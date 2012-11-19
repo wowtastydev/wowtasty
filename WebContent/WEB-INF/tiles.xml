@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+        "-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<tiles-definitions>
+
+    <definition name="default.layout" template="/WEB-INF/jsp/layouts/layout.jsp">
+        <put-attribute name="main" value="/WEB-INF/jsp/layouts/main.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layouts/header.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layouts/footer.jsp" />
+    </definition>
+    
+    <definition name="admin.layout" template="/WEB-INF/jsp/layouts/layout_admin.jsp">
+        <put-attribute name="main_admin" value="/WEB-INF/jsp/layouts/main_admin.jsp" />
+        <put-attribute name="header_admin" value="/WEB-INF/jsp/layouts/header_admin.jsp" />
+        <put-attribute name="footer_admin" value="/WEB-INF/jsp/layouts/footer_admin.jsp" />
+    </definition>
+
+    <!-- 継承することもできます -->
+    <!--
+    <definition name="default2.layout" extends="default.layout">
+        <put-attribute name="head" value="/WEB-INF/jsp/layouts/menu2.jsp" />
+    </definition>
+    -->
+
+</tiles-definitions>

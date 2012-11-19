@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Context privileged="true" reloadable="true">
+
+    <!-- Default set of monitored resources -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+
+    <Resource name="jdbc/mysql" auth="Container"
+              type="javax.sql.DataSource"               	
+              driverClassName="com.mysql.jdbc.Driver"
+        	  url="jdbc:mysql://localhost:3306/mysql"
+        	  username="root" 
+        	  password="root" 	
+        	  maxActive="20"
+        	  maxIdle="10"
+              maxWait="-1" 
+    />
+</Context>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 2.0//EN' 
+	'http://struts.apache.org/dtds/struts-2.0.dtd'>
+
+<struts>
+	<package name="wow-default" namespace="/" extends="struts-default">
+		<interceptors>
+			<interceptor name="logincheckinterceptor" class="com.wowtasty.interceptor.LoginCheckInterceptor" />
+	
+	        <!-- UserInfo Check stack -->
+	        <interceptor-stack name="wowDefaultStack">
+				<interceptor-ref name="logincheckinterceptor" />
+	        	<interceptor-ref name="basicStack" />
+	        </interceptor-stack>
+	        
+	        <!-- UserInfo Check & Validation stack -->
+	        <interceptor-stack name="wowValidationStack">
+				<interceptor-ref name="logincheckinterceptor" />
+	        	<interceptor-ref name="validationWorkflowStack" />
+	        </interceptor-stack>
+	        
+	        <!-- UserInfo Check,Validation & fileUpload stack -->
+	        <interceptor-stack name="wowValidationFileUploadStack">
+				<interceptor-ref name="logincheckinterceptor" />
+	        	<interceptor-ref name="validationWorkflowStack" />
+	        	<interceptor-ref name="fileUpload"/>
+	        </interceptor-stack>
+	        
+	        <!-- UserInfo Check,Validation & fileUpload stack -->
+	        <interceptor-stack name="wowValidationChainStack">
+				<interceptor-ref name="logincheckinterceptor" />
+	        	<interceptor-ref name="validationWorkflowStack" />
+	        	<interceptor-ref name="chain"/>
+	        </interceptor-stack>
+	        
+		</interceptors>	
+	</package>
+	
+	<include file="struts-admin.xml"></include>
+	<include file="struts-user.xml"></include>
+
+	<constant name="struts.custom.i18n.resources" value="message" />
+</struts>

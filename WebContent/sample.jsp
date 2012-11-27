@@ -29,6 +29,8 @@ renamed as long as the file extension remains .jsp
 
 // the parameters for the payment can be configured here
 // the API Login ID and Transaction Key must be replaced with valid values
+
+//TEST from 
 String loginID			= "API_LOGIN_ID";
 String transactionKey	= "TRANSACTION_KEY";
 String amount			= "19.99";

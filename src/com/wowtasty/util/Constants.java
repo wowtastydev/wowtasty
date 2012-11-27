@@ -19,6 +19,7 @@ public class Constants {
 	/**Session Key*/
 	static public final String KEY_SESSION_USER = "KEY_SESSION_USER";
 	static public final String KEY_SESSION_CODE_LIST = "KEY_SESSION_CODE_LIST";
+	static public final String KEY_SESSION_ACTIONAUTH_LIST = "KEY_SESSION_ACTIONAUTH_LIST";
 	static public final String KEY_SESSION_CONFIG_PROPERTIES = "KEY_SESSION_CONFIG_PROPERTIES";
 	
 	/**Action name to skip user information from session */

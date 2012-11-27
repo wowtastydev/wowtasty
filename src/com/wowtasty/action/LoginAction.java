@@ -55,15 +55,15 @@ public class LoginAction extends ActionSupport {
 	private String memberPasswordStr = "";
 	
 	public String init() throws Exception {
-		logger.debug("<---LoginAction init start --->");
+		logger.debug("init start --->");
 		
-		logger.debug("<---LoginAction init end --->");
+		logger.debug("init end --->");
 		return SUCCESS;
 	}
 	
 	@Override
 	public String execute() throws Exception {
-		logger.debug("<---LoginAction execute start --->");
+		logger.debug("execute start --->");
 		
 		//Password Encryption
 		EncryptUtil en = new EncryptUtil();
@@ -76,7 +76,7 @@ public class LoginAction extends ActionSupport {
 
 			if ("".equals(mvo.getMemberID())) {
 				// Email is not exists
-				addFieldError("memberEmail", getText("errors.0002", new String[]{"The Email"}));
+				addFieldError("memberEmail", getText("E0002", new String[]{"The Email"}));
 				return INPUT;
 			}
 			
@@ -87,7 +87,7 @@ public class LoginAction extends ActionSupport {
 				httpSession.setAttribute(Constants.KEY_SESSION_USER, mvo);
 			} else {
 				// Password is not matched
-				addFieldError("memberPasswordStr", getText("errors.0005", new String[]{"Passwords"}));
+				addFieldError("memberPasswordStr", getText("E0005", new String[]{"Passwords"}));
 				return INPUT;
 			}
 			
@@ -95,7 +95,7 @@ public class LoginAction extends ActionSupport {
 			return INPUT;
 		}
 		
-		logger.debug("<---LoginAction execute end --->");
+		logger.debug("execute end --->");
 		return SUCCESS;
 	}
 	

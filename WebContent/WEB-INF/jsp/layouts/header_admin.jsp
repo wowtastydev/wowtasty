@@ -1,12 +1,22 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <div id="header">
-	<h1><a href="initLogin">WOW TASTY ADMIN</a></h1>
+	<table width="1100">
+		<tr><td>
+			<h1><a href="initLogin">WOW TASTY ADMIN</a></h1>
+			</td>
+			<td align="right">
+				Welcome <s:property value="%{uservo.firstName}"/><br>
+				<a href="initLogin">Change Password</a> | <a href="initLogin">Log out</a>
+			</td>
+		</tr>
+	</table>
+	
 </div>
 
 <div id='cssmenu'>
 	<ul>
-	   <li class='has-sub '><a href='orderHistory.html'><span>Order</span></a>
+	   <li class='has-sub '><a href='orderHistory.html'><span>&nbsp;&nbsp;&nbsp;&nbsp;Order&nbsp;&nbsp;&nbsp;&nbsp;</span></a>
 	      <ul>
 	         <li><a href='currentOrder.html'><span>Current Order</span></a></li>
 	         <li><a href='orderHistory.html'><span>Order History</span></a></li>

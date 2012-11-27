@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.FactoryService;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
@@ -20,9 +21,13 @@ import com.wowtasty.mybatis.vo.CodeMasterVO;
  */
 public class CodeMasterDao {
 	
+	/** Logger */
+	private static Logger logger = Logger.getLogger(CodeMasterDao.class);
+	
 	/**Sql Session Factory*/
 	SqlSessionFactory factory = null;
 	
+	/**Contruction: get factory instance*/
 	public CodeMasterDao() {
 		factory = FactoryService.getFactory();
 	}
@@ -61,12 +66,14 @@ public class CodeMasterDao {
 				list.add(vo);
 			}
 		} catch (Exception e) {
-			throw new RuntimeException(":::::CodeDao selectList occurs error:" + e, e);
+			logger.error("!!!!!CodeMasterDao selectList occurs error:" + e);
+        	throw new RuntimeException(e);
 		} finally {
 			try {
 				sqlSession.close();
 			} catch (Exception e) {
-				throw new RuntimeException(":::::CodeDao selectList occurs error:" + e, e);
+				logger.error("!!!!!CodeMasterDao selectList occurs error:" + e);
+	        	throw new RuntimeException(e);
 			}
 		}
 		return returnObject;

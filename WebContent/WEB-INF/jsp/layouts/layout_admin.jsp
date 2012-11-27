@@ -8,11 +8,12 @@
 <link rel="shortcut icon" href="../images/wowicon.ico">
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
 <head>
-<title><s:property value='headTitle' /></title>
+<title><s:property value='headTitle' /> at FoodDelivery WowTasty</title>
 </head>
 <body>
 <font color="White"><s:actionmessage /></font>
 <font color="White"><s:actionerror /></font>
+
 <div id="page">
 <tiles:insertAttribute name="header_admin" />
 <tiles:insertAttribute name="main_admin" />

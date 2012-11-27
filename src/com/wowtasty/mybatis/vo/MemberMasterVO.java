@@ -12,6 +12,7 @@ public class MemberMasterVO {
 	private String memberID = "";
 	private String email = "";
 	private String password = "";
+	private String auth = "";
 	private String firstName = "";
 	private String lastName = "";
 	private String telephone = "";
@@ -72,6 +73,18 @@ public class MemberMasterVO {
 	 */
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	/**
+	 * @return the auth
+	 */
+	public String getAuth() {
+		return auth;
+	}
+	/**
+	 * @param auth the auth to set
+	 */
+	public void setAuth(String auth) {
+		this.auth = auth;
 	}
 	/**
 	 * @return the firstName

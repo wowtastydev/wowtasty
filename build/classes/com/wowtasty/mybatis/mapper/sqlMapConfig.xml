@@ -11,6 +11,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	<typeAliases>
 		<typeAlias type="com.wowtasty.mybatis.vo.CodeMasterVO" alias="codemastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.MemberMasterVO" alias="membermastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.ActionAuthVO" alias="actionauthvo"/>
 	</typeAliases>
    
 	<environments default="">
@@ -27,5 +28,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	<mappers>
 		<mapper resource="com/wowtasty/mybatis/mapper/codemaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/membermaster.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/actionauth.xml"/>
 	</mappers>
 </configuration>

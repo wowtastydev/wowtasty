@@ -3,11 +3,16 @@ package com.wowtasty.util;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Hak C.
  *
  */
 public class StringConvertUtil {
+	/** Logger */	
+	private static Logger logger = Logger.getLogger(StringConvertUtil.class);
+	
 	static final public String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	static final public String DAY_PATTERN = "yyyy-MM-dd";
 	static final public String TIME_PATTERN = "HH:mm";
@@ -22,7 +27,8 @@ public class StringConvertUtil {
 	    	Timestamp tempDate = new Timestamp(sdf.parse(value).getTime());
 	        return tempDate;  
 	    } catch (Exception e) {  
-	        return null;  
+	    	logger.error("!!!!!StringConvertUtil convertString2date occurs error:" + e);
+        	throw new RuntimeException(e);
 	    }  
 	}
 	

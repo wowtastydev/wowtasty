@@ -13,7 +13,7 @@ import com.wowtasty.action.CodeAction;
  */
 public class EncryptUtil {
 	/** Logger */	
-	private static Logger logger = Logger.getLogger(CodeAction.class);
+	private static Logger logger = Logger.getLogger(EncryptUtil.class);
 	
 	/** User's password */
 	private String userPassword;
@@ -45,7 +45,7 @@ public class EncryptUtil {
             setPassword(tempPassword);
             isSuccess = true;
         } catch (NoSuchAlgorithmException e) {
-        	logger.error(":::::EncryptUtil encrypt occurs error:" + e);
+        	logger.error("!!!!!EncryptUtil encrypt occurs error:" + e);
             isSuccess = false;
             return isSuccess;
         }

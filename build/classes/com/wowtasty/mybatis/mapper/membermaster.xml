@@ -5,7 +5,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="membermaster">
 
 	<sql id="columns"> 
-		MemberID, Email, Password, FirstName, LastName, Telephone, Address
+		MemberID, Email, Password, Auth, FirstName, LastName, Telephone, Address
 		, Suite, City, Province, PostalCode, DelivFirstName, DelivLastName, DelivTelephone
 		, DelivAddress, DelivSuite, DelivBuzzer, DelivCity, DelivProvince, DelivIntruction
 		, Ecash, Status, TotalOrderCnt, NAFlag, UpdateID, UpdateTime
@@ -28,7 +28,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<!--selectMaxID-->
 	<select id="selectMaxID" resultType="java.lang.String">
-	SELECT LPAD(MAX(MemberID)+1, 10, '0') FROM member_master;
+	SELECT Create_MaxID(1)
 	</select>
 	
 	<!--Insert-->
@@ -37,6 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	( 	MemberID,
 		Email,
 		Password,
+		Auth,
 		FirstName,
 		LastName,
 		Telephone,
@@ -64,6 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	(	#{memberID},
 		#{email},
 		#{password},
+		#{auth},
 		#{firstName},
 		#{lastName},
 		#{telephone},
@@ -94,6 +96,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		UPDATE member_master
 		SET Email = #{email},
 			Password = #{password},
+			Auth = #{auth},
 			FirstName = #{firstName},
 			LastName = #{lastName},
 			Telephone = #{telephone},

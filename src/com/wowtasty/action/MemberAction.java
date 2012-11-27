@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -39,8 +42,11 @@ public class MemberAction extends ActionSupport implements Preparable {
 	/** codemaster map */
 	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
 	
+	/** user information */
+	private MemberMasterVO uservo = new MemberMasterVO();
+	
 	/** Title&Metatag */
-	// Title : Restaurant Name;City Name;at FoodDelivery WowStaty
+	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
 	private String headTitle = "FoodDelivery WowStaty";
 	// Meta Keywords : Restaurant Name,City Name,Postal prefix, Cuisine Type, Delivery/Take out
 	private String metaKeywords = "Keywords FoodDelivery,WowStaty,Vancouver";
@@ -62,8 +68,13 @@ public class MemberAction extends ActionSupport implements Preparable {
 		logger.info("<---Prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
+		// set up dropdown menu from codes
 		provinceList = codeMap.get(Constants.KEY_CD_PROVINCE);
 		cityList = codeMap.get(Constants.KEY_CD_CITY);
+		
+		// userinfo from httpsession
+		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
+		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
 		logger.info("<---Prepare end --->");
 	}
@@ -92,7 +103,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 		vo = dao.selectByEmail(mvo.getEmail());
 		if (!"".equals(vo.getEmail())) {
 			//The inputted email exists
-			addFieldError("mvo.email", getText("errors.0004", new String[]{"The Email"}));
+			addFieldError("mvo.email", getText("E0004", new String[]{"The Email"}));
 			return INPUT;
 		}
 		
@@ -271,5 +282,19 @@ public class MemberAction extends ActionSupport implements Preparable {
 	 */
 	public void setMetaDescription(String metaDescription) {
 		this.metaDescription = metaDescription;
+	}
+
+	/**
+	 * @return the uservo
+	 */
+	public MemberMasterVO getUservo() {
+		return uservo;
+	}
+
+	/**
+	 * @param uservo the uservo to set
+	 */
+	public void setUservo(MemberMasterVO uservo) {
+		this.uservo = uservo;
 	}
 }

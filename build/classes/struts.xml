@@ -36,8 +36,8 @@
 		</interceptors>	
 	</package>
 	
-	<include file="struts-admin.xml"></include>
-	<include file="struts-user.xml"></include>
+	<include file="struts-a0.xml"></include>
+	<include file="struts-u0.xml"></include>
 
 	<constant name="struts.custom.i18n.resources" value="message" />
 </struts>

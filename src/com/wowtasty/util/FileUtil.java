@@ -13,12 +13,18 @@ import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Hak C.
  *
  */
 public class FileUtil {
 	
+	/** Logger */	
+	private static Logger logger = Logger.getLogger(FileUtil.class);
+
+	/** config.properties */	
 	private Properties config = null;
 
 	/**
@@ -110,16 +116,16 @@ public class FileUtil {
 			ImageIO.write(thumbi, "jpg", outFile);
 			
 		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage(), e);
+			logger.error("!!!!!FileUtil writePict occurs error:" + e);
+        	throw new RuntimeException(e);
 		} finally {
 			try {
 				if (bis != null) {
 					bis.close();
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException(e.getMessage(), e);
+				logger.error("!!!!!FileUtil writePict occurs error:" + e);
+	        	throw new RuntimeException(e);
 			}
 		}
 	}
@@ -165,8 +171,8 @@ public class FileUtil {
 
 			}
 		} catch(Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage(), e);
+			logger.error("!!!!!FileUtil downloadOrderList occurs error:" + e);
+        	throw new RuntimeException(e);
 		} finally {
 			try {
 				if (bw != null) {
@@ -176,8 +182,8 @@ public class FileUtil {
 					fw.close();
 				}
 			} catch(Exception e) {
-				e.printStackTrace();
-				throw new RuntimeException(e.getMessage(), e);
+				logger.error("!!!!!FileUtil downloadOrderList occurs error:" + e);
+	        	throw new RuntimeException(e);
 			}
 		}
 		

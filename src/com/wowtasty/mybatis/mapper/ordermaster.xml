@@ -15,10 +15,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="select" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
 	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
-		, r.deliveryType, getCdShortName('101', r.deliveryType) as deliveryTypeName
-		, m.orderType, IF(m.orderType = '1', '', getCdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
 		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
-		, r.orderStatus, getCdShortName('103', r.orderStatus) as orderStatusName
+		, r.orderStatus, Get_CdShortName('103', r.orderStatus) as orderStatusName
 		, r.deliverymanID, r.deliverymanName
 	FROM order_master m
 		INNER JOIN order_restaurant r on m.orderID = r.orderID
@@ -35,10 +35,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectCurrent" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
 	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
-		, r.deliveryType, getCdShortName('101', r.deliveryType) as deliveryTypeName
-		, m.orderType, IF(m.orderType = '1', '', getCdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
 		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
-		, r.orderStatus, getCdShortName('103', r.orderStatus) as orderStatusName
+		, r.orderStatus, Get_CdShortName('103', r.orderStatus) as orderStatusName
 		, r.deliverymanID, r.deliverymanName
 	FROM order_master m
 		INNER JOIN order_restaurant r on m.orderID = r.orderID

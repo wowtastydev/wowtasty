@@ -1,6 +1,5 @@
 package com.wowtasty.mybatis.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
@@ -32,7 +31,7 @@ public class ActionAuthDao {
 	/**
 	 * @return List<ActionAuthVO>: Authorization by action list
 	 */
-	public List<ActionAuthVO> selectAll() throws SQLException{
+	public List<ActionAuthVO> selectAll() {
 		SqlSession sqlSession = factory.openSession();
 		List<ActionAuthVO> list = null;
 		

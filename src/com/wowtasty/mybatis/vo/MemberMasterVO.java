@@ -31,7 +31,7 @@ public class MemberMasterVO {
 	private String delivProvince = "";
 	private String delivIntruction = "";
 	private String delivPostalCode = "";
-	private int ecash = 1;
+	private int ecash = 0;
 	private String status = "";
 	private int totalOrderCnt = 0;
 	private String naFlag = "0";

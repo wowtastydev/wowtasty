@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="orderrestaurant">
+
+	<sql id="columns"> 
+		OrderID, RestaurantID, RestaurantName, DeliveryType, DeliveryPrice, DeliveryTaxPrice, FoodTotalPrice, FoodTaxPrice, TotalPrice, TipPrice, TotalPriceWithTax,
+		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliverymanID, DeliverymanTelephone, DeliveryGoogleMapURL, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
+		DeliveryAddress, DeliverySuite, DeliveryBuzzer, DeliveryCity, DeliveryProvince, DeliveryPostalCode, DeliveryInstruction, ReviewRate, UpdateID, UpdateTime, DeliverymanName
+	</sql>
+	
+	<!--Update-->
+	<select id="update" parameterType="orderrestaurantvo">
+		UPDATE 
+			order_restaurant  
+		SET 
+			RestaurantName = #{restaurantName},
+			DeliveryType = #{deliveryType},
+			DeliveryPrice = #{deliveryPrice},
+			DeliveryTaxPrice = #{deliveryTaxPrice},
+			FoodTotalPrice = #{foodTotalPrice},
+			FoodTaxPrice = #{foodTaxPrice},
+			TotalPrice = #{totalPrice},
+			TipPrice = #{tipPrice},
+			TotalPriceWithTax = #{totalPriceWithTax},
+			OrderStatus = #{orderStatus},
+			DeclinedReason = #{declinedReason},
+			DeliveryCompanyID = #{deliveryCompanyID},
+			DeliverymanID = #{deliverymanID},
+			DeliverymanName = #{deliverymanName}, 
+			DeliverymanTelephone = #{deliverymanTelephone},
+			DeliveryGoogleMapURL = #{deliveryGoogleMapURL},
+			DeliveryFirstName = #{deliveryFirstName},
+			DeliveryLastName = #{deliveryLastName},
+			DeliveryTelephone = #{deliveryTelephone},
+			DeliveryAddress = #{deliveryAddress},
+			DeliverySuite = #{deliverySuite},
+			DeliveryBuzzer = #{deliveryBuzzer},
+			DeliveryCity = #{deliveryCity},
+			DeliveryProvince = #{deliveryProvince},
+			DeliveryPostalCode = #{deliveryPostalCode},
+			DeliveryInstruction = #{deliveryInstruction},
+			ReviewRate = #{reviewRate},
+			UpdateID = #{updateID},
+			UpdateTime = NOW()
+		WHERE 
+			OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	
+	</select>
+	
+	<!--changeOrderStatus-->
+	<select id="changeOrderStatus" parameterType="orderrestaurantvo">
+		UPDATE 
+			order_restaurant  
+		SET 
+			OrderStatus = #{orderStatus},
+			UpdateID = #{updateID},
+			UpdateTime = NOW()
+		WHERE 
+			OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	
+	</select>
+	
+	<!--setDeliveryMan-->
+	<select id="setDeliveryMan" parameterType="orderrestaurantvo">
+		UPDATE 
+			order_restaurant  
+		SET 
+			DeliverymanID = #{deliverymanID},
+			DeliverymanName = #{deliverymanName}, 
+			DeliverymanTelephone = #{deliverymanTelephone},
+			UpdateID = #{updateID},
+			UpdateTime = NOW()
+		WHERE 
+			OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	
+	</select>
+	
+
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ordermaster">
+
+	<sql id="columns"> 
+		OrderID, InvoiceNO, OrderTime, DeliveryTime, OrderType, PaymentType, PaymentCreditType, PaymentCreditNO, PaymentDebitNO,
+		PaymentAmount, PaymentRefNO, PaymentStatus, PaymentTime, PaymentEcash, PaymentGiftCard, TotalPrice, TotalPriceWithTax,
+		OrderMemberID, OrderMemberEmail, OrderMemberTelephone, BillFirstName, BillLastName, BillTelephone, BillAddress, BillSuite,
+		BillCity, BillProvince, BillPostalCode, UpdateID, UpdateTime
+	</sql>
+	
+	<!--Order List-->
+	<select id="select" parameterType="orderlistconditionvo" resultType="orderlistvo">
+	
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
+		, r.deliveryType, getCdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', getCdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
+		, r.orderStatus, getCdShortName('103', r.orderStatus) as orderStatusName
+		, r.deliverymanID, r.deliverymanName
+	FROM order_master m
+		INNER JOIN order_restaurant r on m.orderID = r.orderID
+
+	WHERE 
+		AND r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
+		AND m.orderID LIKE CONCAT('%',#{orderID},'%')
+		<!--TODO: Add Order List condition-->
+		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
+	
+	</select>
+	
+	<!--Current Order List(Status: Ordered, Pending, Confirmed)-->
+	<select id="selectCurrent" parameterType="orderlistconditionvo" resultType="orderlistvo">
+	
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
+		, r.deliveryType, getCdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', getCdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
+		, r.orderStatus, getCdShortName('103', r.orderStatus) as orderStatusName
+		, r.deliverymanID, r.deliverymanName
+	FROM order_master m
+		INNER JOIN order_restaurant r on m.orderID = r.orderID
+
+	WHERE 
+		<![CDATA[
+		r.orderStatus < '50'
+		]]>
+		AND r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
+		AND m.orderID LIKE CONCAT('%',#{orderID},'%')
+		<if test="time != ''">
+		AND m.deliveryTime > ADDTIME(NOW(), #{time})
+		</if>
+		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
+	
+	</select>
+	
+
+</mapper>

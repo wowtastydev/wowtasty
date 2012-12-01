@@ -13,8 +13,10 @@ import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.dao.CodeMasterDao;
 import com.wowtasty.mybatis.dao.ActionAuthDao;
+import com.wowtasty.mybatis.dao.ContentsTextDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.ActionAuthVO;
+import com.wowtasty.mybatis.vo.ContentsTextVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
 
@@ -40,20 +42,20 @@ public class ExtendServletContextListener implements ServletContextListener {
 			
             // Load page authorization
 			ActionAuthDao adao = new ActionAuthDao();
-			List<ActionAuthVO> list = (List<ActionAuthVO>)adao.selectAll();
+			List<ActionAuthVO> alist = (List<ActionAuthVO>)adao.selectAll();
 			// Put the page authorization list on the single tone session
-			SessionUtil.getInstance().setApplicationAttribute(Constants.KEY_SESSION_ACTIONAUTH_LIST, list);
+			SessionUtil.getInstance().setApplicationAttribute(Constants.KEY_SESSION_ACTIONAUTH_LIST, alist);
 
 			// Load config.properties
 			Properties config = new Properties();
 			config.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
 			// Put the config.properties on the single tone session
 			SessionUtil.getInstance().setApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES, config);
-        } catch (SQLException e) {
-        	logger.error("!!!!!Loading code list failed:" + e);
-        	throw new RuntimeException(e);
-        }  catch (IOException e) {
+        } catch (IOException e) {
         	logger.error("!!!!!Loading config.properties failed:" + e);
+        	throw new RuntimeException(e);
+        } catch (Exception e) {
+        	logger.error("!!!!!contextInitialized occurs error:" + e);
         	throw new RuntimeException(e);
         }
         logger.debug("<---contextInitialized end --->");

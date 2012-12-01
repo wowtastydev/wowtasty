@@ -1,6 +1,5 @@
 package com.wowtasty.mybatis.dao;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +34,7 @@ public class CodeMasterDao {
 	/**
 	 * @return Map<String, List<CodeVO>>: Code lists Map by group code
 	 */
-	public Map<String, List<CodeMasterVO>> selectAll() throws SQLException{
+	public Map<String, List<CodeMasterVO>> selectAll() {
 		SqlSession sqlSession = factory.openSession();
 		List<CodeMasterVO> codeList = new ArrayList<CodeMasterVO>();
 		Map<String, List<CodeMasterVO>> returnObject = new HashMap<String, List<CodeMasterVO>>();

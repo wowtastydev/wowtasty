@@ -12,7 +12,7 @@
 <body>
 <div id="page">
 	<div id="header">
-		<h1><a href="initLogin">WOW TASTY ADMIN</a></h1>
+		<h1>WOW TASTY ADMIN</h1>
 	</div>
 	<center>
 		<h2>Wow Tasty Admin Login</h2>

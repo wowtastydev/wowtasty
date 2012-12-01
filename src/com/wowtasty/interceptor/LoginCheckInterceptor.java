@@ -40,10 +40,9 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
         // In case of no authorization
 		MemberMasterVO mvo = (MemberMasterVO)session.get(Constants.KEY_SESSION_USER);
 		int auth = Integer.parseInt(mvo.getAuth());
-		// Get namespace and action name : "/namespace/actionname"
+		// Get namespace : "/namespace"
 		StringBuilder sb = new StringBuilder();
-		sb.append(invocation.getProxy().getNamespace()).append("/").append(invocation.getProxy().getActionName());
-		String actionName = sb.toString();
+		String namespace = invocation.getProxy().getNamespace();
 		
 		// Get action authorization list from single tone session.
 		List<ActionAuthVO> list = (List<ActionAuthVO>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_ACTIONAUTH_LIST);
@@ -54,7 +53,7 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
 			ActionAuthVO vo = new ActionAuthVO();
 			for (int i = 0; i < size; i++) {
 				vo = list.get(i);
-				if(actionName.equals(vo.getActionName())) {
+				if(namespace.equals(vo.getActionName())) {
 					if(auth > Integer.parseInt(vo.getAuth())) {
 						// If memeber auth is over action auth, forward to error
 						logger.info("!!!!!Unauthorized access without proper authorization --->");

@@ -13,6 +13,7 @@ public class CodeMasterVO {
 	private String code = "";
 	private String shortName = "";
 	private String name = "";
+	private String value = "";
 	private int sort = 1;
 	private String naFlag = "0";
 	private String updateID = "";
@@ -77,6 +78,18 @@ public class CodeMasterVO {
 	 */
 	public void setSort(int sort) {
 		this.sort = sort;
+	}
+	/**
+	 * @return the value
+	 */
+	public String getValue() {
+		return value;
+	}
+	/**
+	 * @param value the value to set
+	 */
+	public void setValue(String value) {
+		this.value = value;
 	}
 	/**
 	 * @return the naFlag

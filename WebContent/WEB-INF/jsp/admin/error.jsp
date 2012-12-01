@@ -18,7 +18,8 @@
 		<div id="contentarea">
 			<h2>Wow Tasty System Error</h2>
 		
-			Systme Error Occurs. Please Contact to System administrator.
+			<p>Systme Error Occurs. Please Contact to System administrator.</p>
+			<input type="button" value="Login" onClick="javascript:window.location='initLogin';" />
 		</div>
 	</div>
 	<div id="footer">

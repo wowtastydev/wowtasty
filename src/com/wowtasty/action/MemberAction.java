@@ -119,7 +119,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 		
 		//Set memberID,status,password
 		mvo.setMemberID(memberID);
-		mvo.setStatus(Constants.KEY_MEMBER_STATUS_ACTIVE);
+		mvo.setStatus(Constants.KEY_MEMBER_STATUS_CONFIRMED);
 		mvo.setPassword(memberPassword);
 		
 		//Insert MemberMasterdata

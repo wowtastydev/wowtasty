@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectAll" resultType="codemastervo">
 		SELECT groupcd, code, shortname, name, sort, naflag, updateid, updatetime 
 		FROM code_master 
-		WHERE naflag != 1
+		WHERE naflag != '1'
 		ORDER BY groupcd, sort
 	</select>
 </mapper>

@@ -9,9 +9,23 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</settings>
 	
 	<typeAliases>
-		<typeAlias type="com.wowtasty.mybatis.vo.CodeMasterVO" alias="codemastervo"/>
-		<typeAlias type="com.wowtasty.mybatis.vo.MemberMasterVO" alias="membermastervo"/>
+		<!-- Mapping VO -->
 		<typeAlias type="com.wowtasty.mybatis.vo.ActionAuthVO" alias="actionauthvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.CodeMasterVO" alias="codemastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.ContentsTextVO" alias="contentstextvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryAreaVO" alias="deliveryareavo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryManVO" alias="deliverymanvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.MemberMasterVO" alias="membermastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.OrderMasterVO" alias="ordermastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.OrderMenuOptionVO" alias="ordermenuoptionvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.OrderMenuVO" alias="ordermenuvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.OrderRestaurantVO" alias="orderrestaurantvo"/>
+		
+		<!-- List VO -->
+		<typeAlias type="com.wowtasty.vo.OrderListVO" alias="orderlistvo"/>
+		
+		<!-- Condition VO  -->
+		<typeAlias type="com.wowtasty.vo.OrderListConditionVO" alias="orderlistconditionvo"/>
 	</typeAliases>
    
 	<environments default="">
@@ -26,8 +40,13 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</environment>
 	</environments>
 	<mappers>
-		<mapper resource="com/wowtasty/mybatis/mapper/codemaster.xml"/>
-		<mapper resource="com/wowtasty/mybatis/mapper/membermaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/actionauth.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/codemaster.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/contentstext.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/deliveryman.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/ordermaster.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/orderrestaurant.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/membermaster.xml"/>
+		
 	</mappers>
 </configuration>

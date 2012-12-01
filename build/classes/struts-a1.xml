@@ -9,6 +9,7 @@
 	
 		<global-results>
 			<result name="login">/WEB-INF/jsp/admin/login.jsp</result>
+			<result name="autherror">/WEB-INF/jsp/admin/autherror.jsp</result>
 			<result name="error">/WEB-INF/jsp/admin/error.jsp</result>
 		</global-results>
 		
@@ -16,37 +17,33 @@
 			<exception-mapping exception="java.lang.RuntimeException" result="error" />
 			<exception-mapping exception="java.lang.Exception" result="error" />
 		</global-exception-mappings>
-	
-		<!-- LoginAction -->
-		<action name="initLogin" class="com.wowtasty.action.LoginAction" method="init">
-			<interceptor-ref name="basicStack"/>
-			<result>/WEB-INF/jsp/admin/login.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
+		
+		<!-- PasswordAction -->
+		<action name="initPassword" class="com.wowtasty.action.PasswordAction" method="init">
+			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
 		</action>
 		
-		<action name="login" class="com.wowtasty.action.LoginAction">
-			<interceptor-ref name="validationWorkflowStack"/>
-			<result type="chain">initMember</result>
-			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
+		<action name="changePassword" class="com.wowtasty.action.PasswordAction">
+			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
 		</action>
-
-		<!-- MemberAction -->		
+	
+		<!-- MemberAction -->
+		
+		<!-- initMember : initialize Member insert Page -->	
 		<action name="initMember" class="com.wowtasty.action.MemberAction" method="init">
 			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
 		</action>
 		
+		<!-- insertMember : insert new member account Page -->	
 		<action name="insertMember" class="com.wowtasty.action.MemberAction">
 			<interceptor-ref name="wowValidationStack"/>
 			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
 		</action>
 		
-		<!-- CodeAction -->
-		<action name="searchCode" class="com.wowtasty.action.CodeAction">
-			<result>/WEB-INF/jsp/admin/codelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/codelist.jsp</result>
-		</action>
 	</package>
 	
 </struts>

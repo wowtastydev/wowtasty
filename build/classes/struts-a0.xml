@@ -27,27 +27,50 @@
 		
 		<action name="login" class="com.wowtasty.action.LoginAction">
 			<interceptor-ref name="validationWorkflowStack"/>
-			<result type="chain">initMember</result>
+			<result type="chain">initCurrentOrderList</result>
 			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
 		</action>
 
-		<!-- MemberAction -->		
-		<action name="initMember" class="com.wowtasty.action.MemberAction" method="init">
-			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
+		<!-- OrderListAction -->		
+		<action name="initOrderList" class="com.wowtasty.action.OrderListAction" method="init">
+			<result>/WEB-INF/jsp/admin/orderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/orderlist.jsp</result>
 		</action>
 		
-		<action name="insertMember" class="com.wowtasty.action.MemberAction">
-			<interceptor-ref name="wowValidationStack"/>
-			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
+		<action name="searchOrder" class="com.wowtasty.action.OrderListAction">
+			<result>/WEB-INF/jsp/admin/orderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/orderlist.jsp</result>
 		</action>
 		
-		<!-- CodeAction -->
-		<action name="searchCode" class="com.wowtasty.action.CodeAction">
-			<result>/WEB-INF/jsp/admin/codelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/codelist.jsp</result>
+		<action name="initCurrentOrderList" class="com.wowtasty.action.OrderListAction" method="initCurrent">
+			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
+		
+		<action name="searchCurrentOrder" class="com.wowtasty.action.OrderListAction" method="searchCurrent">
+			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+		</action>
+		
+		<action name="changeOrderStatus" class="com.wowtasty.action.OrderListAction" method="changeOrderStatus">
+			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+		</action>
+		
+		<action name="setDeliveryMan" class="com.wowtasty.action.OrderListAction" method="setDeliveryMan">
+			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+		</action>
+		
+		<action name="releaseDeliveryMan" class="com.wowtasty.action.OrderListAction" method="releaseDeliveryMan">
+			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+		</action>
+		
+		
+		
+
+		
 	</package>
 	
 </struts>

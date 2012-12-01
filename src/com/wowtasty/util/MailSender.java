@@ -25,25 +25,28 @@ public class MailSender {
 	private String smtpServer = "";
 	private String userName = ""; 
 	private String password = "";
+	private String infoEmail = "";
+	private String infoEmailName = "";
         
     /**
     * Contructor : Set up SMTP information from config.properties
     */        
-	private MailSender() {
+	public MailSender() {
     	Properties config = (Properties)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES);
     	smtpServer = config.getProperty("smtpServer");
     	userName = config.getProperty("userName");
     	password = config.getProperty("password");
+    	infoEmail = config.getProperty("infoEmail");
+    	infoEmailName = config.getProperty("infoEmailName");
     }
        
     /**
      *
-     * @param from
      * @param to Cannot be Null
      * @param subject Cannot be Null
      * @param mailText
      */
-    public synchronized boolean sendEmail(String from, String to, String subject, String mailText) throws Exception {
+    public synchronized boolean sendEmail(String to, String subject, String mailText) throws Exception {
         if((to == null)  && (subject == null)) {
         	return false;
         }
@@ -51,15 +54,15 @@ public class MailSender {
         if(mailText == null) {
         	mailText = "";
         }
-        
-        if(from == null) {
-        	from = userName;
-        }
                 
         try {
             Properties props = System.getProperties();
-            props.put( "mail.smtp.host", smtpServer ) ;
- 
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.transport.protocol", "smtp");
+            props.put("mail.host", smtpServer);
+            props.put("mail.user", userName);
+            props.put("mail.password", password);
+            props.put("mail.port", "587");
             //SMTP server authentication is set to false, by default. Setting it to true as shown below
             props.put( "mail.smtp.auth", "true" ) ;
  
@@ -67,7 +70,7 @@ public class MailSender {
             MimeMessage message = new MimeMessage(session);
  
             //Setting the 'from', 'to', 'cc' addresses and the 'subject'
-            message.setFrom(new InternetAddress(from));
+            message.setFrom(new InternetAddress(infoEmail, infoEmailName));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
             message.setSubject(subject);
  

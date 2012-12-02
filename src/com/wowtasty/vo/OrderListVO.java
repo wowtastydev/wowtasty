@@ -13,6 +13,7 @@ public class OrderListVO {
 	private Timestamp deliveryTime = null;
 	private String restaurantID = "";
 	private String restaurantName = "";
+	private String restaurantEmail = "";
 	private String deliveryType = "";
 	private String deliveryTypeName = "";
 	private String orderType = "";
@@ -217,5 +218,17 @@ public class OrderListVO {
 	 */
 	public void setDeliverymanName(String deliverymanName) {
 		this.deliverymanName = deliverymanName;
+	}
+	/**
+	 * @return the restaurantEmail
+	 */
+	public String getRestaurantEmail() {
+		return restaurantEmail;
+	}
+	/**
+	 * @param restaurantEmail the restaurantEmail to set
+	 */
+	public void setRestaurantEmail(String restaurantEmail) {
+		this.restaurantEmail = restaurantEmail;
 	}
 }

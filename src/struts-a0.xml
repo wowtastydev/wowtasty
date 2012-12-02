@@ -38,6 +38,7 @@
 		</action>
 		
 		<action name="searchOrder" class="com.wowtasty.action.OrderListAction">
+			<interceptor-ref name="validationWorkflowStack"/>
 			<result>/WEB-INF/jsp/admin/orderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/orderlist.jsp</result>
 		</action>
@@ -48,6 +49,7 @@
 		</action>
 		
 		<action name="searchCurrentOrder" class="com.wowtasty.action.OrderListAction" method="searchCurrent">
+			<interceptor-ref name="validationWorkflowStack"/>
 			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
@@ -61,16 +63,6 @@
 			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
-		
-		<action name="releaseDeliveryMan" class="com.wowtasty.action.OrderListAction" method="releaseDeliveryMan">
-			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
-		</action>
-		
-		
-		
-
-		
 	</package>
 	
 </struts>

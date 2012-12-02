@@ -37,7 +37,7 @@
 
 		// Check password
 		if (pwd != "") {
-			if(isvalid_password(pwd)){
+			if(!isvalid_password(pwd)){
 				password_info.innerHTML = '<span style="color: #f00;">The type of New Password is invalid.</span>';
 				return;
 			}

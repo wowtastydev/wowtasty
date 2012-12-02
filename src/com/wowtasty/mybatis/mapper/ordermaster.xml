@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--Order List-->
 	<select id="select" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
-	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName, r.restaurantEmail
 		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
 		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
 		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
@@ -23,10 +23,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	FROM order_master m
 		INNER JOIN order_restaurant r on m.orderID = r.orderID
 
-	WHERE 
-		AND r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
+	WHERE r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
 		AND m.orderID LIKE CONCAT('%',#{orderID},'%')
-		<!--TODO: Add Order List condition-->
+		AND IFNULL(m.orderMemberEmail,'') LIKE CONCAT('%',#{orderMemberEmail},'%')
+		AND IFNULL(m.orderMemberTelephone,'') LIKE CONCAT('%',#{orderMemberTelephone},'%')
+		<if test="fromDate != ''">
+		AND m.deliveryTime > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
+		</if>
+		<if test="toDate != ''">
+		<![CDATA[
+		AND m.deliveryTime < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
+		]]>
+		</if>
 		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
 	
 	</select>
@@ -34,7 +42,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--Current Order List(Status: Ordered, Pending, Confirmed)-->
 	<select id="selectCurrent" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
-	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName, r.restaurantEmail
 		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
 		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
 		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone

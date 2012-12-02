@@ -5,7 +5,7 @@
 	<field name="mvo.email">
 		<field-validator type="requiredstring">
 			<param name="trim">true</param>
-			<message key="errors.required" />
+			<message key="E0001" />
 		</field-validator>
 		<field-validator type="email">
 			<message key="errors.invalid" />
@@ -13,54 +13,54 @@
 	</field>
 	<field name="memberPasswordStr">
 		<field-validator type="requiredstring">
-			<message key="errors.required" />
+			<message key="E0001" />
 		</field-validator>
 	</field>
 	<field name="confirmPasswordStr">
 		<field-validator type="requiredstring">
-			<message key="errors.required" />
+			<message key="E0001" />
 		</field-validator>
 	</field>
 	<field name="mvo.telephone">
 		<field-validator type="regex">
 			<param name="expression">^[0-9- ]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="mvo.suite">
 		<field-validator type="regex">
 			<param name="expression">^[a-zA-Z0-9]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="mvo.postalCode">
 		<field-validator type="regex">
 			<param name="expression">^[a-zA-Z0-9 ]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="mvo.delivTelephone">
 		<field-validator type="regex">
 			<param name="expression">^[0-9- ]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="mvo.delivSuite">
 		<field-validator type="regex">
 			<param name="expression">^[a-zA-Z0-9]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="mvo.delivBuzzer">
 		<field-validator type="regex">
 			<param name="expression">^[a-zA-Z0-9]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 	<field name="delivPostalCode">
 		<field-validator type="regex">
 			<param name="expression">^[a-zA-Z0-9 ]+$</param>
-			<message key="errors.invalid" />
+			<message key="E0003" />
 		</field-validator>
 	</field>
 </validators>

@@ -9,17 +9,14 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-
+import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
-import com.wowtasty.mybatis.dao.MemberMasterDao;
-
-import com.wowtasty.util.EncryptUtil;
 import com.wowtasty.util.Constants;
+import com.wowtasty.util.EncryptUtil;
 import com.wowtasty.util.SessionUtil;
 
 

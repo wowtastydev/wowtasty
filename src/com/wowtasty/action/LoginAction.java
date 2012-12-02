@@ -1,30 +1,20 @@
 package com.wowtasty.action;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.interceptor.validation.SkipValidation;
-
-
 import javax.servlet.http.HttpSession;
 
-import com.opensymphony.xwork2.ActionSupport;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
 
+import com.opensymphony.xwork2.ActionSupport;
+import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.EncryptUtil;
-import com.wowtasty.util.SessionUtil;
-
-import com.wowtasty.mybatis.dao.CodeMasterDao;
-import com.wowtasty.mybatis.dao.MemberMasterDao;
-
-
-
 
 /**
  * @author Hak C.

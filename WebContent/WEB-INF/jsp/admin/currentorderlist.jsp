@@ -2,17 +2,13 @@
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
 <t:insertDefinition name="admin.layout">
 <t:putAttribute name="main_admin">
-<link rel="stylesheet" href="../css/jquery-ui.css" />
-<link rel="stylesheet" href="../css/themes/blue/style.css" type="text/css" media="print, projection, screen" />
-<script src="../js/jquery-1.8.3.js"></script>
-<script src="../js/jquery-ui.js"></script>
-<script src="../js/common.js"></script>
-<script src="../js/jquery.tablesorter.js"></script> 
+<link rel="stylesheet" href="../themes/blue/style.css" type="text/css" media="print, projection, screen" />
+<script src="../js/jquery.tablesorter.js"></script>
 
 <script>
 <!--	
-	// Search Current Order
 	function search(){
+		$.blockUI({ message: '<h4><img src="../images/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
 
@@ -21,28 +17,20 @@
 		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
 		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
 		document.getElementById("selectedOrderMemberEmail").value = document.getElementById("list[" + index + "].orderMemberEmail").value;
+		document.getElementById("selectedRestaurantEmail").value = document.getElementById("list[" + index + "].restaurantEmail").value;
+
+		$.blockUI({ message: '<h4><img src="../images/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").action = "changeOrderStatus";
 		document.getElementById("frm").submit();
 	}
 	// Set Delivery Man
 	function setDeliveryMan(index){
-		var deliveryman = document.getElementById("list[" + index + "].deliverymanID").value;
-		if (deliveryman == "") {
-			alert("Please select a deliveryman.");
-			return;
-		}
 		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
 		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
-		document.getElementById("selectedDeliverymanID").value = deliveryman;
+		document.getElementById("selectedDeliverymanID").value = document.getElementById("list[" + index + "].deliverymanID").value;
+
+		$.blockUI({ message: '<h4><img src="../images/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").action = "setDeliveryMan";
-		document.getElementById("frm").submit();
-	}
-	
-	// Release Assigned Delivery Man
-	function releaseDeliveryMan(index){
-		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
-		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
-		document.getElementById("frm").action = "releaseDeliveryMan";
 		document.getElementById("frm").submit();
 	}
 	
@@ -51,6 +39,7 @@
 	$(function() {		
 		$("#listTable").tablesorter({sortList:[[0,0],[2,1]], widgets: ['zebra']});
 	});
+
 
 // -->
 </script>
@@ -70,6 +59,7 @@
 			<s:hidden name="selectedRestaurantID" id="selectedRestaurantID"/>
 			<s:hidden name="selectedDeliverymanID" id="selectedDeliverymanID"/>
 			<s:hidden name="selectedOrderMemberEmail" id="selectedOrderMemberEmail"/>
+			<s:hidden name="selectedRestaurantEmail" id="selectedRestaurantEmail"/>
 			<div id="searchconditionarea">
 				<table>
 					<tr>
@@ -78,13 +68,15 @@
 					<tr>
 						<td align="left" width="150">Restaurant Name : </td>
 						<td width="200">
-							<s:textfield name="condition.restaurantName" id="condition.restaurantName" value="%{condition.restaurantName}" size="20" maxlength="50"/>
+							<s:textfield name="condition.restaurantName" id="condition.restaurantName" value="%{condition.restaurantName}" size="30" maxlength="50"/>
 						</td>
 						<td align="left" width="150">Order ID : </td>
 						<td width="200">
 							<s:textfield name="condition.orderID" id="condition.orderID" value="%{condition.orderID}" size="20" maxlength="13"/>
 						</td>
-						<td rowspan="2" valign="top" width="100"><input type="button" value="Search" onClick="javascript:search();" /></td>
+						<td rowspan="2" valign="top" width="100">
+							<input type="button" value="Search" onClick="javascript:search();" />
+						</td>
 					</tr>
 					<tr>
 						<td colspan="2">
@@ -127,6 +119,7 @@
 						<td align="left">	
 							<s:property value="%{restaurantName}"/>
 							<s:hidden name="list[%{#outerStat.index}].restaurantID" id="list[%{#outerStat.index}].restaurantID"  value="%{restaurantID}"/>
+							<s:hidden name="list[%{#outerStat.index}].restaurantEmail" id="list[%{#outerStat.index}].restaurantEmail"  value="%{restaurantEmail}"/>
 						</td>
 						<td align="center">
 							<s:property value="%{deliveryTypeName}"/>

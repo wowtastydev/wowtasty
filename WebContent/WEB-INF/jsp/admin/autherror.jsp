@@ -16,7 +16,7 @@
 	</div>
 	<div id="mainarea">
 		<div id="contentarea">
-			<h2>Wow Tasty Authorization Error</h2>
+			<h2><font color="#f00">Wow Tasty Authorization Error</font></h2>
 		
 			<p>You are not authorized to access this page. Please Contact to System administrator.</p>
 			<input type="button" value="Login" onClick="javascript:window.location='initLogin';" />

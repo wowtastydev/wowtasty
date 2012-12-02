@@ -8,14 +8,10 @@ document.onkeydown = function() {
 	
 };
 
-//var clickCount = 0;
-//window.onload = function() {
-	// Double click check
-//	if(clickCount == 0){
-//		clickCount = 1;
-//	}
-//};
-
+//UnblockUI after submit
+window.onload = function() {
+	$.unblockUI;
+};
 
 // Password minmum length
 var pwdMinLen = 8;

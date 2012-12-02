@@ -40,8 +40,18 @@ public class Constants {
 	static public final String KEY_ORDER_STATUS_CANCELED = "91";
 	static public final String KEY_ORDER_STATUS_REFUNDED = "92";
 	
-	static public final Integer KEY_CONTENTS_ORDERED_CUST = 1;
-	static public final Integer KEY_CONTENTS_ORDERED_REST = 2;
+	/**Mail Contents key */
+	static public final Integer KEY_CONTENTS_SIGNUP_MEM = 1;
+	static public final Integer KEY_CONTENTS_SIGNUP_REST = 2;
+	static public final Integer KEY_CONTENTS_PWD_CHANGE = 3;
+	static public final Integer KEY_CONTENTS_ORDERED_MEM = 4;
+	static public final Integer KEY_CONTENTS_ORDERED_REST = 5;
+	static public final Integer KEY_CONTENTS_CONFIRMED_MEM = 6;
+	static public final Integer KEY_CONTENTS_CONFIRMED_REST = 7;
+	static public final Integer KEY_CONTENTS_DECLINED_MEM = 8;
+	static public final Integer KEY_CONTENTS_DECLINED_REST = 9;
+	static public final Integer KEY_CONTENTS_CANCELED_MEM = 10;
+	static public final Integer KEY_CONTENTS_CANCELED_REST = 11;
 	
 
 	/**Session Key*/

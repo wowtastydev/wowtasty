@@ -130,9 +130,19 @@ margin:0;
 }
 
 h2 {
-font-size:15pt;
+font-size:20pt;
 color:#555555;
 padding-top:6px;
+}
+
+h3 {
+font-size:15pt;
+color:#FFFFFF;
+}
+
+h4 {
+font-size:12pt;
+color:#414141;
 }
 
 #sidebar h2 {

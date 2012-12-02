@@ -2,8 +2,11 @@ package com.wowtasty.util;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
+
+import java.text.ParseException;
 
 /**
  * @author Hak C.
@@ -77,6 +80,38 @@ public class StringConvertUtil {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * check if string is date type
+	 * @param datetype String 
+	 * @param datetype 'yyyy-MM-dd' or 'MM/dd/yyyy'
+	 * @return boolean: true-blank, false-not blank 
+	 */
+	public static boolean isDate(String value, String type) {
+		if (value == null) {
+			return false;
+		}
+		if (value.trim().length() == 0) {
+			return false;
+		}
+		SimpleDateFormat sdf = new SimpleDateFormat(type);
+		Date testDate = null;
+
+	    try {  
+	    	testDate = sdf.parse(value);
+	    	
+	    	// If the date is not the same as input's value
+	    	// ex) sdf.parse(11/31/2012) change into 12/01/2012 without exception
+	    	if (!sdf.format(testDate).equals(value)) {
+	    		return false;
+	    	}
+
+	        return true;  
+	    } catch (ParseException e) {
+	    	// If exception occurs, not date type
+	    	return false;
+	    } 
 	}
 
 }

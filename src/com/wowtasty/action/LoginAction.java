@@ -55,6 +55,8 @@ public class LoginAction extends ActionSupport {
 	public String execute() throws Exception {
 		logger.debug("execute start --->");
 		
+		String returnString = SUCCESS;
+		
 		//Password Encryption
 		EncryptUtil en = new EncryptUtil();
 		if (en.encrypt(memberPasswordStr)) {
@@ -67,7 +69,7 @@ public class LoginAction extends ActionSupport {
 			if ("".equals(mvo.getMemberID())) {
 				// Email is not exists
 				addFieldError("memberEmail", getText("E0002", new String[]{"The Email"}));
-				return INPUT;
+				returnString = INPUT;
 			}
 			
 			//Match password with db data
@@ -78,15 +80,15 @@ public class LoginAction extends ActionSupport {
 			} else {
 				// Password is not matched
 				addFieldError("memberPasswordStr", getText("E0005", new String[]{"Passwords"}));
-				return INPUT;
+				returnString = INPUT;
 			}
 			
 		} else {
-			return INPUT;
+			returnString = INPUT;
 		}
 		
 		logger.debug("execute end --->");
-		return SUCCESS;
+		return returnString;
 	}
 	
 	/**

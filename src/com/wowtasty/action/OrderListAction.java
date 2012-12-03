@@ -146,12 +146,14 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	public String execute() throws Exception {
 		logger.info("<---Execute start --->");
 		
+		String returnString = SUCCESS;
+		
 		//Check date type
 		if (!"".equals(condition.getFromDate().trim())) {
 			if (!StringConvertUtil.isDate(condition.getFromDate(), DAY_PATTERN)) {
 				// Date(from) is not datetype
 				addFieldError("condition.fromDate", getText("E0003_1", new String[]{"Date(from)"}));
-				return INPUT;
+				returnString = INPUT;
 			}
 		}
 
@@ -159,7 +161,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 			if (!StringConvertUtil.isDate(condition.getToDate(), DAY_PATTERN)) {
 				// Date(to) is not datetype
 				addFieldError("condition.toDate", getText("E0003_1", new String[]{"Date(to)"}));
-				return INPUT;
+				returnString = INPUT;
 			}
 		}
 		
@@ -168,7 +170,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		list = dao.select(condition);
 		
 		logger.info("<---Execute end --->");
-		return SUCCESS;
+		return returnString;
 	}
 	
 	/**

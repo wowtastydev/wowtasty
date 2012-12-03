@@ -17,7 +17,7 @@ table td, table th {
 
 #page {
 width:1200px;
-background-image:url(../images/page.png);
+background-image:url(../images/admin/page.png);
 margin:auto;
 padding:auto;
 }
@@ -26,7 +26,7 @@ padding:auto;
 clear:both;
 width:1140px;
 height:50px;
-background-image:url(../images/header.png);
+background-image:url(../images/admin/header.png);
 padding-left:60px;
 padding-top:50px;
 }
@@ -114,7 +114,7 @@ height:62px;
 padding-top:30px;
 text-align:center;
 line-height:14pt;
-background-image:url(../images/footer.png);
+background-image:url(../images/admin/footer.png);
 background-repeat:no-repeat;
 color:#FFFFFF;
 }

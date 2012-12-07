@@ -5,8 +5,6 @@ import java.security.NoSuchAlgorithmException;
 
 import org.apache.log4j.Logger;
 
-import com.wowtasty.action.CodeAction;
-
 /**
  * @author Hak C.
  *
@@ -22,10 +20,9 @@ public class EncryptUtil {
 	 * @param userPassword
 	 * @return encrypted string :SHA-512
 	 */
-	public boolean encrypt(String userPassword) {
+	public void encrypt(String userPassword) {
 
 		MessageDigest md;
-        boolean isSuccess;
         String tempPassword = "";
 
         try {
@@ -43,13 +40,10 @@ public class EncryptUtil {
                 tempPassword += s;
             }
             setPassword(tempPassword);
-            isSuccess = true;
         } catch (NoSuchAlgorithmException e) {
         	logger.error("!!!!!EncryptUtil encrypt occurs error:" + e);
-            isSuccess = false;
-            return isSuccess;
+        	throw new RuntimeException(e);
         }
-        return isSuccess;
     }
 	
     private void setPassword(String temppassword) {

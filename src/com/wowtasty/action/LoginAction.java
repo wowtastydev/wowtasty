@@ -59,31 +59,28 @@ public class LoginAction extends ActionSupport {
 		
 		//Password Encryption
 		EncryptUtil en = new EncryptUtil();
-		if (en.encrypt(memberPasswordStr)) {
-			memberPassword = en.getPassword();
-			//Select db data by inputted email
-			MemberMasterDao mdao = new MemberMasterDao();
-			MemberMasterVO mvo = new MemberMasterVO();
-			mvo = mdao.selectByEmail(memberEmail);
+		en.encrypt(memberPasswordStr);
+		
+		memberPassword = en.getPassword();
+		//Select db data by inputted email
+		MemberMasterDao mdao = new MemberMasterDao();
+		MemberMasterVO mvo = new MemberMasterVO();
+		mvo = mdao.selectByEmail(memberEmail);
 
-			if ("".equals(mvo.getMemberID())) {
-				// Email is not exists
-				addFieldError("memberEmail", getText("E0002", new String[]{"The Email"}));
-				returnString = INPUT;
-			}
-			
-			//Match password with db data
-			if (memberPassword.equals(mvo.getPassword())) {
-				// Set user info to http session
-				HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
-				httpSession.setAttribute(Constants.KEY_SESSION_USER, mvo);
-			} else {
-				// Password is not matched
-				addFieldError("memberPasswordStr", getText("E0005", new String[]{"Passwords"}));
-				returnString = INPUT;
-			}
-			
+		if ("".equals(mvo.getMemberID())) {
+			// Email is not exists
+			addFieldError("memberEmail", getText("E0002", new String[]{"The Email"}));
+			returnString = INPUT;
+		}
+		
+		//Match password with db data
+		if (memberPassword.equals(mvo.getPassword())) {
+			// Set user info to http session
+			HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
+			httpSession.setAttribute(Constants.KEY_SESSION_USER, mvo);
 		} else {
+			// Password is not matched
+			addFieldError("memberPasswordStr", getText("E0005", new String[]{"Passwords"}));
 			returnString = INPUT;
 		}
 		

@@ -67,33 +67,27 @@ public class PasswordAction extends ActionSupport implements Preparable {
 		
 		// Current Password Encryption
 		EncryptUtil en = new EncryptUtil();
-		if (en.encrypt(currentPasswordStr)) {
-			encryptedPassword = en.getPassword();
+		en.encrypt(currentPasswordStr);
+		encryptedPassword = en.getPassword();
 
-			// Match password with user data
-			if (!encryptedPassword.equals(uservo.getPassword())) {
-				// Password is not matched
-				addFieldError("currentPasswordStr", getText("E0005", new String[]{"Current Passwords"}));
-				return INPUT;
-			}
-			
-			// New Password Encryption
-			if (en.encrypt(newPasswordStr)) {
-				encryptedPassword = en.getPassword();
-				// Update Session
-				uservo.setPassword(encryptedPassword);
-				
-				// Update DB
-				MemberMasterDao dao = new MemberMasterDao();
-				dao.update(uservo);
-				
-				addActionMessage("Changed password sucessfully");
-			} else {
-				addActionMessage("Encryption sucessfully");
-			}
-		} else {
+		// Match password with user data
+		if (!encryptedPassword.equals(uservo.getPassword())) {
+			// Password is not matched
+			addFieldError("currentPasswordStr", getText("E0005", new String[]{"Current Passwords"}));
 			return INPUT;
 		}
+		
+		// New Password Encryption
+		en.encrypt(newPasswordStr);
+		encryptedPassword = en.getPassword();
+		// Update Session
+		uservo.setPassword(encryptedPassword);
+		
+		// Update DB
+		MemberMasterDao dao = new MemberMasterDao();
+		dao.update(uservo);
+		
+		addActionMessage("Changed password sucessfully");
 		
 		logger.debug("execute end --->");
 		return SUCCESS;

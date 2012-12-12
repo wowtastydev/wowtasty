@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="deliverymaster">
+
+	<sql id="columns"> 
+		DeliveryCompanyID,DeliveryCompanyType,Name,MemberID,FirstName,LastName,Telephone,Fax,Address,Suite,City,
+		Province,PostalCode,Website,Facebook,Email1,Email2,LogoImagePath,CommissionType,Commission,Status,
+		RegisterDate,NAFlag,UpdateID,UpdateTime
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="deliverymastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM delivery_master 
+	</select>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="deliverymastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM delivery_master 
+	WHERE DeliveryCompanyID = #{deliveryCompanyID}
+	</select>
+	
+	<!--selectMaxID-->
+	<select id="selectMaxID" resultType="java.lang.String">
+	SELECT Create_MaxID(3)
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="deliverymastervo">
+	INSERT INTO delivery_master
+	( 	
+	<include refid="columns"/>
+	)
+	VALUES
+	(	#{deliveryCompanyID},
+	    #{deliveryCompanyType},
+		#{name},
+		#{memberID},
+		#{firstName},
+		#{lastName},
+		#{telephone},
+		#{fax},
+		#{address},
+		#{suite},
+		#{city},
+		#{province},
+		#{postalCode},
+		#{logoImagePath},
+		#{website},
+		#{facebook},
+		#{email1},
+		#{email2},
+		#{commissionType},
+		#{commission},
+		#{status},
+		#{registerDate},
+		#{naFlag},
+		#{updateID},
+		now())
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="deliverymastervo">
+		UPDATE delivery_master
+		SET DeliveryCompanyType = #{deliveryCompanyType},
+			Name = #{name},
+			MemberID = #{memberID},
+			FirstName = #{firstName},
+			LastName = #{lastName},
+			Telephone = #{telephone},
+			Fax = #{fax},
+			Address = #{address},
+			Suite = #{suite},
+			City = #{city},
+			Province = #{province},
+			PostalCode = #{postalCode},
+			LogoImagePath = #{logoImagePath},
+			Website = #{website},
+			Facebook = #{facebook},
+			Email1 = #{email1},
+			Email2 = #{email2},
+			CommissionType = #{commissionType},
+			Commission = #{commission},
+			Status = #{status},
+			RegisterDate = #{registerDate},
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE 
+		  	DeliveryCompanyID = #{deliveryCompanyID}
+
+	</update>
+</mapper>

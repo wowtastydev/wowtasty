@@ -12,21 +12,21 @@ public class OrderRestaurantVO {
 	private String orderID = "";
 	private String restaurantID = "";
 	private String restaurantName = "";
+	private String restaurantEmail = "";
 	private String deliveryType = "";
-	private float deliveryPrice = 0.00f;
-	private float deliveryTaxPrice = 0.00f;
-	private float foodTotalPrice = 0.00f;
-	private float foodTaxPrice = 0.00f;
-	private float totalPrice = 0.00f;
-	private float tipPrice = 0.00f;
-	private float totalPriceWithTax = 0.00f;
+	private Float deliveryPrice = 0.00f;
+	private Float deliveryTaxPrice = 0.00f;
+	private Float foodTotalPrice = 0.00f;
+	private Float foodTaxPrice = 0.00f;
+	private Float totalPrice = 0.00f;
+	private Float tipPrice = 0.00f;
+	private Float totalPriceWithTax = 0.00f;
 	private String orderStatus = "";
 	private String declinedReason = "";
 	private String deliveryCompanyID = "";
-	private int deliverymanID = 0;
+	private Integer deliverymanID = 0;
 	private String deliverymanName = "";
 	private String deliverymanTelephone = "";
-	private String deliveryGoogleMapURL = "";
 	private String deliveryFirstName = "";
 	private String deliveryLastName = "";
 	private String deliveryTelephone = "";
@@ -37,7 +37,7 @@ public class OrderRestaurantVO {
 	private String deliveryProvince = "";
 	private String deliveryPostalCode = "";
 	private String deliveryInstruction = "";
-	private int reviewRate = 0;
+	private Integer reviewRate = 0;
 	private String updateID = "";
 	private Timestamp updateTime = null;
 	/**
@@ -77,6 +77,18 @@ public class OrderRestaurantVO {
 		this.restaurantName = restaurantName;
 	}
 	/**
+	 * @return the restaurantEmail
+	 */
+	public String getRestaurantEmail() {
+		return restaurantEmail;
+	}
+	/**
+	 * @param restaurantEmail the restaurantEmail to set
+	 */
+	public void setRestaurantEmail(String restaurantEmail) {
+		this.restaurantEmail = restaurantEmail;
+	}
+	/**
 	 * @return the deliveryType
 	 */
 	public String getDeliveryType() {
@@ -91,85 +103,85 @@ public class OrderRestaurantVO {
 	/**
 	 * @return the deliveryPrice
 	 */
-	public float getDeliveryPrice() {
+	public Float getDeliveryPrice() {
 		return deliveryPrice;
 	}
 	/**
 	 * @param deliveryPrice the deliveryPrice to set
 	 */
-	public void setDeliveryPrice(float deliveryPrice) {
+	public void setDeliveryPrice(Float deliveryPrice) {
 		this.deliveryPrice = deliveryPrice;
 	}
 	/**
 	 * @return the deliveryTaxPrice
 	 */
-	public float getDeliveryTaxPrice() {
+	public Float getDeliveryTaxPrice() {
 		return deliveryTaxPrice;
 	}
 	/**
 	 * @param deliveryTaxPrice the deliveryTaxPrice to set
 	 */
-	public void setDeliveryTaxPrice(float deliveryTaxPrice) {
+	public void setDeliveryTaxPrice(Float deliveryTaxPrice) {
 		this.deliveryTaxPrice = deliveryTaxPrice;
 	}
 	/**
 	 * @return the foodTotalPrice
 	 */
-	public float getFoodTotalPrice() {
+	public Float getFoodTotalPrice() {
 		return foodTotalPrice;
 	}
 	/**
 	 * @param foodTotalPrice the foodTotalPrice to set
 	 */
-	public void setFoodTotalPrice(float foodTotalPrice) {
+	public void setFoodTotalPrice(Float foodTotalPrice) {
 		this.foodTotalPrice = foodTotalPrice;
 	}
 	/**
 	 * @return the foodTaxPrice
 	 */
-	public float getFoodTaxPrice() {
+	public Float getFoodTaxPrice() {
 		return foodTaxPrice;
 	}
 	/**
 	 * @param foodTaxPrice the foodTaxPrice to set
 	 */
-	public void setFoodTaxPrice(float foodTaxPrice) {
+	public void setFoodTaxPrice(Float foodTaxPrice) {
 		this.foodTaxPrice = foodTaxPrice;
 	}
 	/**
 	 * @return the totalPrice
 	 */
-	public float getTotalPrice() {
+	public Float getTotalPrice() {
 		return totalPrice;
 	}
 	/**
 	 * @param totalPrice the totalPrice to set
 	 */
-	public void setTotalPrice(float totalPrice) {
+	public void setTotalPrice(Float totalPrice) {
 		this.totalPrice = totalPrice;
 	}
 	/**
 	 * @return the tipPrice
 	 */
-	public float getTipPrice() {
+	public Float getTipPrice() {
 		return tipPrice;
 	}
 	/**
 	 * @param tipPrice the tipPrice to set
 	 */
-	public void setTipPrice(float tipPrice) {
+	public void setTipPrice(Float tipPrice) {
 		this.tipPrice = tipPrice;
 	}
 	/**
 	 * @return the totalPriceWithTax
 	 */
-	public float getTotalPriceWithTax() {
+	public Float getTotalPriceWithTax() {
 		return totalPriceWithTax;
 	}
 	/**
 	 * @param totalPriceWithTax the totalPriceWithTax to set
 	 */
-	public void setTotalPriceWithTax(float totalPriceWithTax) {
+	public void setTotalPriceWithTax(Float totalPriceWithTax) {
 		this.totalPriceWithTax = totalPriceWithTax;
 	}
 	/**
@@ -211,13 +223,13 @@ public class OrderRestaurantVO {
 	/**
 	 * @return the deliverymanID
 	 */
-	public int getDeliverymanID() {
+	public Integer getDeliverymanID() {
 		return deliverymanID;
 	}
 	/**
 	 * @param deliverymanID the deliverymanID to set
 	 */
-	public void setDeliverymanID(int deliverymanID) {
+	public void setDeliverymanID(Integer deliverymanID) {
 		this.deliverymanID = deliverymanID;
 	}
 	/**
@@ -243,18 +255,6 @@ public class OrderRestaurantVO {
 	 */
 	public void setDeliverymanTelephone(String deliverymanTelephone) {
 		this.deliverymanTelephone = deliverymanTelephone;
-	}
-	/**
-	 * @return the deliveryGoogleMapURL
-	 */
-	public String getDeliveryGoogleMapURL() {
-		return deliveryGoogleMapURL;
-	}
-	/**
-	 * @param deliveryGoogleMapURL the deliveryGoogleMapURL to set
-	 */
-	public void setDeliveryGoogleMapURL(String deliveryGoogleMapURL) {
-		this.deliveryGoogleMapURL = deliveryGoogleMapURL;
 	}
 	/**
 	 * @return the deliveryFirstName
@@ -379,13 +379,13 @@ public class OrderRestaurantVO {
 	/**
 	 * @return the reviewRate
 	 */
-	public int getReviewRate() {
+	public Integer getReviewRate() {
 		return reviewRate;
 	}
 	/**
 	 * @param reviewRate the reviewRate to set
 	 */
-	public void setReviewRate(int reviewRate) {
+	public void setReviewRate(Integer reviewRate) {
 		this.reviewRate = reviewRate;
 	}
 	/**

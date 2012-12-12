@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="deliveryarea">
+
+	<sql id="columns"> 
+		DeliveryCompanyID,PostalPrefix,Seq,MinPrice,DeliveryFee
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="deliveryareavo">
+	SELECT 
+	<include refid="columns"/>
+	FROM delivery_area 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="deliveryareavo">
+	INSERT INTO delivery_area
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{deliveryCompanyID},
+		#{postalPrefix},
+		#{seq},
+		#{minPrice},
+		#{deliveryFee})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="deliveryareavo">
+		UPDATE delivery_area
+		SET MinPrice = #{minPrice},
+			DeliveryFee = #{deliveryFee}
+		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+		  AND PostalPrefix = #{postalPrefix}
+		  AND Seq = #{seq}
+	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="deliveryareavo">
+		DELETE FROM delivery_area
+		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+		  AND PostalPrefix = #{postalPrefix}
+		  AND Seq = #{seq}
+	</delete>
+</mapper>

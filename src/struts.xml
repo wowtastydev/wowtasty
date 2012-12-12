@@ -21,16 +21,15 @@
 	        
 	        <!-- UserInfo Check,Validation & fileUpload stack -->
 	        <interceptor-stack name="wowValidationFileUploadStack">
-				<interceptor-ref name="logincheckinterceptor" />
-	        	<interceptor-ref name="validationWorkflowStack" />
-	        	<interceptor-ref name="fileUpload"/>
-	        </interceptor-stack>
-	        
-	        <!-- UserInfo Check,Validation & fileUpload stack -->
-	        <interceptor-stack name="wowValidationChainStack">
-				<interceptor-ref name="logincheckinterceptor" />
-	        	<interceptor-ref name="validationWorkflowStack" />
-	        	<interceptor-ref name="chain"/>
+	        	<interceptor-ref name="logincheckinterceptor" />
+		        <interceptor-ref name="basicStack"/>
+	            <interceptor-ref name="i18n"/>
+	            <interceptor-ref name="fileUpload">
+		       		<param name="maximumSize">10240</param>
+				</interceptor-ref> 
+	            <interceptor-ref name="params"/>
+	            <interceptor-ref name="validation"/>
+	            <interceptor-ref name="workflow"/>
 	        </interceptor-stack>
 	        
 		</interceptors>	
@@ -38,6 +37,7 @@
 	
 	<include file="struts-a0.xml"></include>
 	<include file="struts-a1.xml"></include>
+	<include file="struts-a2.xml"></include>
 	<include file="struts-u0.xml"></include>
 
 	<constant name="struts.custom.i18n.resources" value="message" />

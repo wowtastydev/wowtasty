@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurantmenu">
+
+	<sql id="columns"> 
+		RestaurantID,MenuID,CategoryID,Name,Price,Description,ImagePath,Sort,TaxRate,Status,NAFlag,UpdateID,UpdateTime
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="restaurantmenuvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_menu 
+	</select>
+	
+	<!--selectByID-->
+	<select id="selectByID" resultType="restaurantmenuvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_menu 
+	WHERE RestaurantID = #{restaurantID} 
+		  AND MenuID = #{MenuID}
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="restaurantmenuvo">
+	INSERT INTO restaurant_menu
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{restaurantID},
+		#{menuID},
+		#{categoryID},
+		#{name},
+		#{price},
+		#{description},
+		#{imagePath},
+		#{sort},
+		#{taxRate},
+		#{status},
+		#{naFlag},
+		#{updateID},
+		#{updateTime})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="restaurantmenuvo">
+		UPDATE restaurant_menu
+		SET CategoryID = #{categoryID},
+			Name = #{name},
+			Price = #{price},
+			Description = #{description},
+			ImagePath = #{imagePath},
+			Sort = #{sort},
+			TaxRate = #{taxRate},
+			Status = #{status},
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE RestaurantID = #{restaurantID} 
+		  AND PostalPrefix = #{postalPrefix}
+		  AND Seq = #{seq}
+	</update>
+</mapper>

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ordermenu">
+
+	<sql id="columns"> 
+		OrderID, RestaurantID, Seq, MenuID, MenuName, Unit, UnitPrice, TotalExtraCharge,
+		CouponNO, CouponPrice, TaxPrice, TotalPrice, TotalPriceWithTax, Instruction
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="Map" resultType="ordermenuvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM order_menu 
+	WHERE OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	</select>
+	
+	<!--selectByOrderID-->
+	<select id="selectByOrderID" parameterType="String" resultType="ordermenuvo">
+		SELECT 
+		<include refid="columns"/>
+		FROM order_menu 
+		WHERE OrderID = #{orderID}
+	</select>
+	
+	<!-- Insert -->
+	<insert id="insert" parameterType="ordermenuvo">
+	INSERT INTO 
+ 			order_menu
+		(	OrderID,
+			RestaurantID,
+			Seq,
+			MenuID,
+			MenuName,
+			Unit,
+			UnitPrice,
+			TotalExtraCharge,
+			CouponNO,
+			CouponPrice,
+			TaxPrice,
+			TotalPrice,
+			TotalPriceWithTax,
+			Instruction) 
+	VALUE ( #{orderID},
+			#{restaurantID},
+			#{seq},
+			#{menuID},
+			#{menuName},
+			#{unit},
+			#{unitPrice},
+			#{totalExtraCharge},
+			#{couponNO},
+			#{couponPrice},
+			#{taxPrice},
+			#{totalPrice},
+			#{totalPriceWithTax},
+			#{instruction})
+	</insert>
+	
+	<!--Update-->
+	<update id="update" parameterType="ordermenuvo">
+	UPDATE 
+		order_menu  
+	SET 
+		MenuID = #{menuID},
+		MenuName = #{menuName},
+		Unit = #{unit},
+		UnitPrice = #{unitPrice},
+		TotalExtraCharge = #{totalExtraCharge},
+		CouponNO = #{couponNO},
+		CouponPrice = #{couponPrice},
+		TaxPrice = #{taxPrice},
+		TotalPrice = #{totalPrice},
+		TotalPriceWithTax = #{totalPriceWithTax},
+		Instruction = #{instruction}
+	WHERE OrderID = #{orderID} 
+	  AND RestaurantID = #{restaurantID}
+	  AND Seq = #{seq}
+	</update>
+</mapper>

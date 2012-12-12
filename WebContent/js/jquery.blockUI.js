@@ -40,16 +40,16 @@
 
 		// convenience method for quick growl-like notifications  (http://www.google.com/search?q=growl)
 		$.growlUI = function(title, message, timeout, onClose) {
-			var $m = $('<div class="growlUI"></div>');
+			var $m = $('<div class="growlUI" style="text-align:left" ></div>');
 			//if (title) $m.append('<h3>'+title+'</h3>');
-			if (message) $m.append('<h4 align="left"><font color="#fff">'+message+'</font></h4>');
+			if (message) $m.append('<b><font color="#fff">'+message+'</font></b>');
 			if (timeout === undefined) timeout = 3000;
 			$.blockUI({
 				message: $m, fadeIn: 700, fadeOut: 1000, centerY: false,
 				timeout: timeout, showOverlay: false,
 				onUnblock: onClose,
 				css: { 
-	                width: '350px', 
+	                width: '100%', 
 	                top: '10px', 
 	                left: '10px', 
 	                right: '', 

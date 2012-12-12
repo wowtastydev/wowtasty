@@ -1,12 +1,11 @@
 package com.wowtasty.util;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.log4j.Logger;
-
-import java.text.ParseException;
 
 /**
  * @author Hak C.
@@ -31,6 +30,20 @@ public class StringConvertUtil {
 	        return tempDate;  
 	    } catch (Exception e) {  
 	    	logger.error("!!!!!StringConvertUtil convertString2date occurs error:" + e);
+        	throw new RuntimeException(e);
+	    }  
+	}
+	
+	/**
+	 * Convert String(HH:mm) to Time
+	 * @return Time 
+	 */
+	public static Time convertString2Time(String value) {  
+	    SimpleDateFormat sdf = new SimpleDateFormat(TIME_PATTERN);  
+	    try {  
+	        return new Time(sdf.parse(value).getTime());
+	    } catch (Exception e) {  
+	    	logger.error("!!!!!StringConvertUtil convertString2Time occurs error:" + e);
         	throw new RuntimeException(e);
 	    }  
 	}
@@ -69,49 +82,10 @@ public class StringConvertUtil {
 	}
 	
 	/**
-	 * check if string is blank/null/trim blank
-	 * @return boolean: true-blank, false-not blank 
+	 * @param value : price
+	 * @return String : ###,##0.00 type price
 	 */
-	public static boolean isBlank(String value) {
-		if (value == null) {
-			return true;
-		}
-		if (value.trim().length() == 0) {
-			return true;
-		}
-		return false;
+	public static String decimalFormat(Float value) {
+		return new DecimalFormat("###,##0.00").format(value);
 	}
-	
-	/**
-	 * check if string is date type
-	 * @param datetype String 
-	 * @param datetype 'yyyy-MM-dd' or 'MM/dd/yyyy'
-	 * @return boolean: true-blank, false-not blank 
-	 */
-	public static boolean isDate(String value, String type) {
-		if (value == null) {
-			return false;
-		}
-		if (value.trim().length() == 0) {
-			return false;
-		}
-		SimpleDateFormat sdf = new SimpleDateFormat(type);
-		Date testDate = null;
-
-	    try {  
-	    	testDate = sdf.parse(value);
-	    	
-	    	// If the date is not the same as input's value
-	    	// ex) sdf.parse(11/31/2012) change into 12/01/2012 without exception
-	    	if (!sdf.format(testDate).equals(value)) {
-	    		return false;
-	    	}
-
-	        return true;  
-	    } catch (ParseException e) {
-	    	// If exception occurs, not date type
-	    	return false;
-	    } 
-	}
-
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurantmenuoption">
+
+	<sql id="columns"> 
+		RestaurantID,MenuID,OptionID,OptionType,OptionGroup,Name,ExtraCharge,NAFlag,UpdateID,UpdateTime
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="restaurantmenuoptionvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_menu_option 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="restaurantmenuoptionvo">
+	INSERT INTO restaurant_menu_option
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{restaurantID},
+		#{menuID},
+		#{optionID},
+		#{optionType},
+		#{optionGroup},
+		#{name},
+		#{naFlag},
+		#{updateID},
+		#{updateTime})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="restaurantmenuoptionvo">
+		UPDATE restaurant_menu_option
+		SET OptionType = #{optionType},
+			OptionGroup = #{optionGroup},
+			Name = #{name},
+			ExtraCharge = #{extraCharge},
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE RestaurantID = #{restaurantID} 
+		  AND MenuID = #{menuID}
+		  AND OptionID = #{optionID}
+	</update>
+</mapper>

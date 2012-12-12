@@ -52,6 +52,54 @@ public class MemberMasterDao {
 	}
 	
 	/**
+	 * @return List<MemberMasterVO>: Member lists
+	 */
+	public List<MemberMasterVO> select(List<String> list) {
+		SqlSession sqlSession = factory.openSession();
+		List<MemberMasterVO> returnObject = new ArrayList<MemberMasterVO>();
+		try {
+			returnObject = sqlSession.selectList("membermaster.select", list);
+		} catch (Exception e) {
+			logger.error("!!!!!MemberMasterDao select occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!MemberMasterDao select occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @return MemberMasterVO: Member master data
+	 */
+	public MemberMasterVO selectByID(String id) {
+		SqlSession sqlSession = factory.openSession();
+		List<MemberMasterVO> list = new ArrayList<MemberMasterVO>();
+		MemberMasterVO returnObject = new MemberMasterVO();
+		try {
+			list = sqlSession.selectList("membermaster.selectByID", id);
+			if (list.size() > 0) {
+				returnObject = list.get(0);
+			}
+		} catch (Exception e) {
+			logger.error("!!!!!MemberMasterDao selectByEmail occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!MemberMasterDao selectByEmail occurs error:" + e);
+	        	throw new RuntimeException(e);
+	        }
+		}
+		return returnObject;
+	}
+	
+	/**
 	 * @return MemberMasterVO: Member master data
 	 */
 	public MemberMasterVO selectByEmail(String email) {

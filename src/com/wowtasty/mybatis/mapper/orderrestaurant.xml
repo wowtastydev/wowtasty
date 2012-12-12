@@ -5,17 +5,104 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="orderrestaurant">
 
 	<sql id="columns"> 
-		OrderID, RestaurantID, RestaurantName, DeliveryType, DeliveryPrice, DeliveryTaxPrice, FoodTotalPrice, FoodTaxPrice, TotalPrice, TipPrice, TotalPriceWithTax,
-		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliverymanID, DeliverymanTelephone, DeliveryGoogleMapURL, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
+		OrderID, RestaurantID, RestaurantName, RestaurantEmail, DeliveryType, DeliveryPrice, DeliveryTaxPrice, FoodTotalPrice, FoodTaxPrice, TotalPrice, TipPrice, TotalPriceWithTax,
+		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliverymanID, DeliverymanTelephone, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
 		DeliveryAddress, DeliverySuite, DeliveryBuzzer, DeliveryCity, DeliveryProvince, DeliveryPostalCode, DeliveryInstruction, ReviewRate, UpdateID, UpdateTime, DeliverymanName
 	</sql>
 	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="Map" resultType="orderrestaurantvo">
+		SELECT 
+		<include refid="columns"/>
+		FROM order_restaurant 
+		WHERE OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	</select>
+	
+	<!--selectByOrderID-->
+	<select id="selectByOrderID" parameterType="String" resultType="orderrestaurantvo">
+		SELECT 
+		<include refid="columns"/>
+		FROM order_restaurant 
+		WHERE OrderID = #{orderID}
+	</select>
+	
+	<!-- Insert -->
+	<insert id="insert" parameterType="orderrestaurantvo">
+		INSERT INTO 
+			order_restaurant
+		(   OrderID,
+			RestaurantID,
+			RestaurantName,
+			RestaurantEmail,
+			DeliveryType,
+			DeliveryPrice,
+			DeliveryTaxPrice,
+			FoodTotalPrice,
+			FoodTaxPrice,
+			TotalPrice,
+			TipPrice,
+			TotalPriceWithTax,
+			OrderStatus,
+			DeclinedReason,
+			DeliveryCompanyID,
+			DeliveryManID,
+			DeliverymanName,
+			DeliverymanTelephone,
+			DeliveryFirstName,
+			DeliveryLastName,
+			DeliveryTelephone,
+			DeliveryAddress,
+			DeliverySuite,
+			DeliveryBuzzer,
+			DeliveryCity,
+			DeliveryProvince,
+			DeliveryPostalCode,
+			DeliveryInstruction,
+			ReviewRate,
+			UpdateID,
+			UpdateTime) 
+		VALUE (
+			#{orderID},
+			#{restaurantID},
+			#{restaurantName},
+			#{restaurantEmail},
+			#{deliveryType},
+			#{deliveryPrice},
+			#{deliveryTaxPrice},
+			#{foodTotalPrice},
+			#{foodTaxPrice},
+			#{totalPrice},
+			#{tipPrice},
+			#{totalPriceWithTax},
+			#{orderStatus},
+			#{declinedReason},
+			#{deliveryCompanyID},
+			#{deliveryManID},
+			#{deliverymanName},
+			#{deliverymanTelephone},
+			#{deliveryFirstName},
+			#{deliveryLastName},
+			#{deliveryTelephone},
+			#{deliveryAddress},
+			#{deliverySuite},
+			#{deliveryBuzzer},
+			#{deliveryCity},
+			#{deliveryProvince},
+			#{deliveryPostalCode},
+			#{deliveryInstruction},
+			#{reviewRate},
+			#{updateID},
+			#{updateTime})
+	</insert>
+	
 	<!--Update-->
-	<select id="update" parameterType="orderrestaurantvo">
+	<update id="update" parameterType="orderrestaurantvo">
 		UPDATE 
 			order_restaurant  
 		SET 
 			RestaurantName = #{restaurantName},
+			RestaurantEmail = #{restaurantEmail},
 			DeliveryType = #{deliveryType},
 			DeliveryPrice = #{deliveryPrice},
 			DeliveryTaxPrice = #{deliveryTaxPrice},
@@ -30,7 +117,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			DeliverymanID = #{deliverymanID},
 			DeliverymanName = #{deliverymanName}, 
 			DeliverymanTelephone = #{deliverymanTelephone},
-			DeliveryGoogleMapURL = #{deliveryGoogleMapURL},
 			DeliveryFirstName = #{deliveryFirstName},
 			DeliveryLastName = #{deliveryLastName},
 			DeliveryTelephone = #{deliveryTelephone},
@@ -47,11 +133,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE 
 			OrderID = #{orderID} 
 			AND RestaurantID = #{restaurantID}
-	
-	</select>
+	</update>
 	
 	<!--changeOrderStatus-->
-	<select id="changeOrderStatus" parameterType="orderrestaurantvo">
+	<update id="changeOrderStatus" parameterType="orderrestaurantvo">
 		UPDATE 
 			order_restaurant  
 		SET 
@@ -61,11 +146,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE 
 			OrderID = #{orderID} 
 			AND RestaurantID = #{restaurantID}
-	
-	</select>
+	</update>
 	
 	<!--setDeliveryMan-->
-	<select id="setDeliveryMan" parameterType="orderrestaurantvo">
+	<update id="setDeliveryMan" parameterType="orderrestaurantvo">
 		UPDATE 
 			order_restaurant  
 		SET 
@@ -77,8 +161,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		WHERE 
 			OrderID = #{orderID} 
 			AND RestaurantID = #{restaurantID}
-	
-	</select>
+	</update>
 	
 
 </mapper>

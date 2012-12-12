@@ -1,0 +1,343 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+@import url(http://fonts.googleapis.com/css?family=Share);
+@import url(http://fonts.googleapis.com/css?family=Doppio+One|Oswald);
+@import url(http://fonts.googleapis.com/css?family=Cantata+One);
+@import url(http://fonts.googleapis.com/css?family=Rambla);
+
+html, body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ 
+.clearfix {
+	display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+	display: block;
+}
+ 
+* html .clearfix {
+	height: 1%;
+}
+
+body { padding:0; margin:0; background:#000; font-family: Arial, Helvetica, sans-serif; font-size:12px; line-height:1.5em } 
+
+textarea { font-family:Arial, Helvetica, sans-serif; font-size:1em; background: #fff; color:#000; border: #DBDBDB solid 1px; padding:5px}
+
+.fleft { float:left;}
+.fright { float:right;}
+.clear { clear:both; height:1px}
+
+.alignright { text-align:right;}
+.aligncenter { text-align:center;}
+
+.wrapper, block { width:100%; overflow:hidden;}
+.container { width:100%;}
+
+div, p, ul, ol, li, br, img, h1, h2, h3 { margin:0; padding:0;}
+
+ul { list-style:none }
+
+img { border:0 }
+
+select { font-size:11px; color:#666666 }
+
+a { color: #161616; text-decoration:none }
+
+
+#full-screen-background-image {
+  z-index: -999;
+  min-height: 100%;
+  min-width: 1024px;
+  width: 100%;
+  height: auto;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#container-sub { background:url(../images/sub-bg-y.png) center top repeat-y; padding-bottom:30px}
+#container { background:url(../images/top-bar-x.png) repeat-x;}
+
+#wrapper {width:1000px; margin:auto  }
+
+
+#wrapper-sub-out {width:1227px; margin:auto  }
+#wrapper-sub {width:1000px; float:left  }
+
+#top {  height:150px; position:relative   }
+
+#top .logo { float:left; margin: 0 0 0 30px }
+
+#top .logo h3.slogan {font:italic 17px Georgia, "Times New Roman", Times, serif; color:#FFF; position:absolute;	left:280px;	top:65px;	width: 220px;	height: 74px;
+}
+
+#top .headermenu { position:absolute; right:30px; top:30px;  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; font-size:14px; text-transform:uppercase }
+#top .headermenu a { display:inline-block; padding:5px 10px ; color:#ffd200 }
+#top .headermenu a:hover { color:#fff}
+
+#top .topmenu { position:absolute;right:30px; top:62px; font-family: Impact; color:#fff; font-size:22px }
+#top .topmenu a { display:inline-block; padding:5px 10px 5px 25px ; color:#fff; font-weight:300 }
+#top .topmenu a:hover { color:#FF6600 }
+
+
+#warning { position:absolute; top:122px; z-index:9999 }
+
+#mainsearch { height:480px; position:relative  }
+
+
+
+#mainsearch .searcharea { position:relative; background:url(../images/mainlogin-bg.png) no-repeat; width:600px; height:389px; margin:35px auto }
+
+#mainsearch .searcharea .searchareain { width:507px; margin:auto; padding:40px 20px  }
+#mainsearch .searcharea .searchareain h2 { font-family:Georgia, "Times New Roman", Times, serif; text-align:center; font-size:22px; font-weight:700; text-shadow: 1px 1px 1px #fff; letter-spacing:-1px; padding:5px 0 5px 0 }
+
+#mainsearch .searcharea .searchareain .field { padding:15px 0 0 0 }
+
+#mainsearch .searcharea .searchareain .field p { font-size:15px; font-family: Tahoma, Geneva, sans-serif; color:#646464; text-transform:uppercase; font-weight:700; padding:2px 0; line-height:18px }
+
+#mainsearch .searcharea .searchareain .field p input.field { width:486px; padding:9px 7px; font-size:16px; color:#767676; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; border:1px solid #b9b9b9 }
+
+
+#mainsearch .searcharea .searchareain .field p span.col1 { float:left; padding: 0 50px }
+#mainsearch .searcharea .searchareain .field p span.col2 { float:right; padding: 0 100px }
+
+#mainsearch .searcharea .searchareain .field a.submit { display:block; width:505px; height:56px; background:url(../images/btn-mainlogin.gif) no-repeat center top }
+
+#mainsearch .searcharea .searchareain .field a:hover.submit {background-position: center -56px }
+
+
+
+#mainsearch .searcharea2 { position:relative; background:url(../images/mainlogin-bg2.png) no-repeat; width:600px; height:359px; margin:35px auto }
+
+#mainsearch .searcharea2 .searchareain { width:507px; margin:auto; padding:40px 20px  }
+#mainsearch .searcharea2 .searchareain h2 { font-family:Georgia, "Times New Roman", Times, serif; text-align:center; font-size:22px; font-weight:700; text-shadow: 1px 1px 1px #fff; letter-spacing:-1px; padding:5px 0 5px 0 }
+#mainsearch .searcharea2 .searchareain .field p select { width:507px; padding:9px 7px; font-size:16px; color:#767676; font-family:"Trebuchet MS", Arial, Helvetica, sans-serif; border:1px solid #b9b9b9 }
+
+#mainsearch .searcharea2 .searchareain .field { padding:15px 0 0 0 }
+
+#mainsearch .searcharea2 .searchareain .field p { font-size:15px; font-family: Tahoma, Geneva, sans-serif; color:#646464; text-transform:uppercase; font-weight:700; padding:2px 0; line-height:18px }
+
+#mainsearch .searcharea2 .searchareain .field a.submit { display:block; width:505px; height:56px; background:url(../images/btn-mainlogin.gif) no-repeat center top }
+
+#mainsearch .searcharea2 .searchareain .field a:hover.submit {background-position: center -56px }
+
+
+
+
+.transparent {
+	zoom: 1;
+	filter: alpha(opacity=50);
+	opacity: 0.5;
+}
+
+#mainbody { width:940px; margin:auto;}
+
+#mainbody .topborder { background-color:#ec760a; height:4px }
+
+#mainbody #maincontent { background: url(../images/body-bg.png) repeat;   }
+
+#mainbody #maincontent .maincontent-in { width:866px; margin:0 auto; color:#fff; font-family:Georgia, "Times New Roman", Times, serif; font-style:italic; font-size:14px }
+
+#mainbody #maincontent .maincontent-in a { color:#fff}
+#mainbody #maincontent .maincontent-in a:hover { color:#FFCC00 }
+
+#mainbody #maincontent .maincontent-in .block { float:left; width:866px }
+#mainbody #maincontent .maincontent-in .block h2 { font-style:italic; color: #ff8400; font-size:18px; font-weight:400 }
+#mainbody #maincontent .maincontent-in .block h3 { background:url(../images/main-title-bg3.png) no-repeat; width:826px; height:25px; font-size:18px; font-weight:400; padding: 5px 20px;  text-shadow: 1px 1px 1px #000; }
+
+#mainbody #maincontent .maincontent-in .block ul { float:left; padding:15px 25px 0 25px; line-height:19px; font-size:12px }
+
+
+#mainbody #maincontent .maincontent-in .blockleft { float:left; width:416px }
+#mainbody #maincontent .maincontent-in .blockleft h2 { font-style:italic; color: #ff8400; font-size:18px; font-weight:400 }
+#mainbody #maincontent .maincontent-in .blockleft h3 { background:url(../images/main-title-bg1.png) no-repeat; width:376px; height:25px; font-size:18px; font-weight:400; padding: 5px 20px;  text-shadow: 1px 1px 1px #000; }
+
+#mainbody #maincontent .maincontent-in .blockleft ul { padding:15px 0 0 20px; line-height:18px }
+
+#mainbody #maincontent .maincontent-in .blockleft .sns { padding:10px 0 0 0 }
+#mainbody #maincontent .maincontent-in .blockleft .sns a { display:block; float:left; width:49px; height:49px; margin-right:6px }
+
+#mainbody #maincontent .maincontent-in .blockleft .sns a.twit {background:url(../images/icon-twitter.png) no-repeat 0 0 }
+#mainbody #maincontent .maincontent-in .blockleft .sns a.fb {background:url(../images/icon-fb.png) no-repeat 0 0 }
+#mainbody #maincontent .maincontent-in .blockleft .sns a.rss {background:url(../images/icon-rss.png) no-repeat 0 0 }
+#mainbody #maincontent .maincontent-in .blockleft .sns a.google {background:url(../images/icon-google.png) no-repeat 0 0 }
+
+#mainbody #maincontent .maincontent-in .blockleft .sns a:hover { background-position:0 -49px }
+
+
+#mainbody #maincontent .maincontent-in .blockright { float:right; width:423px }
+#mainbody #maincontent .maincontent-in .blockright p { font-style:italic; padding:7px 0 0 0; font-size:13px}
+#mainbody #maincontent .maincontent-in .blockright h2 { font-style:italic; color: #ff8400; font-size:18px; font-weight:400 }
+#mainbody #maincontent .maincontent-in .blockright h3 { background:url(../images/main-title-bg2.png) no-repeat; width:383px; height:25px; font-size:18px; font-weight:400; padding: 5px 20px;  text-shadow: 1px 1px 1px #000; }
+
+#mainbody #maincontent .maincontent-in .blockright ul { padding:15px 0 0 20px; line-height:18px }
+
+
+#mainbody #maincontent .maincontent-in .blockright p a { color:#ffc000 }
+#mainbody #maincontent .maincontent-in .blockright p a:hover { color:#00FFCC }
+
+
+/**********Sub pages***********/
+
+#breadcrumb { margin:10px 0 0 0; font-size:12px; padding:5px 0 10px 0; text-align:right }
+#breadcrumb, #breadcrumb a { color:#818181 }
+
+#breadcrumb .current { color:#000 }
+
+
+#subbody { width:940px; margin:auto; position:relative }
+
+#subbody .titlearea { background:#ff7f00; padding:20px 26px; font-family:Georgia, "Times New Roman", Times, serif; font-weight:400; color:#fff08a }
+#subbody .titlearea h2 { font-size:29px; color:#fff; font-weight:400 }
+#subbody .titlearea h2 span.small{ font-size:15px; color:#fff08a; padding:0 0 0 10px }
+
+#rightpanel {  width:214px;  float:right; position: relative}
+#rightpanel #rightpanel-in { padding:11px; background:#f4f4f4;width:192px; position:absolute; top:190px; right:0}
+
+
+#mapandlocation { }
+
+#map { border-bottom:1px solid #fe830a; float:left; width:638px; margin-top:10px}
+
+#currentlocation { width:263px; float:right; border:1px solid #e7e7e7; background:#f4f4f4; padding:10px; margin-top:10px}
+
+#currentlocation .address { padding:10px; color:#484848; font-size:11px }
+
+#currentlocation .resetlocation { width:247px; margin:auto; border-top:1px solid #e0e0e0}
+#currentlocation .resetlocation h3 { font-family:Georgia, "Times New Roman", Times, serif; font-size:14px; padding:8px 0; color:#4f4f4f; text-transform:uppercase; font-weight:400  }
+
+#currentlocation .input_text { width:215px; border:1px solid #e6e6e6; padding:5px 15px; margin:0 0 10px 0; color:#767676; font-size:12px }
+
+#currentlocation span.col1 { float:left; padding: 0 0 0 10px }
+#currentlocation span.col2 { float:right; padding: 0 30px 0 0; text-align:right }
+
+#currentlocation p.btnsubmit a { display:block; background:url(../images/btn-01.png) no-repeat; width:243px; height:30px; text-align:center; font-family:Georgia, "Times New Roman", Times, serif; font-size:12px; font-weight:400px; color:#000; font-style:italic; margin:10px 0 0 0; padding:10px 0 0 0 }
+
+#currentlocation p.btnsubmit a:hover { color:#FF6600 }
+
+
+#restaurant-list { padding:30px 0 10px 0 }
+
+#restaurant-list input, #restaurant-list select { color:#767676; padding:5px; border:1px solid #dbdbdb; font-size:11px; margin:0 5px }
+
+#restaurant-list .order { float:left  }
+
+#restaurant-list .order p { float:left; color:#ff6000; font-family:Verdana, Geneva, sans-serif; font-size:11px; font-weight:bold;  }
+#restaurant-list .order span {  }
+
+#restaurant-list .order p.btn a { display:block; background:url(../images/btn-02.png) no-repeat ; width:86px; height:21px; font-size:11px; color:#fff; text-align:center; padding:5px 0; font-weight:normal; font-family:Verdana, Geneva, sans-serif }
+
+.listheader { background:url(../images/list-bg.gif) repeat-x left top; height:30px; padding:17px 0 0 0; font-family: "Trebuchet MS", Arial, Helvetica, sans-serif; font-size:12px; font-weight:bold; color:#fff; margin:7px 0 0 0 }
+
+.listheader .thumb 	{ float:left; text-align:left; width:131px }
+.listheader .name 	{ float:left; text-align:left; width:219px; color:#ffde00 }
+.listheader .cusine { float:left; text-align:center; width:107px }
+.listheader .price	{ float:left; text-align:center; width:123px }
+.listheader .time	{ float:left; text-align:center; width:126px }
+.listheader .minorder	{ float:left; text-align:center; width:127px }
+.listheader .option { float:left; text-align:center; width:106px }
+
+
+
+.listup li { display:block; padding:9px 0; border-bottom:1px solid #dadada; position:relative }
+
+.listup li p.thumb 	{ float:left; text-align:left; width:131px }
+.listup li p.thumb img 	{ border:1px solid #dadada}
+
+.listup li p.name a { float:left; text-align:left; width:219px; }
+.listup li p.name a span.title { font-family:Georgia, "Times New Roman", Times, serif; color:#000; display:block; font-size:13px; padding:3px 0 0 0; font-style:italic; font-weight:bold}
+.listup li p.name a:hover span.title { color:#FF6600}
+.listup li p.name a span.describe {  color:#000; display:block; font-size:11px; padding:5px 0 0 0}
+
+
+.listup li p.cusine { float:left; text-align:center; width:107px; line-height:4em  }
+.listup li p.price	{ float:left; text-align:center; width:123px; line-height:4em  }
+.listup li p.time	{ float:left; text-align:center; width:126px; line-height:4em  }
+.listup li p.minorder	{ float:left; text-align:center; width:127px; line-height:4em  }
+.listup li p.option { float:left; text-align:center; width:106px; line-height:4em  }
+
+
+
+
+
+/**********Sub pages End***********/
+
+
+
+
+
+
+
+/**********Right PAnel***********/
+
+.rporderrestaurnat { padding:5px 0 }
+.rporderrestaurnat p { padding:5px 0 }
+.rporderrestaurnat select { color:#767676; padding:5px; border:1px solid #dbdbdb; font-size:11px;  }
+
+.rporderlist { padding:0 0 0 5px }
+.rporderlist dt { color:#000000 }
+.rporderlist dd { padding:3px 0; margin:0; display:block}
+.rporderlist dd span.price { float:right; padding:0 20px 0 0; font-weight:bold }
+.rporderlist dd span.delete { float:right; padding:0 10px 0 0 }
+
+
+.rporderlist dl.total { }
+.rporderlist dl.total dt { display:block; border-bottom:1px solid #d6d6d6; color:#df7e00; font-weight:bold; padding:5px 0}
+.rporderlist dl.total dt .price {float:right; padding:0 34px 0 0; }
+
+.rporderlist dl.total dd { display:block; border-bottom:1px solid #d6d6d6; font-weight:bold; padding:5px 0}
+.rporderlist dl.total dd .price {float:right; padding:0 34px 0 0; }
+
+
+.btn-checkout a {display:block; background:url(../images/btn-03.gif) no-repeat; width:192px; height:28px; color:#fff; padding:7px 10px 0 0; text-align:center; font:italic 18px Georgia, "Times New Roman", Times, serif  }
+.btn-checkout a:hover { color:#000}
+
+/**********Right PAnel End***********/
+
+
+
+
+
+
+
+/**********pages misc***********/
+
+.titlePanel { font-family:Georgia, "Times New Roman", Times, serif; font-size:16px; color:#ff7200; padding:5px 10px; background:#fff; border:3px solid #e2e2e2; font-weight:400 }
+
+/**********pages misc End***********/
+
+
+
+
+
+#footer { padding:21px 0; background:#000; width:940px; margin:auto }
+
+#footer .links { color:#ffba00; text-align:center }
+
+#footer .links a { padding:5px 17px; color:#ffba00;  }
+#footer .links a:hover { color:#fff}
+
+#footer .copyright { text-align:center; text-transform: uppercase; color:#525252; padding:20px 0 0 0; font-size:11px}
+
+
+
+
+
+
+

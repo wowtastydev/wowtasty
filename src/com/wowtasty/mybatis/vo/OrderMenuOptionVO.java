@@ -9,12 +9,12 @@ public class OrderMenuOptionVO {
 	/** order_menu_option columns*/
 	private String orderID = "";
 	private String restaurantID = "";
-	private int seq = 0;
+	private Integer seq = 0;
 	private String optionID = "";
 	private String optionName = "";
 	private String menuID = "";
-	private int unit = 0;
-	private float extraCharge = 0.00f;
+	private Integer unit = 0;
+	private Float extraCharge = 0.00f;
 	/**
 	 * @return the orderID
 	 */
@@ -42,13 +42,13 @@ public class OrderMenuOptionVO {
 	/**
 	 * @return the seq
 	 */
-	public int getSeq() {
+	public Integer getSeq() {
 		return seq;
 	}
 	/**
 	 * @param seq the seq to set
 	 */
-	public void setSeq(int seq) {
+	public void setSeq(Integer seq) {
 		this.seq = seq;
 	}
 	/**
@@ -90,26 +90,25 @@ public class OrderMenuOptionVO {
 	/**
 	 * @return the unit
 	 */
-	public int getUnit() {
+	public Integer getUnit() {
 		return unit;
 	}
 	/**
 	 * @param unit the unit to set
 	 */
-	public void setUnit(int unit) {
+	public void setUnit(Integer unit) {
 		this.unit = unit;
 	}
 	/**
 	 * @return the extraCharge
 	 */
-	public float getExtraCharge() {
+	public Float getExtraCharge() {
 		return extraCharge;
 	}
 	/**
 	 * @param extraCharge the extraCharge to set
 	 */
-	public void setExtraCharge(float extraCharge) {
+	public void setExtraCharge(Float extraCharge) {
 		this.extraCharge = extraCharge;
 	}
-
 }

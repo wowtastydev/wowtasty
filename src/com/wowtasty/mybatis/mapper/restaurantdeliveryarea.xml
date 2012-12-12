@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurantdeliveryarea">
+
+	<sql id="columns"> 
+		RestaurantID,PostalPrefix,Seq,DeliveryCompanyID,MinPrice,DeliveryFee
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="restaurantdeliveryareavo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_delivery_area 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="restaurantdeliveryareavo">
+	INSERT INTO restaurant_delivery_area
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{restaurantID},
+		#{postalPrefix},
+		#{seq},
+		#{deliveryCompanyID},
+		#{minPrice},
+		#{deliveryFee})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="restaurantdeliveryareavo">
+		UPDATE restaurant_delivery_area
+		SET DeliveryCompanyID = #{deliveryCompanyID},
+			MinPrice = #{minPrice},
+			DeliveryFee = #{deliveryFee}
+		WHERE RestaurantID = #{restaurantID} 
+		  AND PostalPrefix = #{postalPrefix}
+		  AND Seq = #{seq}
+	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="restaurantdeliveryareavo">
+		DELETE FROM restaurant_delivery_area
+		WHERE RestaurantID = #{restaurantID} 
+		  AND PostalPrefix = #{postalPrefix}
+		  AND Seq = #{seq}
+	</delete>
+</mapper>

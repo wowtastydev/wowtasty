@@ -17,8 +17,8 @@ public class EncryptUtil {
 	private String userPassword;
 
 	/**
+	 * Encryption :SHA-512
 	 * @param userPassword
-	 * @return encrypted string :SHA-512
 	 */
 	public void encrypt(String userPassword) {
 

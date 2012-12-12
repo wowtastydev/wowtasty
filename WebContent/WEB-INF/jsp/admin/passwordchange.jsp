@@ -2,18 +2,18 @@
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
 <t:insertDefinition name="admin.layout">
 <t:putAttribute name="main_admin">
-<script src="../js/common.js"></script>
+<link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
 
 <script>
 <!--	
-	// Password Validation Check
+	//Password Validation Check
 	function check_pwd(pwd) {
 		if(isvalid_password(pwd)){
 			// Password is OK
-			password_info.innerHTML = '<image src="../images/v.png">';
+			password_info.innerHTML = '<image src="../images/admin/v.png">';
 		} else {
 			// Password is invalid
-			password_info.innerHTML = '<image src="../images/x.png">';
+			password_info.innerHTML = '<image src="../images/admin/x.png">';
 		}
 	
 	}
@@ -50,34 +50,41 @@
 		}
 		document.getElementById("frm").submit();
 	}
-	
-
-	
 // -->
+</script>
+
+
+<script>
+<!--
+    // JQuery
+	$(document).ready( function() {
+        $("input[type=button]").button();
+	} );
+//-->
 </script>
 
 <div id="page">
 	<div id="mainarea">
 		<div id="sidebar">
 			<div id="sidebarnav">
-				<a href="#" onClick="initUserList">User Account List</a>
-					<div id="layer01" style="display:none;">
-					</div>
-				<a href="#" onClick="initUserAdd">Add User Account</a>
-					<div id="layer02" style="display:none;">
-					</div>
+				<a href="javascript:goPage('A101');">User Account List</a>
+				<a href="javascript:goPage('A102');">Add User Account</a>
 				<a href="#" class="active">Change Password</a>
-					<div id="layer03" style="display:block;">
-					</div>
 			</div>
 		</div>
 	
 		<div id="contentarea">
 		<s:form theme="css_xhtml" name="frm" id="frm" action="changePassword">
-			<table width="800">
-				<tr>
-					<td align="left" colspan="3"><h2>Change Password</h2></td>
-				</tr>
+
+		<h2>Change Password</h2>
+		
+			<s:if test="hasFieldErrors()">
+				<div class="error">
+					<s:fielderror/>
+				</div>
+			</s:if>
+			
+			<table width="100%">
 				<tr>
 					<td align="right">Current Password : </td>
 					<td colspan="2"><s:password name="currentPasswordStr" id="currentPasswordStr" value="%{currentPasswordStr}" size="30" maxlength="20"/>
@@ -91,7 +98,7 @@
 					</td>
 				</tr>
 				<tr><td colspan="2">
-					<b>More than 8 digits with alphabets or symbols</b>
+					<FONT color=red>More than 8 digits with alphabets or symbols</FONT>
 					</td>
 				</tr>
 				<tr>

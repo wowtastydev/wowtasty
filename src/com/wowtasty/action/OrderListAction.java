@@ -23,7 +23,7 @@ import com.wowtasty.mybatis.vo.OrderRestaurantVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.MailSender;
 import com.wowtasty.util.SessionUtil;
-import com.wowtasty.util.StringConvertUtil;
+import com.wowtasty.util.ValidationUtil;
 import com.wowtasty.vo.OrderListConditionVO;
 import com.wowtasty.vo.OrderListVO;
 import com.wowtasty.vo.RadioButtonVO;
@@ -46,6 +46,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	
 	/** dropdown box, radio button list */
 	private List<CodeMasterVO> orderStatusList = new ArrayList<CodeMasterVO>();
+	private List<CodeMasterVO> deliveryTypeList = new ArrayList<CodeMasterVO>();
 	private List<DeliveryManVO> deliverymanList = new ArrayList<DeliveryManVO>();
 	private List<RadioButtonVO> timeList = new ArrayList<RadioButtonVO>();
 	private List<RadioButtonVO> orderStatusRList = new ArrayList<RadioButtonVO>();
@@ -58,11 +59,11 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
-	private String headTitle = "FoodDelivery WowStaty";
+	private String headTitle = "Food Order List";
 	// Meta Keywords : Restaurant Name,City Name,Postal prefix, Cuisine Type, Delivery/Take out
-	private String metaKeywords = "Keywords FoodDelivery,WowStaty,Vancouver";
+	private String metaKeywords = "Food Order List";
 	// Meta Description : Restaurant Name,City Name,Postal prefix, Cuisine Type, Delivery/Take out
-	private String metaDescription = "Description FoodDelivery,WowStaty,Vancouver";
+	private String metaDescription = "Food Order List";
 	
 	/** Search Condition */
 	private OrderListConditionVO condition = new OrderListConditionVO();
@@ -76,6 +77,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	private int selectedDeliverymanID = 0;
 	private String selectedOrderMemberEmail = "";
 	private String selectedRestaurantEmail = "";
+	private String page = "";
 	
 	/**
 	 * Prepared method
@@ -87,6 +89,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		// set up dropdown menu from codes
 		orderStatusList = codeMap.get(Constants.KEY_CD_ORDER_STATUS);
+		deliveryTypeList = codeMap.get(Constants.KEY_CD_DELIVERY_TYPE);
 		
 		// set up deliveryman dropdown menu 
 		DeliveryManDao dao = new DeliveryManDao();
@@ -95,11 +98,11 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		// set up conditions
 		timeList.add(new RadioButtonVO("", "All"));
 		timeList.add(new RadioButtonVO("-0:30", "30 Minutes"));
-		timeList.add(new RadioButtonVO("-1:00", "1 Hour&"));
+		timeList.add(new RadioButtonVO("-1:00", "1 Hour"));
 		timeList.add(new RadioButtonVO("-3:00", "3 Hours"));
 		
 		orderStatusRList.add(new RadioButtonVO("", "All Status"));
-		orderStatusRList.add(new RadioButtonVO(Constants.KEY_ORDER_STATUS_PENDING, "Pending Only"));
+		orderStatusRList.add(new RadioButtonVO(Constants.CODE_ORDER_STATUS_PENDING, "Pending Only"));
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
@@ -117,7 +120,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 
 		//Select All Order List
 		OrderDao dao = new OrderDao();
-		list = dao.selectCurrent(condition);
+		list = dao.select(condition);
 
 		logger.info("<---Init end --->");
 		return SUCCESS;
@@ -150,7 +153,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		//Check date type
 		if (!"".equals(condition.getFromDate().trim())) {
-			if (!StringConvertUtil.isDate(condition.getFromDate(), DAY_PATTERN)) {
+			if (!ValidationUtil.isDate(condition.getFromDate(), DAY_PATTERN)) {
 				// Date(from) is not datetype
 				addFieldError("condition.fromDate", getText("E0003_1", new String[]{"Date(from)"}));
 				returnString = INPUT;
@@ -158,7 +161,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		}
 
 		if (!"".equals(condition.getToDate().trim())) {
-			if (!StringConvertUtil.isDate(condition.getToDate(), DAY_PATTERN)) {
+			if (!ValidationUtil.isDate(condition.getToDate(), DAY_PATTERN)) {
 				// Date(to) is not datetype
 				addFieldError("condition.toDate", getText("E0003_1", new String[]{"Date(to)"}));
 				returnString = INPUT;
@@ -197,7 +200,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		// set up order status and update Information
 		OrderRestaurantVO vo = new OrderRestaurantVO();
-		vo.setOrderStatus(Constants.KEY_ORDER_STATUS_ORDERED);
+		vo.setOrderStatus(Constants.CODE_ORDER_STATUS_ORDERED);
 		vo.setOrderID(selectedOrderID);
 		vo.setRestaurantID(selectedRestaurantID);
 		vo.setUpdateID(uservo.getMemberID());
@@ -485,5 +488,33 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	 */
 	public void setSelectedRestaurantEmail(String selectedRestaurantEmail) {
 		this.selectedRestaurantEmail = selectedRestaurantEmail;
+	}
+
+	/**
+	 * @return the page
+	 */
+	public String getPage() {
+		return page;
+	}
+
+	/**
+	 * @param page the page to set
+	 */
+	public void setPage(String page) {
+		this.page = page;
+	}
+
+	/**
+	 * @return the deliveryTypeList
+	 */
+	public List<CodeMasterVO> getDeliveryTypeList() {
+		return deliveryTypeList;
+	}
+
+	/**
+	 * @param deliveryTypeList the deliveryTypeList to set
+	 */
+	public void setDeliveryTypeList(List<CodeMasterVO> deliveryTypeList) {
+		this.deliveryTypeList = deliveryTypeList;
 	}
 }

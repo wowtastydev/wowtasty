@@ -7,38 +7,14 @@ package com.wowtasty.vo;
 public class OrderListConditionVO {
 	
 	/** order list page's condition items*/
-	private String orderID = "";
-	private String restaurantName = "";
 	private String time = "";
 	private String fromDate = "";
 	private String toDate = "";
 	private String orderMemberEmail = "";
 	private String orderMemberTelephone = "";
 	private String orderStatus = "";
-	/**
-	 * @return the orderID
-	 */
-	public String getOrderID() {
-		return orderID;
-	}
-	/**
-	 * @param orderID the orderID to set
-	 */
-	public void setOrderID(String orderID) {
-		this.orderID = orderID;
-	}
-	/**
-	 * @return the restaurantName
-	 */
-	public String getRestaurantName() {
-		return restaurantName;
-	}
-	/**
-	 * @param restaurantName the restaurantName to set
-	 */
-	public void setRestaurantName(String restaurantName) {
-		this.restaurantName = restaurantName;
-	}
+	private String deliveryType = "";
+
 	/**
 	 * @return the time
 	 */
@@ -110,5 +86,17 @@ public class OrderListConditionVO {
 	 */
 	public void setOrderStatus(String orderStatus) {
 		this.orderStatus = orderStatus;
+	}
+	/**
+	 * @return the deliveryType
+	 */
+	public String getDeliveryType() {
+		return deliveryType;
+	}
+	/**
+	 * @param deliveryType the deliveryType to set
+	 */
+	public void setDeliveryType(String deliveryType) {
+		this.deliveryType = deliveryType;
 	}
 }

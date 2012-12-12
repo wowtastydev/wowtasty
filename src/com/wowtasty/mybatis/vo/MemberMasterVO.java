@@ -1,5 +1,6 @@
 package com.wowtasty.mybatis.vo;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 /**
@@ -29,11 +30,12 @@ public class MemberMasterVO {
 	private String delivBuzzer = "";
 	private String delivCity = "";
 	private String delivProvince = "";
-	private String delivIntruction = "";
+	private String delivInstruction = "";
 	private String delivPostalCode = "";
 	private int ecash = 0;
 	private String status = "";
 	private int totalOrderCnt = 0;
+	private Date registerDate = null;
 	private String naFlag = "0";
 	private String updateID = "";
 	private Timestamp updateTime = null;
@@ -278,17 +280,18 @@ public class MemberMasterVO {
 	public void setDelivProvince(String delivProvince) {
 		this.delivProvince = delivProvince;
 	}
+
 	/**
-	 * @return the delivIntruction
+	 * @return the delivInstruction
 	 */
-	public String getDelivIntruction() {
-		return delivIntruction;
+	public String getDelivInstruction() {
+		return delivInstruction;
 	}
 	/**
-	 * @param delivIntruction the delivIntruction to set
+	 * @param delivInstruction the delivInstruction to set
 	 */
-	public void setDelivIntruction(String delivIntruction) {
-		this.delivIntruction = delivIntruction;
+	public void setDelivInstruction(String delivInstruction) {
+		this.delivInstruction = delivInstruction;
 	}
 	/**
 	 * @return the delivPostalCode
@@ -373,6 +376,18 @@ public class MemberMasterVO {
 	 */
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
+	}
+	/**
+	 * @return the registerDate
+	 */
+	public Date getRegisterDate() {
+		return registerDate;
+	}
+	/**
+	 * @param registerDate the registerDate to set
+	 */
+	public void setRegisterDate(Date registerDate) {
+		this.registerDate = registerDate;
 	}
 
 }

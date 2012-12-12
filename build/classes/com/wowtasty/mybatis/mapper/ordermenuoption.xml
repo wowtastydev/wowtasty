@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ordermenuoption">
+
+	<sql id="columns"> 
+		OrderID, RestaurantID, Seq, OptionID, OptionName, MenuID, Unit, ExtraCharge
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="Map" resultType="ordermenuoptionvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM order_menu_option 
+	WHERE OrderID = #{orderID} 
+			AND RestaurantID = #{restaurantID}
+	</select>
+	
+	<!--selectByOrderID-->
+	<select id="selectByOrderID" parameterType="String" resultType="ordermenuoptionvo">
+		SELECT 
+		<include refid="columns"/>
+		FROM order_menu_option 
+		WHERE OrderID = #{orderID}
+	</select>
+	
+	<!-- Insert -->
+	<insert id="insert" parameterType="ordermenuoptionvo">
+	INSERT INTO 
+		order_menu_option
+	(	OrderID,
+		RestaurantID,
+		Seq,
+		OptionID,
+		OptionName,
+		MenuID,
+		Unit,
+		ExtraCharge) 
+	VALUE (
+		#{orderID},
+		#{restaurantID},
+		#{seq},
+		#{optionID},
+		#{optionName},
+		#{menuID},
+		#{unit},
+		#{extraCharge})
+	</insert>
+	
+	<!--Update-->
+	<update id="update" parameterType="ordermenuoptionvo">
+	UPDATE 
+		order_menu_option  
+	SET 
+		OptionName = #{optionName},
+		MenuID = #{menuID},
+		Unit = #{unit},
+		ExtraCharge = #{extraCharge}
+	WHERE OrderID = #{orderID} 
+	  AND RestaurantID = #{restaurantID}
+	  AND Seq = #{seq}
+	  AND OptionID = #{optionID}
+	</update>
+</mapper>

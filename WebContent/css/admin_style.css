@@ -8,15 +8,40 @@ color:#555555;
 }
 
 table {
-    border-spacing:0; 
+    border-spacing:1;
+	border:0;
 }
 
 table td, table th {
     padding:2px;
 }
 
+table th {
+    background-color:#eaf8f9;
+}
+
+table.tableborder {
+    background-color:#8dbdd8;
+}
+
+table.tableborder td, table.tableborder th {
+    padding:2px;
+}
+
+table.tableborder td {
+    background-color:#fff;
+}
+
+table.tableborder td.bg {
+    background-color:#8dbdd8;
+}
+
+table.tableborder td {
+    background-color:#fff;
+}
+
 #page {
-width:1200px;
+width:1400px;
 background-image:url(../images/admin/page.png);
 margin:auto;
 padding:auto;
@@ -24,7 +49,7 @@ padding:auto;
 
 #header {
 clear:both;
-width:1140px;
+width:1340px;
 height:50px;
 background-image:url(../images/admin/header.png);
 padding-left:60px;
@@ -74,28 +99,45 @@ padding-left:30px;
 }
 
 #contentarea {
-width:870px;
+width:800px;
 padding-left:20px;
-padding-bottom:20px;
+padding-bottom:10px;
 float:left;
 line-height:14pt;
 padding-top:5px;
 }
 
 #searchconditionarea {
-width:840px;
+width:1040px;
 padding-left:20px;
-padding-bottom:20px;
+padding-bottom:10px;
 float:left;
 line-height:14pt;
 padding-top:5px;
 }
 
 #searchlistarea {
-width:840px;
+width:1040px;
 padding-left:20px;
-padding-bottom:20px;
+padding-bottom:10px;
 float:left;
+line-height:14pt;
+padding-top:5px;
+}
+
+#detailarea {
+width:1040px;
+padding-left:20px;
+padding-bottom:10px;
+float:left;
+line-height:14pt;
+padding-top:5px;
+}
+
+#detailarearight {
+width:1040px;
+padding-left:20px;
+padding-bottom:10px;
 line-height:14pt;
 padding-top:5px;
 }
@@ -108,7 +150,7 @@ color:#555555;
 }
 
 #footer {
-width:1200px;
+width:1400px;
 clear:both;
 height:62px;
 padding-top:30px;
@@ -142,7 +184,12 @@ color:#FFFFFF;
 
 h4 {
 font-size:12pt;
-color:#414141;
+color:#747474;
+}
+
+h5 {
+font-size:10pt;
+color:#747474;
 }
 
 #sidebar h2 {
@@ -169,6 +216,7 @@ color:#555555;
 a:hover {
 text-decoration:underline;
 }
+
 
 #cssmenu{ height:37px; display:block; padding:0; margin-top:3px; margin-left:22px; margin-right:22px; border:1px solid; border-radius:5px; } 
 #cssmenu > ul {list-style:inside none; padding:0; margin:0;} 

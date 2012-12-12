@@ -1,7 +1,6 @@
 package com.wowtasty.listener;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -11,12 +10,10 @@ import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.Logger;
 
-import com.wowtasty.mybatis.dao.CodeMasterDao;
 import com.wowtasty.mybatis.dao.ActionAuthDao;
-import com.wowtasty.mybatis.dao.ContentsTextDao;
-import com.wowtasty.mybatis.vo.CodeMasterVO;
+import com.wowtasty.mybatis.dao.CodeMasterDao;
 import com.wowtasty.mybatis.vo.ActionAuthVO;
-import com.wowtasty.mybatis.vo.ContentsTextVO;
+import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
 

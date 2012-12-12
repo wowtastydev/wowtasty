@@ -11,6 +11,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		BillCity, BillProvince, BillPostalCode, UpdateID, UpdateTime
 	</sql>
 	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="ordermastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM order_master 
+	WHERE orderID = #{orderID}
+	</select>
+	
 	<!--Order List-->
 	<select id="select" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
@@ -23,9 +31,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	FROM order_master m
 		INNER JOIN order_restaurant r on m.orderID = r.orderID
 
-	WHERE r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
-		AND m.orderID LIKE CONCAT('%',#{orderID},'%')
-		AND IFNULL(m.orderMemberEmail,'') LIKE CONCAT('%',#{orderMemberEmail},'%')
+	WHERE IFNULL(m.orderMemberEmail,'') LIKE CONCAT('%',#{orderMemberEmail},'%')
 		AND IFNULL(m.orderMemberTelephone,'') LIKE CONCAT('%',#{orderMemberTelephone},'%')
 		<if test="fromDate != ''">
 		AND m.deliveryTime > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
@@ -35,6 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		AND m.deliveryTime < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
 		]]>
 		</if>
+		AND r.deliveryType LIKE CONCAT('%',#{deliveryType},'%')
 		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
 	
 	</select>
@@ -55,14 +62,115 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<![CDATA[
 		r.orderStatus < '50'
 		]]>
-		AND r.restaurantName LIKE CONCAT('%',#{restaurantName},'%')
-		AND m.orderID LIKE CONCAT('%',#{orderID},'%')
 		<if test="time != ''">
 		AND m.deliveryTime > ADDTIME(NOW(), #{time})
 		</if>
 		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
-	
 	</select>
+	
+	<!-- Insert -->
+	<insert id="insert" parameterType="ordermastervo">
+	INSERT INTO 
+		order_master
+	(   OrderID,
+		InvoiceNO,
+		OrderTime,
+		DeliveryTime,
+		OrderType,
+		PaymentType,
+		PaymentCreditType,
+		PaymentCreditNO,
+		PaymentDebitNO,
+		PaymentAmount,
+		PaymentRefNO,
+		PaymentStatus,
+		PaymentTime,
+		PaymentEcash,
+		PaymentGiftCard,
+		TotalPrice,
+		TotalPriceWithTax,
+		OrderMemberID,
+		OrderMemberEmail,
+		OrderMemberTelephone,
+		BillFirstName,
+		BillLastName,
+		BillTelephone,
+		BillAddress,
+		BillSuite,
+		BillCity,
+		BillProvince,
+		BillPostalCode,
+		UpdateID,
+		UpdateTime) 
+	VALUE ( #{orderID},
+		#{invoiceNO},
+		#{orderTime},
+		#{deliveryTime},
+		#{orderType},
+		#{paymentType},
+		#{paymentCreditType},
+		#{paymentCreditNO},
+		#{paymentDebitNO},
+		#{paymentAmount},
+		#{paymentRefNO},
+		#{paymentStatus},
+		#{paymentTime},
+		#{paymentEcash},
+		#{paymentGiftCard},
+		#{totalPrice},
+		#{totalPriceWithTax},
+		#{orderMemberID},
+		#{orderMemberEmail},
+		#{orderMemberTelephone},
+		#{billFirstName},
+		#{billLastName},
+		#{billTelephone},
+		#{billAddress},
+		#{billSuite},
+		#{billCity},
+		#{billProvince},
+		#{billPostalCode},
+		#{updateID},
+		#{updateTime})
+	</insert>
+	
+	<!--Update-->
+	<update id="update" parameterType="ordermastervo">
+	UPDATE 
+		order_master  
+	SET 
+		InvoiceNO = #{invoiceNO},
+		OrderTime = #{orderTime},
+		DeliveryTime = #{deliveryTime},
+		OrderType = #{orderType},
+		PaymentType = #{paymentType},
+		PaymentCreditType = #{paymentCreditType},
+		PaymentCreditNO = #{paymentCreditNO},
+		PaymentDebitNO = #{paymentDebitNO},
+		PaymentAmount = #{paymentAmount},
+		PaymentRefNO = #{paymentRefNO},
+		PaymentStatus = #{paymentStatus},
+		PaymentTime = #{paymentTime},
+		PaymentEcash = #{paymentEcash},
+		PaymentGiftCard = #{paymentGiftCard},
+		TotalPrice = #{totalPrice},
+		TotalPriceWithTax = #{totalPriceWithTax},
+		OrderMemberID = #{orderMemberID},
+		OrderMemberEmail = #{orderMemberEmail},
+		OrderMemberTelephone = #{orderMemberTelephone},
+		BillFirstName = #{billFirstName},
+		BillLastName = #{billLastName},
+		BillTelephone = #{billTelephone},
+		BillAddress = #{billAddress},
+		BillSuite = #{billSuite},
+		BillCity = #{billCity},
+		BillProvince = #{billProvince},
+		BillPostalCode = #{billPostalCode},
+		UpdateID = #{updateID},
+		UpdateTime = #{updateTime} 
+	WHERE 
+		OrderID = #{orderID}
+	</update>
 	
 
 </mapper>

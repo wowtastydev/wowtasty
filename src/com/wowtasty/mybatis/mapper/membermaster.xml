@@ -7,15 +7,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<sql id="columns"> 
 		MemberID, Email, Password, Auth, FirstName, LastName, Telephone, Address
 		, Suite, City, Province, PostalCode, DelivFirstName, DelivLastName, DelivTelephone
-		, DelivAddress, DelivSuite, DelivBuzzer, DelivCity, DelivProvince, DelivIntruction
-		, Ecash, Status, TotalOrderCnt, NAFlag, UpdateID, UpdateTime
+		, DelivAddress, DelivSuite, DelivBuzzer, DelivCity, DelivProvince, DelivPostalCode, DelivInstruction
+		, Ecash, Status, TotalOrderCnt, RegisterDate, NAFlag, UpdateID, UpdateTime
 	</sql>
 	
-	<!--SelectAll-->
+	<!--selectAll-->
 	<select id="selectAll" resultType="membermastervo">
 	SELECT 
 	<include refid="columns"/>
 	FROM member_master ORDER BY MemberID
+	</select>
+	
+	<!--select-->
+	<select id="select" parameterType="java.util.List" resultType="membermastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM member_master 
+	WHERE auth in 
+	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+          #{item}
+    </foreach>
+	ORDER BY MemberID
+	</select>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="membermastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM member_master 
+	WHERE MemberID = #{id}
 	</select>
 	
 	<!--selectByEmail-->
@@ -55,15 +75,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DelivCity,
 		DelivProvince,
 		DelivPostalCode,
-		DelivIntruction,
+		DelivInstruction,
 		Ecash,
 		Status,
+		RegisterDate,
 		NAFlag,
 		UpdateID,
 		UpdateTime)
 	VALUES
 	(	#{memberID},
-		#{email},
+		TRIM(#{email}),
 		#{password},
 		#{auth},
 		#{firstName},
@@ -73,7 +94,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{suite},
 		#{city},
 		#{province},
-		#{postalCode},
+		TRIM(REPLACE(#{postalCode},' ','')),
 		#{delivFirstName},
 		#{delivLastName},
 		#{delivTelephone},
@@ -82,10 +103,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{delivBuzzer},
 		#{delivCity},
 		#{delivProvince},
-		#{delivPostalCode},
-		#{delivIntruction},
+		TRIM(REPLACE(#{delivPostalCode},' ','')),
+		#{delivInstruction},
 		#{ecash},
 		#{status},
+		#{registerDate},
 		#{naFlag},
 		#{updateID},
 		now())
@@ -104,7 +126,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			Suite = #{suite},
 			City = #{city},
 			Province = #{province},
-			PostalCode = #{postalCode},
+			PostalCode = TRIM(REPLACE(#{postalCode},' ','')),
 			DelivFirstName = #{delivFirstName},
 			DelivLastName = #{delivLastName},
 			DelivTelephone = #{delivTelephone},
@@ -113,9 +135,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			DelivBuzzer = #{delivBuzzer},
 			DelivCity = #{delivCity},
 			DelivProvince = #{delivProvince},
-			DelivIntruction = #{delivIntruction},
+			DelivPostalCode = TRIM(REPLACE(#{delivPostalCode},' ','')),
+			DelivInstruction = #{delivInstruction},
 			Ecash = #{ecash},
 			Status = #{status},
+			RegisterDate = #{registerDate},
 			NAFlag = #{naFlag},
 			UpdateID = #{updateID},
 			UpdateTime = now() 

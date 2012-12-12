@@ -18,14 +18,14 @@ public class OrderMasterVO {
 	private String paymentCreditType = "";
 	private String paymentCreditNO = "";
 	private String paymentDebitNO = "";
-	private float paymentAmount = 0.00f;
+	private Float paymentAmount = 0.00f;
 	private String paymentRefNO = "";
 	private String paymentStatus = "";
 	private Timestamp paymentTime = null;
-	private int paymentEcash = 0;
-	private float paymentGiftCard = 0.00f;
-	private float totalPrice = 0.00f;
-	private float totalPriceWithTax = 0.00f;
+	private Integer paymentEcash = 0;
+	private Float paymentGiftCard = 0.00f;
+	private Float totalPrice = 0.00f;
+	private Float totalPriceWithTax = 0.00f;
 	private String orderMemberID = "";
 	private String orderMemberEmail = "";
 	private String orderMemberTelephone = "";
@@ -39,7 +39,6 @@ public class OrderMasterVO {
 	private String billPostalCode = "";
 	private String updateID = "";
 	private Timestamp updateTime = null;
-	
 	/**
 	 * @return the orderID
 	 */
@@ -151,13 +150,13 @@ public class OrderMasterVO {
 	/**
 	 * @return the paymentAmount
 	 */
-	public float getPaymentAmount() {
+	public Float getPaymentAmount() {
 		return paymentAmount;
 	}
 	/**
 	 * @param paymentAmount the paymentAmount to set
 	 */
-	public void setPaymentAmount(float paymentAmount) {
+	public void setPaymentAmount(Float paymentAmount) {
 		this.paymentAmount = paymentAmount;
 	}
 	/**
@@ -199,49 +198,49 @@ public class OrderMasterVO {
 	/**
 	 * @return the paymentEcash
 	 */
-	public int getPaymentEcash() {
+	public Integer getPaymentEcash() {
 		return paymentEcash;
 	}
 	/**
 	 * @param paymentEcash the paymentEcash to set
 	 */
-	public void setPaymentEcash(int paymentEcash) {
+	public void setPaymentEcash(Integer paymentEcash) {
 		this.paymentEcash = paymentEcash;
 	}
 	/**
 	 * @return the paymentGiftCard
 	 */
-	public float getPaymentGiftCard() {
+	public Float getPaymentGiftCard() {
 		return paymentGiftCard;
 	}
 	/**
 	 * @param paymentGiftCard the paymentGiftCard to set
 	 */
-	public void setPaymentGiftCard(float paymentGiftCard) {
+	public void setPaymentGiftCard(Float paymentGiftCard) {
 		this.paymentGiftCard = paymentGiftCard;
 	}
 	/**
 	 * @return the totalPrice
 	 */
-	public float getTotalPrice() {
+	public Float getTotalPrice() {
 		return totalPrice;
 	}
 	/**
 	 * @param totalPrice the totalPrice to set
 	 */
-	public void setTotalPrice(float totalPrice) {
+	public void setTotalPrice(Float totalPrice) {
 		this.totalPrice = totalPrice;
 	}
 	/**
 	 * @return the totalPriceWithTax
 	 */
-	public float getTotalPriceWithTax() {
+	public Float getTotalPriceWithTax() {
 		return totalPriceWithTax;
 	}
 	/**
 	 * @param totalPriceWithTax the totalPriceWithTax to set
 	 */
-	public void setTotalPriceWithTax(float totalPriceWithTax) {
+	public void setTotalPriceWithTax(Float totalPriceWithTax) {
 		this.totalPriceWithTax = totalPriceWithTax;
 	}
 	/**

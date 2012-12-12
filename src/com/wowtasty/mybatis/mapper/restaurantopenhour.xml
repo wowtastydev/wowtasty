@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurantopenhour">
+
+	<sql id="columns"> 
+		RestaurantID,WeekDay,Seq,StartTime,EndTime
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="restaurantopenhourvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_open_hour 
+	WHERE RestaurantID = #{restaurantID} 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="restaurantopenhourvo">
+	INSERT INTO restaurant_open_hour
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{restaurantID},
+		#{weekDay},
+		#{seq},
+		#{startTime},
+		#{endTime})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="restaurantopenhourvo">
+		UPDATE restaurant_open_hour
+		SET StartTime = #{startTime},
+			EndTime = #{endTime}
+		WHERE RestaurantID = #{restaurantID} 
+		  AND WeekDay = #{weekDay}
+		  AND Seq = #{seq}
+	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="restaurantopenhourvo">
+		DELETE FROM restaurant_open_hour
+		WHERE RestaurantID = #{restaurantID} 
+		  AND WeekDay = #{weekDay}
+		  AND Seq = #{seq}
+	</delete>
+</mapper>

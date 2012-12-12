@@ -10,7 +10,6 @@ import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ValidationAware;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import com.wowtasty.mybatis.vo.ActionAuthVO;
-import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
@@ -41,7 +40,6 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
 		MemberMasterVO mvo = (MemberMasterVO)session.get(Constants.KEY_SESSION_USER);
 		int auth = Integer.parseInt(mvo.getAuth());
 		// Get namespace : "/namespace"
-		StringBuilder sb = new StringBuilder();
 		String namespace = invocation.getProxy().getNamespace();
 		
 		// Get action authorization list from single tone session.

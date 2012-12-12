@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurantpict">
+
+	<sql id="columns"> 
+		RestaurantID,Seq,FileName,FilePath,FileSize,UpdateID,UpdateTime
+	</sql>
+	
+	<!--selectAll-->
+	<select id="selectAll" resultType="restaurantpictvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_pict 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="restaurantpictvo">
+	INSERT INTO restaurant_pict
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{restaurantID},
+		#{seq},
+		#{fileName},
+		#{filePath},
+		#{fileSize},
+		#{updateID},
+		#{updateTime})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="restaurantpictvo">
+		UPDATE restaurant_pict
+		SET FileName = #{fileName},
+			FilePath = #{filePath},
+			FileSize = #{fileSize},
+			UpdateID = #{updateID},
+			UpdateTime = #{updateTime}
+		WHERE RestaurantID = #{restaurantID} 
+		  AND Seq = #{seq}
+	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="restaurantpictvo">
+		DELETE FROM restaurant_pict
+		WHERE RestaurantID = #{restaurantID} 
+		  AND Seq = #{seq}
+	</delete>
+</mapper>

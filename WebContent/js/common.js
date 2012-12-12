@@ -1,12 +1,32 @@
- 
-document.onkeydown = function() {
-	// Disable F5 keydown
-	if(event.keyCode == "116") {
-		event.returnValue = false;
-		event.keyCode = 0;
-	}
-	
+//this code handles the F5
+document.onkeydown = function(e) {
+    var keycode;
+    if (window.event)
+        keycode = window.event.keyCode;
+    else if (e)
+        keycode = e.which;
+
+    // Mozilla firefox
+    if ($.browser.mozilla) {
+        //if (keycode == 116 ||(e.ctrlKey && keycode == 82)) {
+    	if (keycode == 116) {
+            if (e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        }
+    } 
+    // IE & Chrome
+    else {
+        //if (keycode == 116 || (window.event.ctrlKey && keycode == 82)) {
+    	if (keycode == 116) {
+            window.event.returnValue = false;
+            window.event.keyCode = 0;
+            window.status = "Refresh is disabled";
+        }
+    }
 };
+
 
 //UnblockUI after submit
 window.onload = function() {

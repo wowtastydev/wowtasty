@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="deliveryopenhour">
+
+	<sql id="columns"> 
+		DeliveryCompanyID,WeekDay,Seq,StartTime,EndTime
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="deliveryopenhourvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM delivery_open_hour 
+	WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="deliveryopenhourvo">
+	INSERT INTO delivery_open_hour
+	( 	
+		<include refid="columns"/>
+		)
+	VALUES
+	(	#{deliveryCompanyID},
+		#{weekDay},
+		#{seq},
+		#{startTime},
+		#{endTime})
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="deliveryopenhourvo">
+		UPDATE delivery_open_hour
+		SET StartTime = #{startTime},
+			EndTime = #{endTime}
+		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+		  AND WeekDay = #{weekDay}
+		  AND Seq = #{seq}
+	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="deliveryopenhourvo">
+		DELETE FROM delivery_open_hour
+		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+		  AND WeekDay = #{weekDay}
+		  AND Seq = #{seq}
+	</delete>
+</mapper>

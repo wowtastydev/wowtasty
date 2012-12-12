@@ -9,19 +9,18 @@ public class OrderMenuVO {
 	/** order_menu columns*/
 	private String orderID = "";
 	private String restaurantID = "";
-	private int seq = 0;
+	private Integer seq = 0;
 	private String menuID = "";
 	private String menuName = "";
-	private int unit = 0;
-	private float unitPrice = 0.00f;
-	private float totalExtraCharge = 0.00f;
+	private Integer unit = 0;
+	private Float unitPrice = 0.00f;
+	private Float totalExtraCharge = 0.00f;
 	private String couponNO = "";
-	private float couponPrice = 0.00f;
-	private float taxPrice = 0.00f;
-	private float totalPrice = 0.00f;
-	private float totalPriceWithTax = 0.00f;
-	private String Instruction = "";
-	
+	private Float couponPrice = 0.00f;
+	private Float taxPrice = 0.00f;
+	private Float totalPrice = 0.00f;
+	private Float totalPriceWithTax = 0.00f;
+	private String instruction = "";
 	/**
 	 * @return the orderID
 	 */
@@ -49,13 +48,13 @@ public class OrderMenuVO {
 	/**
 	 * @return the seq
 	 */
-	public int getSeq() {
+	public Integer getSeq() {
 		return seq;
 	}
 	/**
 	 * @param seq the seq to set
 	 */
-	public void setSeq(int seq) {
+	public void setSeq(Integer seq) {
 		this.seq = seq;
 	}
 	/**
@@ -85,37 +84,37 @@ public class OrderMenuVO {
 	/**
 	 * @return the unit
 	 */
-	public int getUnit() {
+	public Integer getUnit() {
 		return unit;
 	}
 	/**
 	 * @param unit the unit to set
 	 */
-	public void setUnit(int unit) {
+	public void setUnit(Integer unit) {
 		this.unit = unit;
 	}
 	/**
 	 * @return the unitPrice
 	 */
-	public float getUnitPrice() {
+	public Float getUnitPrice() {
 		return unitPrice;
 	}
 	/**
 	 * @param unitPrice the unitPrice to set
 	 */
-	public void setUnitPrice(float unitPrice) {
+	public void setUnitPrice(Float unitPrice) {
 		this.unitPrice = unitPrice;
 	}
 	/**
 	 * @return the totalExtraCharge
 	 */
-	public float getTotalExtraCharge() {
+	public Float getTotalExtraCharge() {
 		return totalExtraCharge;
 	}
 	/**
 	 * @param totalExtraCharge the totalExtraCharge to set
 	 */
-	public void setTotalExtraCharge(float totalExtraCharge) {
+	public void setTotalExtraCharge(Float totalExtraCharge) {
 		this.totalExtraCharge = totalExtraCharge;
 	}
 	/**
@@ -133,61 +132,61 @@ public class OrderMenuVO {
 	/**
 	 * @return the couponPrice
 	 */
-	public float getCouponPrice() {
+	public Float getCouponPrice() {
 		return couponPrice;
 	}
 	/**
 	 * @param couponPrice the couponPrice to set
 	 */
-	public void setCouponPrice(float couponPrice) {
+	public void setCouponPrice(Float couponPrice) {
 		this.couponPrice = couponPrice;
 	}
 	/**
 	 * @return the taxPrice
 	 */
-	public float getTaxPrice() {
+	public Float getTaxPrice() {
 		return taxPrice;
 	}
 	/**
 	 * @param taxPrice the taxPrice to set
 	 */
-	public void setTaxPrice(float taxPrice) {
+	public void setTaxPrice(Float taxPrice) {
 		this.taxPrice = taxPrice;
 	}
 	/**
 	 * @return the totalPrice
 	 */
-	public float getTotalPrice() {
+	public Float getTotalPrice() {
 		return totalPrice;
 	}
 	/**
 	 * @param totalPrice the totalPrice to set
 	 */
-	public void setTotalPrice(float totalPrice) {
+	public void setTotalPrice(Float totalPrice) {
 		this.totalPrice = totalPrice;
 	}
 	/**
 	 * @return the totalPriceWithTax
 	 */
-	public float getTotalPriceWithTax() {
+	public Float getTotalPriceWithTax() {
 		return totalPriceWithTax;
 	}
 	/**
 	 * @param totalPriceWithTax the totalPriceWithTax to set
 	 */
-	public void setTotalPriceWithTax(float totalPriceWithTax) {
+	public void setTotalPriceWithTax(Float totalPriceWithTax) {
 		this.totalPriceWithTax = totalPriceWithTax;
 	}
 	/**
 	 * @return the instruction
 	 */
 	public String getInstruction() {
-		return Instruction;
+		return instruction;
 	}
 	/**
 	 * @param instruction the instruction to set
 	 */
 	public void setInstruction(String instruction) {
-		Instruction = instruction;
+		this.instruction = instruction;
 	}
 }

@@ -25,7 +25,7 @@
 		</action>
 		
 		<action name="changePassword" class="com.wowtasty.action.PasswordAction">
-			<interceptor-ref name="validationWorkflowStack"/>
+			<interceptor-ref name="wowValidationStack"/>
 			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
 		</action>
@@ -34,15 +34,37 @@
 		
 		<!-- initMember : initialize Member insert Page -->	
 		<action name="initMember" class="com.wowtasty.action.MemberAction" method="init">
-			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
+			<result>/WEB-INF/jsp/admin/memberadd.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
 		</action>
 		
 		<!-- insertMember : insert new member account Page -->	
 		<action name="insertMember" class="com.wowtasty.action.MemberAction">
-			<interceptor-ref name="wowValidationStack"/>
-			<result>/WEB-INF/jsp/admin/membermasteradd.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/membermasteradd.jsp</result>
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
+		</action>
+		
+		<!-- initMemberEdit : initialize Member Edit Page -->	
+		<action name="initMemberEdit" class="com.wowtasty.action.MemberAction" method="initEdit">
+			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		</action>
+		
+		<!-- saveMember : Edit Member data -->
+		<action name="saveMember" class="com.wowtasty.action.MemberAction" method="save">
+			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		</action>
+		
+		<!-- MemberListAction -->
+		<action name="initMemberList" class="com.wowtasty.action.MemberListAction" method="init">
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
+		</action>
+		
+		<action name="searchMember" class="com.wowtasty.action.MemberListAction">
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
 		</action>
 		
 	</package>

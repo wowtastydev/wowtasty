@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 2.0//EN' 
+	'http://struts.apache.org/dtds/struts-2.0.dtd'>
+
+<struts>
+	<package name="admin3" namespace="/admin" extends="wow-default">
+
+	    <default-interceptor-ref name="wowDefaultStack"/>
+	
+		<global-results>
+			<result name="login">/WEB-INF/jsp/admin/login.jsp</result>
+			<result name="autherror">/WEB-INF/jsp/admin/autherror.jsp</result>
+			<result name="error">/WEB-INF/jsp/admin/error.jsp</result>
+		</global-results>
+		
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.RuntimeException" result="error" />
+			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+		
+		<!-- PasswordAction -->
+		<action name="initPassword" class="com.wowtasty.action.PasswordAction" method="init">
+			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
+		</action>
+		
+		<action name="changePassword" class="com.wowtasty.action.PasswordAction">
+			<interceptor-ref name="wowValidationStack"/>
+			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
+		</action>
+	
+		<!-- MemberAction -->
+		
+		<!-- initMember : initialize Member insert Page -->	
+		<action name="initMember" class="com.wowtasty.action.MemberAction" method="init">
+			<result>/WEB-INF/jsp/admin/memberadd.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
+		</action>
+		
+		<!-- insertMember : insert new member account Page -->	
+		<action name="insertMember" class="com.wowtasty.action.MemberAction">
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
+		</action>
+		
+		<!-- initMemberEdit : initialize Member Edit Page -->	
+		<action name="initMemberEdit" class="com.wowtasty.action.MemberAction" method="initEdit">
+			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		</action>
+		
+		<!-- saveMember : Edit Member data -->
+		<action name="saveMember" class="com.wowtasty.action.MemberAction" method="save">
+			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		</action>
+		
+		<!-- MemberListAction -->
+		<action name="initMemberList" class="com.wowtasty.action.MemberListAction" method="init">
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
+		</action>
+		
+		<action name="searchMember" class="com.wowtasty.action.MemberListAction">
+			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
+		</action>
+		
+	</package>
+	
+</struts>

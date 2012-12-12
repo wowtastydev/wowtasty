@@ -13,6 +13,7 @@ import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -30,7 +31,7 @@ public class FileUtil {
 	/**
      * Contructor : Set up File information from config.properties
      */   
-	private FileUtil() {
+	public FileUtil() {
 		config = (Properties)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES);
 	}
 	
@@ -56,31 +57,71 @@ public class FileUtil {
 		//delete thumbnail file
 		String filename =file.getName();
 		String dir = file.getParent();
-		String thumbnailDir = config.getProperty("thumbnailDir");
-		File thumbfile = new File(dir + thumbnailDir + filename);
+		StringBuilder sb = new StringBuilder(dir);
+		sb.append(config.getProperty(Constants.CONFIG_DELIMETER));
+		sb.append(config.getProperty(Constants.CONFIG_THUMBNAIL_DIR));
+		sb.append(config.getProperty(Constants.CONFIG_DELIMETER));
+		sb.append(filename);
+		
+		logger.debug("removePictureFile :" + sb.toString());
+		
+		File thumbfile = new File(sb.toString());
 		thumbfile.delete();
 	}
 	
 	/**
 	 * upload image and create thumbnail image
 	 * @param inFile : input File
-	 * @param pathProperty : output file path(restaurantPicturePath/menuPicturePath)
+	 * @param type : RESTAURANT/MENU
+	 * @param fileName : output file name
+	 * @return filepath : output file path
 	 */
-	public void writePict(File inFile, String pathProperty){
-		// upload original piture
-		// get image upload path and size from config.properties
-		String uploadPath = config.getProperty(pathProperty);
-		int width = Integer.parseInt(config.getProperty(pathProperty + "Width"));
-		int height = Integer.parseInt(config.getProperty(pathProperty + "Height"));
-		writePict(inFile, new File(uploadPath), width, height);
+	public String writePict(File inFile, String type, String fileName){
+		String imgPath ="";
+		int imgWidth = 0;
+		int imgHeight = 0;
+		String thumbPath ="";
+		int thumbWidth = 0;
+		int thumbHeight = 0;
+		StringBuilder sb = null;
 		
-		// upload thumbnail piture
-		// get thumbnail image upload path and size from config.properties
-		String thumbnailDir = config.getProperty("thumbnailDir");
-		uploadPath = uploadPath + thumbnailDir;
-		width = Integer.parseInt(config.getProperty(pathProperty + "ThumbnailWidth"));
-		height = Integer.parseInt(config.getProperty(pathProperty + "ThumbnailHeight"));
-		writePict(inFile, new File(uploadPath), width, height);
+		try{
+			
+			// Get image upload path and size from config.properties
+			if ("RESTAURANT".equals(type)) {
+				// RESTAURANT IMAGE
+				sb = new StringBuilder(config.getProperty(Constants.CONFIG_REST_PICT_PATH));
+				imgPath = sb.append(fileName).toString();
+				imgWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_WIDTH));
+				imgHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_HEIGHT));
+				
+				sb.setLength(0);
+				sb.append(config.getProperty(Constants.CONFIG_REST_PICT_PATH));
+				thumbPath = sb.append("thumb_").append(fileName).toString();
+				thumbWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_THUMB_WIDTH));
+				thumbHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_THUMB_HEIGHT));
+			} else if ("MENU".equals(type)) {
+				// MENU IMAGE
+				sb = new StringBuilder(config.getProperty(Constants.CONFIG_MENU_PICT_PATH));
+				imgPath = sb.append(fileName).toString();
+				imgWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_WIDTH));
+				imgHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_HEIGHT));
+				
+				sb.setLength(0);
+				sb.append(config.getProperty(Constants.CONFIG_MENU_PICT_PATH));
+				thumbPath = sb.append("thumb_").append(fileName).toString();
+				thumbWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_THUMB_WIDTH));
+				thumbHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_THUMB_HEIGHT));
+			}
+			// Image Upload
+			writePict(inFile, new File(imgPath), imgWidth, imgHeight);
+			// Thumbnail Upload
+			writePict(inFile, new File(thumbPath), thumbWidth, thumbHeight);
+		} catch (Exception e) {
+			logger.error("!!!!!FileUtil writePict occurs error:" + e);
+        	throw new RuntimeException(e);
+		} 
+		return imgPath;
 	}
 	
 	/**
@@ -91,7 +132,7 @@ public class FileUtil {
 	 * @param height : maximum image height
 	 * @return
 	 */
-	public void writePict(File loadFile, File outFile, int w, int h){
+	public void writePict(File loadFile, File outFile, int w, int h) {
 		BufferedInputStream bis = null;
 		try{
 			bis = new BufferedInputStream(new FileInputStream(loadFile));

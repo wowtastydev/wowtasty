@@ -1,7 +1,9 @@
 package com.wowtasty.mybatis.dao;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -9,8 +11,10 @@ import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.FactoryService;
 import com.wowtasty.mybatis.vo.OrderMasterVO;
+import com.wowtasty.mybatis.vo.OrderMenuOptionVO;
+import com.wowtasty.mybatis.vo.OrderMenuVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
-
+import com.wowtasty.util.Constants;
 import com.wowtasty.vo.OrderListConditionVO;
 import com.wowtasty.vo.OrderListVO;
 
@@ -78,17 +82,33 @@ public class OrderDao {
 	}
 
 	/**
-	 * @return OrderMasterVO: Order master data
+	 * @param orderID: orderID
+	 * @return Map<Object>: OrderMaster, OrderRestaurant, OrderMenu, OrderOption
 	 */
-	public OrderMasterVO selectByID(String orderID) {
+	public Map<String, Object> selectByID(String orderID) {
 		SqlSession sqlSession = factory.openSession();
-		List<OrderMasterVO> list = new ArrayList<OrderMasterVO>();
-		OrderMasterVO returnObject = new OrderMasterVO();
+		Map<String, Object> returnObject = new HashMap<String, Object>();
+		OrderMasterVO master = new OrderMasterVO();
+		List<OrderRestaurantVO> restaurantList = new ArrayList<OrderRestaurantVO>();
+		List<OrderMenuVO> menuList = new ArrayList<OrderMenuVO>();
+		List<OrderMenuOptionVO> menuoptionList = new ArrayList<OrderMenuOptionVO>();
 		try {
-			list = sqlSession.selectList("ordermaster.selectByID", orderID);
-			if (list.size() > 0) {
-				returnObject = list.get(0);
-			}
+			//Get order master data
+			master = sqlSession.selectOne("ordermaster.selectByID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MASTER, master);
+			
+			//Get order restaurant data
+			restaurantList = sqlSession.selectList("orderrestaurant.selectByOrderID", orderID);
+			returnObject.put(Constants.KEY_ORDER_RESTAURANT, restaurantList);
+			
+			//Get order menu data
+			menuList = sqlSession.selectList("ordermenu.selectByOrderID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MENU, menuList);
+			
+			//Get order menuoption data
+			menuoptionList = sqlSession.selectList("ordermenuoption.selectByOrderID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MENUOPTION, menuoptionList);
+			
 		} catch (Exception e) {
 			logger.error("!!!!!OrderDao selectByID occurs error:" + e);
         	throw new RuntimeException(e);

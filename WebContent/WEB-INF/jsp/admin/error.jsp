@@ -3,6 +3,7 @@
 <!doctype html>
 <html lang="en">
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
+<link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
 <link rel="shortcut icon" href="./images/wowicon.ico">
 <meta name="keywords" content="FoodDelivery, WowStaty, Admin">
 <meta name="description" content="Admin login at FoodDelivery WowStaty">
@@ -17,9 +18,11 @@
 	<div id="mainarea">
 		<div id="contentarea">
 			<h2><font color="#f00">Wow Tasty System Error</font></h2>
-		
-			<p>Systme Error Occurs. Please Contact to System administrator.</p>
+			<div class="error">
+				<p>Systme Error Occurs. Please Contact to System administrator.</p>
+			</div>
 			<input type="button" value="Login" onClick="javascript:window.location='initLogin';" />
+			
 		</div>
 	</div>
 	<div id="footer">

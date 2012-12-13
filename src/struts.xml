@@ -39,6 +39,7 @@
 	<include file="struts-a1.xml"></include>
 	<include file="struts-a2.xml"></include>
 	<include file="struts-u0.xml"></include>
+        <include file="struts-u2.xml"></include>
 
 	<constant name="struts.custom.i18n.resources" value="message" />
 </struts>

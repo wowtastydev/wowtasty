@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="restaurant">
+
+    <sql id="columns"> 
+        RestaurantID, RestaurantType, Name,CuisineType ,MemberID ,FirstName 
+        ,LastName ,Telephone ,Fax ,Address ,Suite ,City ,Province ,PostalCode 
+        ,Website ,Facebook ,Email1 ,Email2 ,LogoImagePath ,MainImagePath 
+        ,GoogleMapURL ,Profile ,Keyword ,CommissionType ,Commission 
+        ,CashCommission ,AveragePrice ,MinPrice ,DeliveryCompanyID ,DeliveryTime 
+        ,BillAccountNO ,AverageRate ,TotalReviewCnt ,TotalOrderCnt ,Status 
+        ,NAFlag ,UpdateID ,UpdateTime ,RegisterDate
+    </sql>
+	
+    <!--Select Keyword-->
+    <select id="selectKeyword" parameterType="String" resultType="java.lang.String">
+        SELECT GROUP_CONCAT(KEYWORD SEPARATOR ',') AS KEYWORDS 
+        FROM RESTAURANT_MASTER
+        WHERE STATUS = '1' AND (KEYWORD LIKE CONCAT(#{keyIn},'%') OR KEYWORD LIKE CONCAT('%,',#{keyIn}))
+    </select>
+    
+    <!--Select New Restaurants-->
+    <select id="selectNRestaurant" resultType="restaurantlistvo">
+        SELECT 
+        RESTAURANTID, NAME
+        FROM RESTAURANT_MASTER
+        WHERE STATUS = '1' ORDER BY REGISTERDATE DESC
+        LIMIT 5
+    </select>
+        
+    <!--Select Most Ordered Restaurants-->
+    <select id="selectMORestaurant" resultType="restaurantlistvo">
+        SELECT 
+        RESTAURANTID, NAME
+        FROM RESTAURANT_MASTER
+        WHERE STATUS = '1' ORDER BY TOTALORDERCNT DESC
+        LIMIT 5
+    </select>
+    
+    <!--Select Cuisine Type -->
+    <select id="selectCuisineType" resultType="cuisinelistvo">
+        SELECT
+        CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT 
+        FROM RESTAURANT_MASTER INNER JOIN CODE_MASTER
+        ON RESTAURANT_MASTER.CUISINETYPE = CODE_MASTER.CODE
+        WHERE GROUPCD='108' AND STATUS = '1'
+        GROUP BY CODE_MASTER.NAME
+    </select>
+</mapper>

@@ -32,7 +32,9 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		
 		<!-- List VO -->
 		<typeAlias type="com.wowtasty.vo.OrderListVO" alias="orderlistvo"/>
-		
+		<typeAlias type="com.wowtasty.vo.RestaurantListVO" alias="restaurantlistvo"/>
+                <typeAlias type="com.wowtasty.vo.CuisineListVO" alias="cuisinelistvo"/>
+                
 		<!-- Condition VO  -->
 		<typeAlias type="com.wowtasty.vo.OrderListConditionVO" alias="orderlistconditionvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListConditionVO" alias="restaurantlistconditionvo"/>
@@ -69,6 +71,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurantmenuoption.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurantopenhour.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurantpict.xml"/>
-		
+		<mapper resource="com/wowtasty/mybatis/mapper/restaurant.xml"/>
 	</mappers>
 </configuration>

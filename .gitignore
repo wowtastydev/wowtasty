@@ -1,0 +1,17 @@
+/nbproject/private/
+/build/
+/document/
+/documents/
+build.xml
+
+nbproject/ant-deploy.xml
+
+nbproject/build-impl.xml
+
+*.properties
+
+nbproject/project.xml
+
+.DS_Store
+
+WebContent/META-INF/context.xml

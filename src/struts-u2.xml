@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 2.0//EN' 
+	'http://struts.apache.org/dtds/struts-2.0.dtd'>
+
+<struts>
+    <package name="order" namespace="/order" extends="wow-default">
+        
+        <interceptors>
+            <!-- chain stack -->
+            <interceptor-stack name="chainStack">
+                <interceptor-ref name="chain" />
+                <interceptor-ref name="basicStack" />
+            </interceptor-stack>
+        </interceptors>
+        
+        <default-interceptor-ref name="basicStack"/>
+            
+        <global-results>
+            <result name="login">/WEB-INF/jsp/login.jsp</result>
+            <result name="error">/WEB-INF/jsp/error.jsp</result>
+        </global-results>
+        
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.RuntimeException" result="error" />
+            <exception-mapping exception="java.lang.Exception" result="error" />
+        </global-exception-mappings>
+        
+        <!-- call wowtasty main page -->	
+        <action name="home" class="com.wowtasty.action.user.OrderAction">
+            <interceptor-ref name="chainStack"/>
+            <result>/WEB-INF/jsp/order/main.jsp</result>
+        </action>
+        <!-- request keywords for input field autocompletion -->
+        <action name="searchKeyword" class="com.wowtasty.action.user.OrderAction" method="searchKeyword">
+            <result>/WEB-INF/jsp/order/keywords.jsp</result>
+        </action>
+        <!-- search restaurant -->
+        <action name="searchRestaurant" class="com.wowtasty.action.user.OrderAction" method="searchRestaurant">
+            <result>/WEB-INF/jsp/order/restaurantList.jsp</result>
+            <result name="error" type="chain">home</result>
+        </action>
+    </package>
+	
+    <constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>
+    <constant name="struts.xwork.chaining.copyErrors" value="true"/>
+    <constant name="struts.xwork.chaining.copyMessages" value="true"/>
+        
+</struts>

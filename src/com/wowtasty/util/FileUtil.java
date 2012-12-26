@@ -13,7 +13,6 @@ import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,95 +23,97 @@ public class FileUtil {
 	
 	/** Logger */	
 	private static Logger logger = Logger.getLogger(FileUtil.class);
+	
+	/**Config property name*/
+	public static final String CONFIG_PICT_PATH = "picturePath";
+	public static final String CONFIG_PICT_WIDTH = "pictureWidth";
+	public static final String CONFIG_PICT_HEIGHT = "pictureHeight";
+	public static final String CONFIG_THUMB_WIDTH = "thumbnailWidth";
+	public static final String CONFIG_THUMB_HEIGHT = "thumbnailHeight";
+	
+	/** constants */
+	public static final String PREFIX_THUMB = "thumb_";
+	public static final String STR_TEMP = ".temp";
+	public static final String WOWTASTY_DIR = "wowtasty/";
+	public static final String RESTAURANT_DIR = "restaurant/";
+	public static final String MENU_DIR = "menu/";
+	public static final String DELIVERY_DIR = "delivery/";
 
 	/** config.properties */	
-	private Properties config = null;
+	private static Properties config = (Properties)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES);
 
 	/**
-     * Contructor : Set up File information from config.properties
-     */   
-	public FileUtil() {
-		config = (Properties)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES);
-	}
-	
-	/**
-	 * delete file
-	 * @param filePath
-	 * @return boolean : true - sucess, false - fail
-	 */
-	public boolean removeFile(String filePath){
-		File file = new File(filePath);
-		return file.delete();
-	}
-	
-	/**
 	 * delete image and thumbnail image
-	 * @param filePath
+	 * @param filename : filename
 	 */
-	public void removePictureFile(String filePath){
-		File file = new File(filePath);
-		//delete original file
-		file.delete();
+	public static void deletePict(String dir, String fileName){
+		String dirPath = "";
+		String imgPath ="";
+		String thumbPath ="";
+		File imgFile = null;
+		File thumbFile = null;
+		StringBuilder sb = new StringBuilder(config.getProperty(CONFIG_PICT_PATH));
 		
-		//delete thumbnail file
-		String filename =file.getName();
-		String dir = file.getParent();
-		StringBuilder sb = new StringBuilder(dir);
-		sb.append(config.getProperty(Constants.CONFIG_DELIMETER));
-		sb.append(config.getProperty(Constants.CONFIG_THUMBNAIL_DIR));
-		sb.append(config.getProperty(Constants.CONFIG_DELIMETER));
-		sb.append(filename);
-		
-		logger.debug("removePictureFile :" + sb.toString());
-		
-		File thumbfile = new File(sb.toString());
-		thumbfile.delete();
+		try{
+			// Get image upload pathfrom config.properties
+			dirPath = sb.append(dir).toString();
+			
+			// Original file
+			sb.setLength(0);
+			imgPath = sb.append(dirPath).append(fileName).toString();
+			
+			// Thumbnail file
+			sb.setLength(0);
+			thumbPath = sb.append(dirPath).append(PREFIX_THUMB).append(fileName).toString();
+			
+			//delete original file
+			imgFile = new File(imgPath);
+			imgFile.delete();
+			
+			//delete thumbnail file
+			thumbFile = new File(thumbPath);
+			thumbFile.delete();
+			
+		} catch (Exception e) {
+			logger.error("!!!!!FileUtil deletePict occurs error:" + e);
+        	throw new RuntimeException(e);
+		} 
 	}
 	
 	/**
 	 * upload image and create thumbnail image
 	 * @param inFile : input File
-	 * @param type : RESTAURANT/MENU
+	 * @param dir : RESTAURANT/MENU/WOWTASTY/DELIVERY directory
 	 * @param fileName : output file name
-	 * @return filepath : output file path
 	 */
-	public String writePict(File inFile, String type, String fileName){
+	public static void writePict(File inFile, String dir, String fileName){
+		String dirPath = "";
 		String imgPath ="";
 		int imgWidth = 0;
 		int imgHeight = 0;
 		String thumbPath ="";
 		int thumbWidth = 0;
 		int thumbHeight = 0;
-		StringBuilder sb = null;
-		
-		try{
+		StringBuilder sb = new StringBuilder(config.getProperty(CONFIG_PICT_PATH));
 			
-			// Get image upload path and size from config.properties
-			if ("RESTAURANT".equals(type)) {
-				// RESTAURANT IMAGE
-				sb = new StringBuilder(config.getProperty(Constants.CONFIG_REST_PICT_PATH));
-				imgPath = sb.append(fileName).toString();
-				imgWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_WIDTH));
-				imgHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_HEIGHT));
+		try{
+			// Get image upload pathfrom config.properties
+			dirPath = sb.append(dir).toString();
+			
+			// Original file
+			sb.setLength(0);
+			imgPath = sb.append(dirPath).append(fileName).toString();
+			
+			// Thumbnail file
+			sb.setLength(0);
+			thumbPath = sb.append(dirPath).append(PREFIX_THUMB).append(fileName).toString();
+			
+			// Image/Thumbnail with, height
+			imgWidth = Integer.parseInt(config.getProperty(CONFIG_PICT_WIDTH));
+			imgHeight = Integer.parseInt(config.getProperty(CONFIG_PICT_HEIGHT));
+			thumbWidth = Integer.parseInt(config.getProperty(CONFIG_THUMB_WIDTH));
+			thumbHeight = Integer.parseInt(config.getProperty(CONFIG_THUMB_HEIGHT));
 				
-				sb.setLength(0);
-				sb.append(config.getProperty(Constants.CONFIG_REST_PICT_PATH));
-				thumbPath = sb.append("thumb_").append(fileName).toString();
-				thumbWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_THUMB_WIDTH));
-				thumbHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_REST_PICT_THUMB_HEIGHT));
-			} else if ("MENU".equals(type)) {
-				// MENU IMAGE
-				sb = new StringBuilder(config.getProperty(Constants.CONFIG_MENU_PICT_PATH));
-				imgPath = sb.append(fileName).toString();
-				imgWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_WIDTH));
-				imgHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_HEIGHT));
-				
-				sb.setLength(0);
-				sb.append(config.getProperty(Constants.CONFIG_MENU_PICT_PATH));
-				thumbPath = sb.append("thumb_").append(fileName).toString();
-				thumbWidth = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_THUMB_WIDTH));
-				thumbHeight = Integer.parseInt(config.getProperty(Constants.CONFIG_MENU_PICT_THUMB_HEIGHT));
-			}
 			// Image Upload
 			writePict(inFile, new File(imgPath), imgWidth, imgHeight);
 			// Thumbnail Upload
@@ -121,7 +122,82 @@ public class FileUtil {
 			logger.error("!!!!!FileUtil writePict occurs error:" + e);
         	throw new RuntimeException(e);
 		} 
-		return imgPath;
+	}
+	
+	/**
+	 * rename image and thumbnail image
+	 * @param orgFileName : original image file name
+	 * @param newFileName : new image file name
+	 */
+	public static void renameRestImage(String orgFileName, String newFileName){
+		String imgPath ="";
+		String thumbPath ="";
+		String newImgPath ="";
+		String newThumbPath ="";
+		// Get image upload path from config.properties
+		StringBuilder sb = new StringBuilder(config.getProperty(CONFIG_PICT_PATH));
+		String dir = sb.append(RESTAURANT_DIR).toString();
+		
+		File file = null;
+		
+		try{
+			// Get image upload path and size from config.properties
+			imgPath = sb.append(orgFileName).toString();
+			sb.setLength(0);
+			newImgPath= sb.append(dir).append(newFileName).toString();
+			
+			sb.setLength(0);
+			thumbPath = sb.append(dir).append(PREFIX_THUMB).append(orgFileName).toString();
+			sb.setLength(0);
+			newThumbPath= sb.append(dir).append(PREFIX_THUMB).append(newFileName).toString();
+			
+			// Rename file to temp file
+			file = new File(imgPath);
+			if(file.exists()) {
+				file.renameTo(new File(newImgPath));
+			}
+			file = new File(thumbPath);
+			if(file.exists()) {
+				file.renameTo(new File(newThumbPath));
+			}
+			
+		} catch (Exception e) {
+			logger.error("!!!!!FileUtil renameImage occurs error:" + e);
+        	throw new RuntimeException(e);
+		} 
+	}
+	
+	/**
+	 * delete temp image and thumbnail image
+	 * @param fileName : image file name
+	 */
+	public static void deleteRestTempImage(String fileName){
+		String imgPath ="";
+		String thumbPath ="";
+		// Get image upload path from config.properties
+		StringBuilder sb = new StringBuilder(config.getProperty(CONFIG_PICT_PATH));
+		String dir = sb.append(RESTAURANT_DIR).toString();
+		File file = null;
+		
+		try{
+			imgPath = sb.append(fileName).append(STR_TEMP).toString();
+			
+			sb.setLength(0);
+			thumbPath = sb.append(dir).append(PREFIX_THUMB).append(fileName).append(STR_TEMP).toString();
+			
+			// Delete temp file
+			file = new File(imgPath);
+			if(file.exists()) {
+				file.delete();
+			}
+			file = new File(thumbPath);
+			if(file.exists()) {
+				file.delete();
+			}
+		} catch (Exception e) {
+			logger.error("!!!!!FileUtil deleteRestTempImage occurs error:" + e);
+        	throw new RuntimeException(e);
+		} 
 	}
 	
 	/**
@@ -132,7 +208,7 @@ public class FileUtil {
 	 * @param height : maximum image height
 	 * @return
 	 */
-	public void writePict(File loadFile, File outFile, int w, int h) {
+	public static void writePict(File loadFile, File outFile, int w, int h) {
 		BufferedInputStream bis = null;
 		try{
 			bis = new BufferedInputStream(new FileInputStream(loadFile));
@@ -154,6 +230,10 @@ public class FileUtil {
 			Image img = bi.getScaledInstance(width, height, Image.SCALE_AREA_AVERAGING);
 			Graphics2D g2 = thumbi.createGraphics();
 			g2.drawImage(img, 0, 0, width, height, null);
+			// If there is the same name file, delete and write
+			if (outFile.exists()) {
+				outFile.delete();
+			}
 			ImageIO.write(thumbi, "jpg", outFile);
 			
 		} catch (Exception e) {
@@ -176,7 +256,7 @@ public class FileUtil {
 	 * @param titles : Title string Array
 	 * @return File : Output File
 	 */
-	public File downloadOrderList(ArrayList<Object> dataList, String[] titles) {
+	public static File downloadOrderList(ArrayList<Object> dataList, String[] titles) {
 		FileWriter fw = null;
 		BufferedWriter bw = null;
 		File dir = null;

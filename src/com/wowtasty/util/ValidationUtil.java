@@ -132,14 +132,14 @@ public class ValidationUtil {
 	
 	/**
 	 * check if string is valid number
-	 * @param value number string
+	 * @param value number string(-,float type including)
 	 * @return boolean: true-valid, false-invalid 
 	 */
 	public static boolean isNum(String value) {
 		if (value == null || value.trim().length() == 0) {
 			return false;
 		}
-		if(!value.matches("[0-9.-]+")) {
+		if(!value.matches("[-]?[0-9]+(.[0-9]+)?")) {
 			return false;
 		}
 		return true;
@@ -155,6 +155,21 @@ public class ValidationUtil {
 			return false;
 		}
 		if(!value.matches("[a-zA-Z0-9 ]+")) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * check if string is valid Whole Number
+	 * @param value integer string
+	 * @return boolean: true-valid, false-invalid 
+	 */
+	public static boolean isWholeNum(String value) {
+		if (value == null || value.trim().length() == 0) {
+			return false;
+		}
+		if(!value.matches("[0-9]+")) {
 			return false;
 		}
 		return true;

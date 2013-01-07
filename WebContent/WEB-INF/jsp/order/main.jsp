@@ -3,7 +3,8 @@
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
 <t:insertDefinition name="default.layout">
     <t:putAttribute name="main">
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
+        <!-- google autocomplete script start -->
+        <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
         <script>
             //location field autocomplete script
             function initialize() {
@@ -17,37 +18,50 @@
                     componentRestrictions: {country: 'ca'}
                 };
                 var autocomplete = new google.maps.places.Autocomplete(input, options);
-                autocomplete.setBounds(defaultBounds);
 
                 google.maps.event.addListener(autocomplete, 'place_changed', function() {
-                    infowindow.close();
-                    marker.setVisible(false);
                     var place = autocomplete.getPlace();
-                    if (!place.geometry) {
-                        // Inform the user that the place was not found and return.
-                        input.value = 'not found';
-                        return;
-                    }
-
                     var address = '';
+                    var postalCode = '';
                     if (place.address_components) {
                         address = [
                             (place.address_components[0] && place.address_components[0].short_name || ''),
                             (place.address_components[1] && place.address_components[1].short_name || ''),
                             (place.address_components[2] && place.address_components[2].short_name || '')
                         ].join(' ');
+
+                        for (var i=0; i<place.address_components.length;i++) {
+                            for (var j=0;j<place.address_components[i].types.length;j++) {
+                                if (place.address_components[i].types[j] == "postal_code"){
+                                    postalCode = place.address_components[i].long_name;
+                                    document.getElementById('postalCode').value=postalCode;
+                                }
+                            }
+                        }
                     }
-                    infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+                    
                 });
             }
             google.maps.event.addDomListener(window, 'load', initialize);
         </script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+        <!-- google autocomplete script end -->
+        <!-- keyword autocomplete -->
         <script src="../js/jquery.autocomplete.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/jquery.autocomplete.css" />
+        <script>
+            $(document).ready(function(){ 
+                $("#submitBtn").click(function(){
+                    $('#cityName').val($('select option:selected').text());
+                    $('#sfrm').submit();
+                    return false;
+                });       
+            });
+        </script>
+
         <div id="mainsearch">
 
-            <s:form theme="simple" cssClass="field" name="frm" id="frm" action="searchRestaurant" method="POST" >
+            <s:form theme="simple" cssClass="field" name="sfrm" id="sfrm" action="searchRestaurant" method="POST" >
                 <s:if test="hasActionMessages()">
                     <div class="searcharea2">
                         <div class="searchareain">
@@ -55,15 +69,8 @@
                             <div class="field">
                                 <p>Browse by Location</p>
                                 <p>
-                                    <select name="select" id="select">
-                                        <option value="Vancouver">Vancouver</option>
-                                        <option value="New Westminster">New Westminster</option>
-                                        <option value="Coquitlam">Coquitlam</option>
-                                        <option value="Surrey">Surrey</option>
-                                        <option value="Notrh Vancouver">Notrh Vancouver</option>
-                                        <option value="West Vancouver">West Vancouver</option>
-                                        <option value="Burnaby">Burnaby</option>
-                                    </select>
+                                    <s:select name="rscVO.city" id="rscVO.city" list="cityList" listKey="code" listValue="name"/>
+                                    <s:hidden name="rscVO.cityName" id="cityName"/>
                                 </p>
                             </s:if>
                             <s:else>
@@ -72,18 +79,19 @@
                                         <h2>START YOUR ORDER HERE</h2>
                                         <div class="field">
                                             <p>Location</p>
-                                            <p><s:textfield id="location" value="Location (Postal code or Address)" cssClass="field" onclick="if(this.value == 'Location (Postal code or Address)') { this.value = ''; }" /></p>
+                                            <p><s:textfield name="rscVO.location" id="location" value="Location (Postal code or Address)" cssClass="field" onclick="if(this.value == 'Location (Postal code or Address)') { this.value = ''; }" /></p>
+                                            <s:hidden name="rscVO.postalCode" id="postalCode" />
                                             <p style="margin-top:7px">Restaurant</p>
-                                            <p><s:textfield id="keyword" value="Restaurant/Cuisine (Option)" cssClass="field" onclick="if(this.value == 'Restaurant/Cuisine (Option)') { this.value = ''; }"  /></p>
+                                            <p><s:textfield name="rscVO.keyword" id="keyword" value="Restaurant/Cuisine (Option)" cssClass="field" onclick="if(this.value == 'Restaurant/Cuisine (Option)') { this.value = ''; }"  /></p>
                                             <script>
-                                                $("#keyword").autocomplete("/order/searchKeyword");
+                                                $("#keyword").autocomplete("order/searchKeyword");
                                             </script>
                                             <p style="margin-top:7px;">
-                                                <span class="col1"><input type="radio" name="restaurantType" id="restaurantType" value="1" class="radio" />Delivery</span>
-                                                <span class="col2"><input type="radio" name="restaurantType" id="restaurantType" value="2" class="radio" />Takeout</span>
+                                                <span class="col1"><input type="radio" name="rscVO.restaurantType" id="restaurantType" value="1" class="radio" checked="true" />Delivery</span>
+                                                <span class="col2"><input type="radio" name="rscVO.restaurantType" id="restaurantType" value="2" class="radio" />Takeout</span>
                                             </p>
                                         </s:else>
-                                        <div class="clear" style="padding:12px 0 0 0"><a href="#" class="submit"></a></div>
+                                        <div class="clear" style="padding:12px 0 0 0" ><a href="#" id="submitBtn" class="submit"></a></div>
                                     </div>
                                 </div>
                             </div>

@@ -4,19 +4,47 @@
 
 <struts>
 	<package name="wow-default" namespace="/" extends="struts-default">
+		<result-types>
+	        <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+	    </result-types>
+	    
 		<interceptors>
 			<interceptor name="logincheckinterceptor" class="com.wowtasty.interceptor.LoginCheckInterceptor" />
-	
+			<interceptor name="json" class="org.apache.struts2.json.JSONInterceptor"/>
+			
+	        <!-- Basic stack define: remove conversionError interceptor-->
+            <interceptor-stack name="basicStack">
+                <interceptor-ref name="exception"/>
+                <interceptor-ref name="servletConfig"/>
+                <interceptor-ref name="prepare"/>
+                <interceptor-ref name="checkbox"/>
+                <interceptor-ref name="actionMappingParams"/>
+                <interceptor-ref name="params"/>
+            </interceptor-stack>
+	        
 	        <!-- UserInfo Check stack -->
 	        <interceptor-stack name="wowDefaultStack">
 				<interceptor-ref name="logincheckinterceptor" />
 	        	<interceptor-ref name="basicStack" />
 	        </interceptor-stack>
 	        
+	        <!-- UserInfo Check stack For Jason Type -->
+	        <interceptor-stack name="wowJasonStack">
+				<interceptor-ref name="wowDefaultStack" />
+	        	<interceptor-ref name="json" />
+	        </interceptor-stack>
+	        
+	        <!-- UserInfo Check & Chain stack -->
+	        <interceptor-stack name="wowChainStack">
+	        	<interceptor-ref name="chain"/>
+				<interceptor-ref name="wowDefaultStack" />
+	        </interceptor-stack>
+	        
 	        <!-- UserInfo Check & Validation stack -->
 	        <interceptor-stack name="wowValidationStack">
-				<interceptor-ref name="logincheckinterceptor" />
-	        	<interceptor-ref name="validationWorkflowStack" />
+				<interceptor-ref name="wowDefaultStack" />
+	        	<interceptor-ref name="validation"/>
+                <interceptor-ref name="workflow"/>
 	        </interceptor-stack>
 	        
 	        <!-- UserInfo Check,Validation & fileUpload stack -->
@@ -24,9 +52,7 @@
 	        	<interceptor-ref name="logincheckinterceptor" />
 		        <interceptor-ref name="basicStack"/>
 	            <interceptor-ref name="i18n"/>
-	            <interceptor-ref name="fileUpload">
-		       		<param name="maximumSize">10240</param>
-				</interceptor-ref> 
+	            <interceptor-ref name="fileUpload"/>
 	            <interceptor-ref name="params"/>
 	            <interceptor-ref name="validation"/>
 	            <interceptor-ref name="workflow"/>
@@ -38,8 +64,12 @@
 	<include file="struts-a0.xml"></include>
 	<include file="struts-a1.xml"></include>
 	<include file="struts-a2.xml"></include>
+	<include file="struts-a3.xml"></include>
 	<include file="struts-u0.xml"></include>
-        <include file="struts-u2.xml"></include>
+    <include file="struts-u2.xml"></include>
 
 	<constant name="struts.custom.i18n.resources" value="message" />
+	<constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>
+    <constant name="struts.xwork.chaining.copyErrors" value="true"/>
+    <constant name="struts.xwork.chaining.copyMessages" value="true"/>
 </struts>

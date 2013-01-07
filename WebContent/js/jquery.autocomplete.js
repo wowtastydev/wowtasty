@@ -13,6 +13,9 @@ jQuery.autocomplete = function(input, options) {
 	// Create jQuery object for results
 	var $results = $(results);
 	$results.hide().addClass(options.resultsClass).css("position", "absolute");
+        // Set the field width
+        options.width = $('#keyword').width()+15;
+        if( options.width < 500) options.width = 247;
 	if( options.width > 0 ) $results.css("width", options.width);
 
 	// Add to body element

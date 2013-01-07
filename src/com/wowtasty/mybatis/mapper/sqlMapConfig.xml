@@ -38,6 +38,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<!-- Condition VO  -->
 		<typeAlias type="com.wowtasty.vo.OrderListConditionVO" alias="orderlistconditionvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListConditionVO" alias="restaurantlistconditionvo"/>
+                <typeAlias type="com.wowtasty.vo.RestaurantSearchConditionVO" alias="restaurantsearchconditionvo"/>
 	</typeAliases>
    
 	<environments default="">

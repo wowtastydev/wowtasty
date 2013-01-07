@@ -2,11 +2,18 @@ package com.wowtasty.action.user;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.wowtasty.mybatis.dao.RestaurantDao;
+import com.wowtasty.mybatis.vo.CodeMasterVO;
+import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.util.Constants;
+import com.wowtasty.util.SessionUtil;
 import com.wowtasty.vo.CuisineListVO;
 import com.wowtasty.vo.RestaurantListVO;
+import com.wowtasty.vo.RestaurantSearchConditionVO;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
@@ -15,8 +22,10 @@ import org.apache.log4j.Logger;
  * @author Seunghon Kim <sh.kim@live.com>
  */
 public class OrderAction extends ActionSupport {
-    //Logger
 
+    //serialVersionUID
+    private static final long serialVersionUID = 1L;
+    //Logger
     private static Logger logger = Logger.getLogger(OrderAction.class);
 
     /**
@@ -32,18 +41,19 @@ public class OrderAction extends ActionSupport {
     public static void setLogger(Logger aLogger) {
         logger = aLogger;
     }
-    /*
-     * main page infomations
-     */
+    // codemaster map
+    private Map<String, List<CodeMasterVO>> codeMap = new HashMap<>();
+    // main page infomations
     private List<RestaurantListVO> newListVO = new ArrayList<>();
     private List<RestaurantListVO> mostListVO = new ArrayList<>();
     private List<CuisineListVO> cuisineListVO = new ArrayList<>();
-    private String location = "";
-    private String keyword = "";
-    private String city = "";
-    private String restaurantType = "1";
+    private List<RestaurantMasterVO> restListVO = new ArrayList<>();
+    // search condition VO
+    private RestaurantSearchConditionVO rscVO = new RestaurantSearchConditionVO();
+    private List<CodeMasterVO> cityList = new ArrayList<>();
+    private List<CodeMasterVO> cuisineTypeList = new ArrayList<>();
     private Iterator keywordList = null;
-    //request parameter for keyword field autocompletion
+    //request parameter for keyword field autocompletion javascript
     private String q = "";
 
     /**
@@ -55,6 +65,10 @@ public class OrderAction extends ActionSupport {
     @Override
     public String execute() throws Exception {
         getLogger().info("Call execute()");
+        // codes from session
+        codeMap = (Map<String, List<CodeMasterVO>>) SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
+        // set up dropdown menu from codes
+        setCityList(codeMap.get(Constants.KEY_CD_CITY));
         //get restaurant lists (new, most ordered, type by cousine)
         RestaurantDao resDao = new RestaurantDao();
         setNewListVO(resDao.getNRestaurantList());
@@ -65,7 +79,7 @@ public class OrderAction extends ActionSupport {
     }
 
     /**
-     * Request and return restaurant keyword for input field auto-completion
+     * Request and return restaurant keyword for keyword field auto-completion
      *
      * @return SUCCESS
      * @throws Exception
@@ -75,7 +89,7 @@ public class OrderAction extends ActionSupport {
 
         if (getQ() != null && getQ().length() > 0) {
             RestaurantDao resDao = new RestaurantDao();
-            TreeSet keywordSet = new TreeSet();
+            TreeSet<String> keywordSet = new TreeSet<>();
             String[] keyArr = resDao.getKeywordList(getQ()).split(",");
 
             for (String str : keyArr) {
@@ -84,15 +98,13 @@ public class OrderAction extends ActionSupport {
                     keywordSet.add(str);
                 }
             }
-
             setKeywordList(keywordSet.iterator());
         }
-
         return SUCCESS;
     }
 
     /**
-     * search restaurants with location, keyword and city
+     * search restaurants by location ,keyword and city
      *
      * @return SUCCESS or INPUT
      * @throws Exception
@@ -100,12 +112,49 @@ public class OrderAction extends ActionSupport {
     public String searchRestaurant() throws Exception {
         getLogger().info("Call searchRestaurant");
         String returnStr = SUCCESS;
-        //@ToDo: test select restaurants list
-        //@ToDo: if restaurants list is null or 0>, change returnStr to ERROR and addActionMessage()
-        //test
-        returnStr = ERROR;
-        addActionMessage("Not found");
+        RestaurantDao resDao = new RestaurantDao();
+        // Check keyword param value with textfield default value
+        if (rscVO.getKeyword().equals("Restaurant/Cuisine (Option)")) {
+            rscVO.setKeyword("");
+        }
+        // Check location value
+        if (!"".equals(rscVO.getLocation()) && "".equals(rscVO.getPostalCode())) {
+            returnStr = ERROR;
+            this.addActionError(this.getText("E0007"));
+            return returnStr;
+        }else if (!"".equals(rscVO.getCity())) {
+            //Search restaurant by city
+            setRestListVO(resDao.getRestaurantByCity(getRscVO()));
+            setCuisineListVO(resDao.getCuisineListByCity(getRscVO()));
+        } else if (!"".equals(rscVO.getPostalCode())) {
+            //Search restaurant by postalcode and(or) keyword
+            setRestListVO(resDao.getRestaurantByAddr(getRscVO()));
+            setCuisineListVO(resDao.getCuisineListByAddr(getRscVO()));
+        }
+        
+        if (getRestListVO().isEmpty() || getRestListVO().size() < 1) {
+            returnStr = ERROR;
+            addActionMessage("No restaurant has been found. \n Please, choose a city");
+        }
+        return returnStr;
+    }
 
+    /**
+     * search restaurants by cuisine
+     *
+     * @return SUCCESS or INPUT
+     * @throws Exception
+     */
+    public String searchRestaurantByCuisine() throws Exception {
+        getLogger().info("Call searchRestaurantByCuisine");
+        String returnStr = SUCCESS;
+
+        RestaurantDao resDao = new RestaurantDao();
+        setRestListVO(resDao.getRestaurantByCity(getRscVO()));
+        if (getRestListVO().isEmpty() || getRestListVO().size() < 1) {
+            returnStr = ERROR;
+            addActionMessage("No restaurant has been found.");
+        }
         return returnStr;
     }
 
@@ -135,62 +184,6 @@ public class OrderAction extends ActionSupport {
      */
     public void setMostListVO(List<RestaurantListVO> mostListVO) {
         this.mostListVO = mostListVO;
-    }
-
-    /**
-     * @return the location
-     */
-    public String getLocation() {
-        return location;
-    }
-
-    /**
-     * @param location the location to set
-     */
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    /**
-     * @return the keyword
-     */
-    public String getKeyword() {
-        return keyword;
-    }
-
-    /**
-     * @param keyword the keyword to set
-     */
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    /**
-     * @return the city
-     */
-    public String getCity() {
-        return city;
-    }
-
-    /**
-     * @param city the city to set
-     */
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    /**
-     * @return the restaurantType
-     */
-    public String getRestaurantType() {
-        return restaurantType;
-    }
-
-    /**
-     * @param restaurantType the deliveryType to set
-     */
-    public void setRestaurantType(String restaurantType) {
-        this.restaurantType = restaurantType;
     }
 
     /**
@@ -233,5 +226,61 @@ public class OrderAction extends ActionSupport {
      */
     public void setKeywordList(Iterator keywordList) {
         this.keywordList = keywordList;
+    }
+
+    /**
+     * @return the restListVO
+     */
+    public List<RestaurantMasterVO> getRestListVO() {
+        return restListVO;
+    }
+
+    /**
+     * @param restListVO the restListVO to set
+     */
+    public void setRestListVO(List<RestaurantMasterVO> restListVO) {
+        this.restListVO = restListVO;
+    }
+
+    /**
+     * @return the rscVO
+     */
+    public RestaurantSearchConditionVO getRscVO() {
+        return rscVO;
+    }
+
+    /**
+     * @param rscVO the rscVO to set
+     */
+    public void setRscVO(RestaurantSearchConditionVO rscVO) {
+        this.rscVO = rscVO;
+    }
+
+    /**
+     * @return the cityList
+     */
+    public List<CodeMasterVO> getCityList() {
+        return cityList;
+    }
+
+    /**
+     * @param cityList the cityList to set
+     */
+    public void setCityList(List<CodeMasterVO> cityList) {
+        this.cityList = cityList;
+    }
+
+    /**
+     * @return the cuisineTypeList
+     */
+    public List<CodeMasterVO> getCuisineTypeList() {
+        return cuisineTypeList;
+    }
+
+    /**
+     * @param cuisineTypeList the cuisineTypeList to set
+     */
+    public void setCuisineTypeList(List<CodeMasterVO> cuisineTypeList) {
+        this.cuisineTypeList = cuisineTypeList;
     }
 }

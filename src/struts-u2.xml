@@ -39,6 +39,7 @@
             <result>/WEB-INF/jsp/order/restaurantList.jsp</result>
             <result name="error" type="chain">home</result>
         </action>
+        
     </package>
 	
     <constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>

@@ -49,6 +49,13 @@ public class RestaurantMasterVO {
 	private String naFlag = "";
 	private String updateID = "";
 	private Timestamp updateTime = null;
+        private String restaurantOpenStatus = "";
+        private String deliveryOpenStatus = "";
+        private String cuisineName = "";
+        private String cityName = "";
+        private String provinceName = "";
+        private String startTime = "";
+        private String endTime = "";
 	
 	/**
 	 * @return the restaurantID
@@ -518,5 +525,103 @@ public class RestaurantMasterVO {
 	public void setRegisterDate(Date registerDate) {
 		this.registerDate = registerDate;
 	}
+
+    /**
+     * @return the restaurantOpenStatus
+     */
+    public String getRestaurantOpenStatus() {
+        return restaurantOpenStatus;
+    }
+
+    /**
+     * @param restaurantOpenStatus the restaurantOpenStatus to set
+     */
+    public void setRestaurantOpenStatus(String restaurantOpenStatus) {
+        this.restaurantOpenStatus = restaurantOpenStatus;
+    }
+
+    /**
+     * @return the deliveryOpenStatus
+     */
+    public String getDeliveryOpenStatus() {
+        return deliveryOpenStatus;
+    }
+
+    /**
+     * @param deliveryOpenStatus the deliveryOpenStatus to set
+     */
+    public void setDeliveryOpenStatus(String deliveryOpenStatus) {
+        this.deliveryOpenStatus = deliveryOpenStatus;
+    }
+
+    /**
+     * @return the cuisineName
+     */
+    public String getCuisineName() {
+        return cuisineName;
+    }
+
+    /**
+     * @param cuisineName the cuisineName to set
+     */
+    public void setCuisineName(String cuisineName) {
+        this.cuisineName = cuisineName;
+    }
+
+    /**
+     * @return the cityName
+     */
+    public String getCityName() {
+        return cityName;
+    }
+
+    /**
+     * @param cityName the cityName to set
+     */
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    /**
+     * @return the provinceName
+     */
+    public String getProvinceName() {
+        return provinceName;
+    }
+
+    /**
+     * @param provinceName the provinceName to set
+     */
+    public void setProvinceName(String provinceName) {
+        this.provinceName = provinceName;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public String getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * @param startTime the startTime to set
+     */
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the endTime
+     */
+    public String getEndTime() {
+        return endTime;
+    }
+
+    /**
+     * @param endTime the endTime to set
+     */
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
 
 }

@@ -1,9 +1,11 @@
 package com.wowtasty.mybatis.dao;
 
-
 import com.wowtasty.mybatis.FactoryService;
+import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.util.Constants;
 import com.wowtasty.vo.CuisineListVO;
 import com.wowtasty.vo.RestaurantListVO;
+import com.wowtasty.vo.RestaurantSearchConditionVO;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.ibatis.session.SqlSession;
@@ -98,9 +100,9 @@ public class RestaurantDao {
         }
         return resultObj;
     }
-    
+
     /**
-     * get most ordered restaurant list
+     * get cuisine list
      *
      * @return List <RestaurantListVO>
      */
@@ -108,7 +110,7 @@ public class RestaurantDao {
         SqlSession sqlSession = factory.openSession();
         List<CuisineListVO> resultObj = new ArrayList<>();
         try {
-            resultObj = sqlSession.selectList("restaurant.selectCuisineType");
+            resultObj = sqlSession.selectList("restaurant.selectCuisineType", Constants.KEY_CD_CUISINE_TYPE);
         } catch (Exception e) {
             logger.error("!!!!!RestaurantDao getCuisineList occurs error:" + e);
             throw new RuntimeException(e);
@@ -117,6 +119,102 @@ public class RestaurantDao {
                 sqlSession.close();
             } catch (Exception e) {
                 logger.error("!!!!!RestaurantDao getCuisineList occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+    /**
+     * search restaurant by address and keyword
+     *
+     * @return List <RestaurantMasterVO>
+     */
+    public List<RestaurantMasterVO> getRestaurantByAddr(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantByAddr", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao getRestaurantByAddr occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantByAddr occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+    /**
+     * search restaurant by city
+     *
+     * @return List <RestaurantMasterVO>
+     */
+    public List<RestaurantMasterVO> getRestaurantByCity(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantByCity", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao selectRestaurantByCity occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao selectRestaurantByCity occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+    
+    /**
+     * get cuisine list by address and/or keyword
+     *
+     * @return List <RestaurantListVO>
+     */
+    public List<CuisineListVO> getCuisineListByAddr(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<CuisineListVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByAddr", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao getCuisineListByAddr occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getCuisineListByAddr occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+    
+        /**
+     * get cuisine list by city
+     *
+     * @return List <RestaurantListVO>
+     */
+    public List<CuisineListVO> getCuisineListByCity(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<CuisineListVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByCity", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao getCuisineListByCity occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getCuisineListByCity occurs error:" + e);
                 throw new RuntimeException(e);
             }
         }

@@ -9,7 +9,7 @@ public class CuisineListVO {
     //for Cuisine list
     private String code = "";
     private String name = "";
-    private int count = 0;
+    private Integer count = new Integer(0);
 
     /**
      * @return the code
@@ -42,14 +42,14 @@ public class CuisineListVO {
     /**
      * @return the count
      */
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 
     /**
      * @param count the count to set
      */
-    public void setCount(int count) {
+    public void setCount(Integer count) {
         this.count = count;
     }
 

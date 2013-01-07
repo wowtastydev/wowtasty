@@ -10,6 +10,12 @@
         <put-attribute name="footer" value="/WEB-INF/jsp/layouts/footer.jsp" />
     </definition>
     
+    <definition name="rlist.layout" template="/WEB-INF/jsp/layouts/layout_rlist.jsp">
+        <put-attribute name="main" value="/WEB-INF/jsp/layouts/main.jsp" />
+        <put-attribute name="header" value="/WEB-INF/jsp/layouts/header.jsp" />
+        <put-attribute name="footer" value="/WEB-INF/jsp/layouts/footer.jsp" />
+    </definition>
+    
     <definition name="admin.layout" template="/WEB-INF/jsp/layouts/layout_admin.jsp">
         <put-attribute name="main_admin" value="/WEB-INF/jsp/layouts/main_admin.jsp" />
         <put-attribute name="header_admin" value="/WEB-INF/jsp/layouts/header_admin.jsp" />

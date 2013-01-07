@@ -18,7 +18,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectKeyword" parameterType="String" resultType="java.lang.String">
         SELECT GROUP_CONCAT(KEYWORD SEPARATOR ',') AS KEYWORDS 
         FROM RESTAURANT_MASTER
-        WHERE STATUS = '1' AND (KEYWORD LIKE CONCAT(#{keyIn},'%') OR KEYWORD LIKE CONCAT('%,',#{keyIn}))
+        WHERE STATUS = '1' AND NAFLAG!='1' AND (KEYWORD LIKE CONCAT(#{keyIn},'%') OR KEYWORD LIKE CONCAT('%,',#{keyIn},'%'))
     </select>
     
     <!--Select New Restaurants-->
@@ -26,7 +26,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT 
         RESTAURANTID, NAME
         FROM RESTAURANT_MASTER
-        WHERE STATUS = '1' ORDER BY REGISTERDATE DESC
+        WHERE STATUS = '1' AND NAFLAG!='1' ORDER BY REGISTERDATE DESC
         LIMIT 5
     </select>
         
@@ -35,17 +35,150 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT 
         RESTAURANTID, NAME
         FROM RESTAURANT_MASTER
-        WHERE STATUS = '1' ORDER BY TOTALORDERCNT DESC
+        WHERE STATUS = '1' AND NAFLAG!='1' ORDER BY TOTALORDERCNT DESC
         LIMIT 5
     </select>
     
     <!--Select Cuisine Type -->
-    <select id="selectCuisineType" resultType="cuisinelistvo">
+    <select id="selectCuisineType" parameterType="String" resultType="cuisinelistvo">
         SELECT
         CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT 
         FROM RESTAURANT_MASTER INNER JOIN CODE_MASTER
         ON RESTAURANT_MASTER.CUISINETYPE = CODE_MASTER.CODE
-        WHERE GROUPCD='108' AND STATUS = '1'
+        WHERE GROUPCD=#{KEY_CD_CUISINE_TYPE} AND STATUS = '1' AND RESTAURANT_MASTER.NAFLAG!='1'
+        GROUP BY CODE_MASTER.NAME
+    </select>
+    
+    <!--Select Restaurant by address and keyword -->
+    <select id="selectRestaurantByAddr" parameterType="restaurantsearchconditionvo" resultType="restaurantmastervo">
+        SELECT
+        RESTAURANTOPENSTATUS, DELIVERYOPENSTATUS, CUISINENAME, CITYNAME, PROVINCENAME
+        , RESTAURANTID, NAME, PROFILE, SUITE, ADDRESS, WEBSITE, LOGOIMAGEPATH
+        , AVERAGEPRICE, DELIVERYTIME, MINPRICE, RESTAURANTTYPE, X.DELIVERYCOMPANYID
+        , TIME_FORMAT(Y.STARTTIME, '%H:%i') AS STARTTIME, TIME_FORMAT(Y.ENDTIME, '%H:%i') AS ENDTIME
+        FROM(
+        SELECT 
+        (CASE WHEN B.OPENRESTAURANTID IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'RESTAURANTOPENSTATUS'
+        ,(CASE WHEN B.OPENDELIVERYCOMPANYID IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'DELIVERYOPENSTATUS'
+        , GET_CDNAME(#{cuisineGCD},A.CUISINETYPE) AS CUISINENAME
+        , GET_CDNAME(#{cityGCD},A.CITY) AS CITYNAME
+        , GET_CDSHORTNAME(#{provinceGCD},A.PROVINCE) AS PROVINCENAME
+        , A.RESTAURANTID, A.NAME, A.PROFILE, A.SUITE, A.ADDRESS, A.WEBSITE, A.POSTALCODE, A.LOGOIMAGEPATH
+        , A.AVERAGEPRICE, A.DELIVERYTIME, A.MINPRICE, A.RESTAURANTTYPE, A.DELIVERYCOMPANYID
+        FROM RESTAURANT_MASTER A
+        INNER JOIN 
+        (SELECT E.RESTAURANTID AS 'RESTAURANTID'
+        ,MIN(C.RESTAURANTID) AS 'OPENRESTAURANTID'
+        ,MIN(D.DELIVERYCOMPANYID) AS 'OPENDELIVERYCOMPANYID'
+        FROM             
+        (SELECT RESTAURANTID AS 'RESTAURANTID'
+        ,DELIVERYCOMPANYID AS 'DELIVERYCOMPANYID'
+        ,POSTALPREFIX AS 'POSTALPREFIX'
+        FROM RESTAURANT_DELIVERY_AREA
+        WHERE POSTALPREFIX = #{postalPrefix}
+        ) E
+        LEFT JOIN RESTAURANT_OPEN_HOUR C
+        ON (E.RESTAURANTID = C.RESTAURANTID AND DAYOFWEEK(NOW()) = C.WEEKDAY 
+        AND TIME(NOW()) BETWEEN C.STARTTIME AND C.ENDTIME)
+        LEFT JOIN DELIVERY_OPEN_HOUR D 
+        ON (E.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = D.WEEKDAY 
+        AND TIME(NOW()) BETWEEN D.STARTTIME AND D.ENDTIME)
+        GROUP BY E.RESTAURANTID) B
+        ON B.RESTAURANTID = A.RESTAURANTID
+        WHERE A.NAFLAG!='1' AND A.STATUS ='1' AND A.RESTAURANTTYPE=#{restaurantType} 
+        <if test="cuisineType != ''">
+            AND A.CUISINETYPE = #{cuisineType}
+        </if>
+        <if test="keyword != ''">
+            AND A.KEYWORD LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        <if test="orderBy != ''">
+            ORDER BY #{orderBy} ASC
+        </if>
+        ) X
+        LEFT JOIN DELIVERY_OPEN_HOUR Y 
+        ON (X.DELIVERYCOMPANYID = Y.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = Y.WEEKDAY)
+    </select>
+    
+    <!--Select Restaurant by city -->
+    <select id="selectRestaurantByCity" parameterType="restaurantsearchconditionvo" resultType="restaurantmastervo">
+        SELECT
+        RESTAURANTOPENSTATUS, DELIVERYOPENSTATUS, CUISINENAME, CITYNAME, PROVINCENAME
+        , RESTAURANTID, NAME, PROFILE, SUITE, ADDRESS, WEBSITE, LOGOIMAGEPATH
+        , AVERAGEPRICE, DELIVERYTIME, MINPRICE, RESTAURANTTYPE, X.DELIVERYCOMPANYID
+        , TIME_FORMAT(Y.STARTTIME, '%H:%i') AS STARTTIME, TIME_FORMAT(Y.ENDTIME, '%H:%i') AS ENDTIME
+        FROM(
+        SELECT 
+        (CASE WHEN MIN(C.RESTAURANTID) IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'RESTAURANTOPENSTATUS'
+        ,(CASE WHEN MIN(D.DELIVERYCOMPANYID) IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'DELIVERYOPENSTATUS'
+        , GET_CDNAME(#{cuisineGCD},A.CUISINETYPE) AS CUISINENAME
+        , GET_CDNAME(#{cityGCD},A.CITY) AS CITYNAME, A.CITY
+        , GET_CDSHORTNAME(#{provinceGCD},A.PROVINCE) AS PROVINCENAME
+        , A.RESTAURANTID, A.NAME, A.PROFILE, A.SUITE, A.ADDRESS, A.WEBSITE, A.LOGOIMAGEPATH
+        , A.AVERAGEPRICE, A.DELIVERYTIME, A.MINPRICE, A.RESTAURANTTYPE, A.DELIVERYCOMPANYID
+        FROM RESTAURANT_MASTER A
+        LEFT JOIN RESTAURANT_OPEN_HOUR C
+        ON (A.RESTAURANTID = C.RESTAURANTID AND DAYOFWEEK(NOW()) = C.WEEKDAY 
+        AND TIME(NOW()) BETWEEN C.STARTTIME AND C.ENDTIME)
+        LEFT JOIN DELIVERY_OPEN_HOUR D 
+        ON (A.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = D.WEEKDAY 
+        AND TIME(NOW()) BETWEEN D.STARTTIME AND D.ENDTIME)
+        WHERE A.NAFLAG!='1' AND A.STATUS ='1' AND CITY=#{city}
+        <if test="cuisineType != ''">
+            AND A.CUISINETYPE = #{cuisineType}
+        </if>
+        GROUP BY A.RESTAURANTID 
+        <if test="orderBy !=''">
+            ORDER BY #{orderBy} ASC
+        </if>
+        ) X
+        LEFT JOIN DELIVERY_OPEN_HOUR Y 
+        ON (X.DELIVERYCOMPANYID = Y.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = Y.WEEKDAY)
+    </select>
+    
+    <!--select searched restaurants' count of cuisine types for selectRestaurantByAddr  -->
+    <select id="selectCuisineTypeByAddr" parameterType="restaurantsearchconditionvo" resultType="cuisinelistvo">
+        SELECT
+        CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT
+        FROM 
+        (SELECT B.CUISINETYPE
+        FROM RESTAURANT_MASTER B
+        INNER JOIN 
+        (SELECT D.RESTAURANTID AS 'RESTAURANTID'
+        FROM             
+        (SELECT RESTAURANTID AS 'RESTAURANTID'
+        ,DELIVERYCOMPANYID AS 'DELIVERYCOMPANYID'
+        ,POSTALPREFIX AS 'POSTALPREFIX'
+        FROM RESTAURANT_DELIVERY_AREA
+        WHERE POSTALPREFIX = #{postalPrefix}
+        ) D
+        GROUP BY D.RESTAURANTID) C
+        ON C.RESTAURANTID = B.RESTAURANTID
+        WHERE B.NAFLAG!='1' AND B.STATUS ='1' AND B.RESTAURANTTYPE=#{restaurantType}
+        <if test="keyword != ''">
+            AND B.KEYWORD LIKE CONCAT('%',#{keyword},'%')
+        </if>
+        ) A
+        INNER JOIN CODE_MASTER
+        ON A.CUISINETYPE = CODE_MASTER.CODE
+        WHERE GROUPCD = #{cuisineGCD}
+        <if test="cuisineType != ''">
+            AND CUISINETYPE = #{cuisineType}
+        </if>
+        GROUP BY CODE_MASTER.NAME
+    </select>
+    
+    <!--select searched restaurants' count of cuisine types for selectRestaurantByCity  -->
+    <select id="selectCuisineTypeByCity" parameterType="restaurantsearchconditionvo" resultType="cuisinelistvo">
+        SELECT
+        CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT
+        FROM 
+        (SELECT CUISINETYPE
+        FROM RESTAURANT_MASTER B
+        WHERE NAFLAG!='1' AND STATUS ='1' AND CITY=#{city}) A
+        INNER JOIN CODE_MASTER
+        ON A.CUISINETYPE = CODE_MASTER.CODE
+        WHERE GROUPCD = #{cuisineGCD}
         GROUP BY CODE_MASTER.NAME
     </select>
 </mapper>

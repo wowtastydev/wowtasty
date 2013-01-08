@@ -50,10 +50,15 @@
         <script src="../js/jquery.autocomplete.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/jquery.autocomplete.css" />
         <script>
+            function searchRestaurantByCuisine(cuisineID){
+                $('#cuisineType').val(cuisineID);
+                $('#sfrm2').submit();
+                return false;
+            };
             $(document).ready(function(){ 
                 $("#submitBtn").click(function(){
                     $('#cityName').val($('select option:selected').text());
-                    $('#sfrm').submit();
+                    $('#sfrm1').submit();
                     return false;
                 });       
             });
@@ -61,7 +66,7 @@
 
         <div id="mainsearch">
 
-            <s:form theme="simple" cssClass="field" name="sfrm" id="sfrm" action="searchRestaurant" method="POST" >
+            <s:form theme="simple" cssClass="field" name="sfrm1" id="sfrm1" action="searchRestaurant" method="POST" >
                 <s:if test="hasActionMessages()">
                     <div class="searcharea2">
                         <div class="searchareain">
@@ -143,9 +148,12 @@
                                 <div class="container clearfix" style="padding:0 0 60px 0">
                                     <div class="block">
                                         <h3>Restaurants by Cuisine</h3>
+                                        <s:form theme="simple" cssClass="field" name="sfrm2" id="sfrm2" action="searchRestaurantByCuisine" method="POST" >
+                                            <s:hidden name="rscVO.cuisineType" id="cuisineType"/>
+                                        </s:form>
                                         <s:iterator value="cuisineListVO" id="cuisineListVO" status="stat">
                                             <s:if test="#stat.isFirst()==true"><ul></s:if>
-                                                <li><a href="#"><s:property value="name"/> (<s:property value="count"/>)</a></li>
+                                                <li><a href="javascript:searchRestaurantByCuisine('<s:property value="code"/>');"><s:property value="name"/> (<s:property value="count"/>)</a></li>
                                                 <s:if test="#stat.isLast()==true"></ul></s:if>
                                             <s:elseif test="(#stat.index+1)%3==0"></ul><ul></s:elseif>
                                             </s:iterator>

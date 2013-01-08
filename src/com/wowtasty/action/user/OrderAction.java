@@ -117,7 +117,7 @@ public class OrderAction extends ActionSupport {
         if (rscVO.getKeyword().equals("Restaurant/Cuisine (Option)")) {
             rscVO.setKeyword("");
         }
-        // Check location value
+        // Check search conditions
         if (!"".equals(rscVO.getLocation()) && "".equals(rscVO.getPostalCode())) {
             returnStr = ERROR;
             this.addActionError(this.getText("E0007"));
@@ -140,22 +140,24 @@ public class OrderAction extends ActionSupport {
     }
 
     /**
-     * search restaurants by cuisine
+     * search restaurants by cuisine type
      *
      * @return SUCCESS or INPUT
      * @throws Exception
      */
     public String searchRestaurantByCuisine() throws Exception {
         getLogger().info("Call searchRestaurantByCuisine");
-        String returnStr = SUCCESS;
 
         RestaurantDao resDao = new RestaurantDao();
-        setRestListVO(resDao.getRestaurantByCity(getRscVO()));
-        if (getRestListVO().isEmpty() || getRestListVO().size() < 1) {
-            returnStr = ERROR;
-            addActionMessage("No restaurant has been found.");
-        }
-        return returnStr;
+        setRestListVO(resDao.getRestaurantByCuisine(getRscVO()));
+        setCuisineListVO(resDao.getCuisineListByCuisine(getRscVO()));
+        return SUCCESS;
+    }
+    
+    public String viewRestaurant() throws Exception {
+        getLogger().info("Call viewRestaurant");
+        //@ToDo: call Dao method
+        return SUCCESS;
     }
 
     /**

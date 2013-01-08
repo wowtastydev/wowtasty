@@ -45,12 +45,21 @@
             }
             google.maps.event.addDomListener(window, 'load', initialize);
         </script>
-        
+
         <!-- keyword autocomplete -->
         <script src="../js/jquery.autocomplete.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/jquery.autocomplete.css" />
 
         <script>
+            function viewRestaurant(resID){
+                if ($('#preOrderDate').val() == 'DD/MM/YY') $('#preOrderDate').val('');
+                if ($('#preOrderTime').val() == 'HH:MM') $('#preOrderTime').val('');
+                $('#restaurantID').val(resID);
+                $('#sfrm2').attr('action','viewRestaurant');
+                $('#sfrm2').submit();
+                return false;
+            };
+            
             $(document).ready(function(){ 
                 $('#submitBtn1').click(function(){
                     $('#sfrm1').submit();
@@ -64,7 +73,7 @@
                 });
             });
         </script>
-        
+
         <!-- body start-->
         <div id="subbody">
             <div id="breadcrumb">Home >> Order > <span class="current">Search Restaurant</span></div>
@@ -79,9 +88,9 @@
                         <div class="address">
                             <s:if test="rscVO.location != ''"><s:property value="%{rscVO.location}"/></s:if>
                             <s:if test="rscVO.city != ''"><s:property value="%{rscVO.cityName}"/></s:if>
-                        </div>
-                        <div class="resetlocation clearfix">
-                            <h3>Reset Location</h3>
+                            </div>
+                            <div class="resetlocation clearfix">
+                                <h3>Reset Location</h3>
                             <s:textfield name="rscVO.location" id="location" value="Location (Postal code or Address)" cssClass="input_text" onclick="if(this.value == 'Location (Postal code or Address)') { this.value = ''; }" />
                             <s:hidden name="rscVO.postalCode" id="postalCode" value="" />
                             <s:textfield name="rscVO.keyword" id="keyword" value="Restaurant/Cuisine (Option)" cssClass="input_text" onclick="if(this.value == 'Restaurant/Cuisine (Option)') { this.value = ''; }"  />
@@ -106,13 +115,14 @@
                     <s:hidden id="rscVO.location" name="rscVO.location" value="%{rscVO.location}"/>
                     <s:hidden id="rscVO.keyword" name="rscVO.keyword" value="%{rscVO.keyword}"/>
                     <s:hidden id="rscVO.restaurantType" name="rscVO.restaurantType" value="%{rscVO.restaurantType}"/>
-                    <s:hidden id="rscVO.postalPrefix" name="rscVO.postalPrefix" value="%{rscVO.postalPrefix}"/>
+                    <s:hidden id="rscVO.postalCode" name="rscVO.postalCode" value="%{rscVO.postalCode}"/>
                     <s:hidden id="rscVO.city" name="rscVO.city" value="%{rscVO.city}"/>
                     <s:hidden id="cityName" name="rscVO.cityName" value="%{rscVO.cityName}"/>
+                    <s:hidden id="restaurantID" name="restaurantID"/>
                     <div>
                         <div class="order" style="width:435px">
                             <p>Pre-order time<span>
-                                    <s:textfield id="preOrderDate" name="rscVO.preOrderDate" cssStyle="width:100px" value="DD/MM/YY"  onclick="if(this.value == 'DD/MM/YY') { this.value = ''; }" />
+                                    <s:textfield id="preOrderDate" name="rscVO.preOrderDate" cssStyle="width:100px" value="DD/MM/YY" onclick="if(this.value == 'DD/MM/YY') { this.value = ''; }" />
                                 </span><span>
                                     <s:textfield id="preOrderTime" name="rscVO.preOrderTime" cssStyle="width:100px" value="HH:MM" onclick="if(this.value == 'HH:MM') { this.value = ''; }" />
                                 </span></p>
@@ -149,7 +159,7 @@
                             <li class="clearfix" >
                                 <p class="thumb" data-gmapping='{"id":"<s:property value="%{restaurantID}"/>","address":"<s:property value="%{address}"/>","city":"<s:property value="%{cityName}"/>","province":"<s:property value="%{provinceName}"/>","tags":"<s:property value='%{(name).replaceAll("\'","")}'/>","image":"<s:property value="%{logoImagePath}"/>"}'>
                                     <img src="<s:property value="%{logoImagePath}"/>" width="115" height="59" /></p>
-                                <p class="name"><a href="#" ><span class="title"><s:property value="%{name}"/></span><span class="describe">
+                                <p class="name"><a href="javascript:viewRestaurant('<s:property value="%{restaurantID}"/>');" ><span class="title"><s:property value="%{name}"/></span><span class="describe">
                                             <s:property value="%{address}"/>, <s:property value="%{cityName}"/> <s:property value="%{provinceName}"/> <s:property value="%{postalCode}"/> 
                                             <s:property value="%{profile}"/></span></a></p>
                                 <p class="cusine"><s:property value="%{cuisineName}"/></p>

@@ -39,6 +39,15 @@
             <result>/WEB-INF/jsp/order/restaurantList.jsp</result>
             <result name="error" type="chain">home</result>
         </action>
+        <!-- search restaurant by cuisine -->
+        <action name="searchRestaurantByCuisine" class="com.wowtasty.action.user.OrderAction" method="searchRestaurantByCuisine">
+            <result>/WEB-INF/jsp/order/restaurantList.jsp</result>
+            <result name="error" type="chain">home</result>
+        </action>
+        <!-- view restaurant -->
+        <action name="viewRestaurant" class="com.wowtasty.action.user.OrderAction" method="viewRestaurant">
+            <result>/WEB-INF/jsp/order/restaurant.jsp</result>
+        </action>
         
     </package>
 	

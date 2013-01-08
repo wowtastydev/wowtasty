@@ -174,6 +174,30 @@ public class RestaurantDao {
     }
     
     /**
+     * search restaurant by cuisine
+     *
+     * @return List <RestaurantMasterVO>
+     */
+    public List<RestaurantMasterVO> getRestaurantByCuisine(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantByCuisine", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao selectRestaurantByCuisine occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao selectRestaurantByCuisine occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+    
+    /**
      * get cuisine list by address and/or keyword
      *
      * @return List <RestaurantListVO>
@@ -215,6 +239,30 @@ public class RestaurantDao {
                 sqlSession.close();
             } catch (Exception e) {
                 logger.error("!!!!!RestaurantDao getCuisineListByCity occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+    
+            /**
+     * get cuisine list by cuisine
+     *
+     * @return List <RestaurantListVO>
+     */
+    public List<CuisineListVO> getCuisineListByCuisine(RestaurantSearchConditionVO vo) {
+        SqlSession sqlSession = factory.openSession();
+        List<CuisineListVO> resultObj = new ArrayList<>();
+        try {
+            resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByCuisine", vo);
+        } catch (Exception e) {
+            logger.error("!!!!!RestaurantDao getCuisineListByCuisine occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getCuisineListByCuisine occurs error:" + e);
                 throw new RuntimeException(e);
             }
         }

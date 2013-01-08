@@ -78,11 +78,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE POSTALPREFIX = #{postalPrefix}
         ) E
         LEFT JOIN RESTAURANT_OPEN_HOUR C
-        ON (E.RESTAURANTID = C.RESTAURANTID AND DAYOFWEEK(NOW()) = C.WEEKDAY 
-        AND TIME(NOW()) BETWEEN C.STARTTIME AND C.ENDTIME)
+        ON (E.RESTAURANTID = C.RESTAURANTID 
+        AND DAYOFWEEK(
+        <if test="preOrderDate == ''">NOW()</if>
+        <if test="preOrderDate != ''">#{preOrderDate}</if>) = C.WEEKDAY 
+        AND TIME(
+        <if test="preOrderTime == ''">NOW()</if>
+        <if test="preOrderTime != ''">#{preOrderTime}</if>) BETWEEN C.STARTTIME AND C.ENDTIME)
         LEFT JOIN DELIVERY_OPEN_HOUR D 
-        ON (E.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = D.WEEKDAY 
-        AND TIME(NOW()) BETWEEN D.STARTTIME AND D.ENDTIME)
+        ON (E.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID 
+        AND DAYOFWEEK(
+        <if test="preOrderDate == ''">NOW()</if>
+        <if test="preOrderDate != ''">#{preOrderDate}</if>) = D.WEEKDAY 
+        AND TIME(
+        <if test="preOrderTime == ''">NOW()</if>
+        <if test="preOrderTime != ''">#{preOrderTime}</if>) BETWEEN D.STARTTIME AND D.ENDTIME)
         GROUP BY E.RESTAURANTID) B
         ON B.RESTAURANTID = A.RESTAURANTID
         WHERE A.NAFLAG!='1' AND A.STATUS ='1' AND A.RESTAURANTTYPE=#{restaurantType} 
@@ -118,11 +128,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         , A.AVERAGEPRICE, A.DELIVERYTIME, A.MINPRICE, A.RESTAURANTTYPE, A.DELIVERYCOMPANYID
         FROM RESTAURANT_MASTER A
         LEFT JOIN RESTAURANT_OPEN_HOUR C
-        ON (A.RESTAURANTID = C.RESTAURANTID AND DAYOFWEEK(NOW()) = C.WEEKDAY 
-        AND TIME(NOW()) BETWEEN C.STARTTIME AND C.ENDTIME)
+        ON (A.RESTAURANTID = C.RESTAURANTID 
+        AND DAYOFWEEK(
+        <if test="preOrderDate == ''">NOW()</if>
+        <if test="preOrderDate != ''">#{preOrderDate}</if>) = C.WEEKDAY 
+        AND TIME(
+        <if test="preOrderTime == ''">NOW()</if>
+        <if test="preOrderTime != ''">#{preOrderTime}</if>) BETWEEN C.STARTTIME AND C.ENDTIME)
         LEFT JOIN DELIVERY_OPEN_HOUR D 
-        ON (A.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = D.WEEKDAY 
-        AND TIME(NOW()) BETWEEN D.STARTTIME AND D.ENDTIME)
+        ON (A.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID 
+        AND DAYOFWEEK(
+        <if test="preOrderDate == ''">NOW()</if>
+        <if test="preOrderDate != ''">#{preOrderDate}</if>) = D.WEEKDAY 
+        AND TIME(
+        <if test="preOrderTime == ''">NOW()</if>
+        <if test="preOrderTime != ''">#{preOrderTime}</if>) BETWEEN D.STARTTIME AND D.ENDTIME)
         WHERE A.NAFLAG!='1' AND A.STATUS ='1' AND CITY=#{city}
         <if test="cuisineType != ''">
             AND A.CUISINETYPE = #{cuisineType}
@@ -136,7 +156,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         ON (X.DELIVERYCOMPANYID = Y.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = Y.WEEKDAY)
     </select>
     
-    <!--select searched restaurants' count of cuisine types for selectRestaurantByAddr  -->
+    <!--Select Restaurant by cuisine -->
+    <select id="selectRestaurantByCuisine" parameterType="restaurantsearchconditionvo" resultType="restaurantmastervo">
+        SELECT
+        RESTAURANTOPENSTATUS, DELIVERYOPENSTATUS, CUISINENAME, CITYNAME, PROVINCENAME
+        , RESTAURANTID, NAME, PROFILE, SUITE, ADDRESS, WEBSITE, LOGOIMAGEPATH
+        , AVERAGEPRICE, DELIVERYTIME, MINPRICE, RESTAURANTTYPE, X.DELIVERYCOMPANYID
+        , TIME_FORMAT(Y.STARTTIME, '%H:%i') AS STARTTIME, TIME_FORMAT(Y.ENDTIME, '%H:%i') AS ENDTIME
+        FROM(
+        SELECT 
+        (CASE WHEN MIN(C.RESTAURANTID) IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'RESTAURANTOPENSTATUS'
+        ,(CASE WHEN MIN(D.DELIVERYCOMPANYID) IS NULL THEN 'CLOSE' ELSE 'OPEN' END) AS 'DELIVERYOPENSTATUS'
+        , GET_CDNAME(#{cuisineGCD},A.CUISINETYPE) AS CUISINENAME
+        , GET_CDNAME(#{cityGCD},A.CITY) AS CITYNAME, A.CITY
+        , GET_CDSHORTNAME(#{provinceGCD},A.PROVINCE) AS PROVINCENAME
+        , A.RESTAURANTID, A.NAME, A.PROFILE, A.SUITE, A.ADDRESS, A.WEBSITE, A.LOGOIMAGEPATH
+        , A.AVERAGEPRICE, A.DELIVERYTIME, A.MINPRICE, A.RESTAURANTTYPE, A.DELIVERYCOMPANYID
+        FROM RESTAURANT_MASTER A
+        LEFT JOIN RESTAURANT_OPEN_HOUR C
+        ON (A.RESTAURANTID = C.RESTAURANTID 
+        AND DAYOFWEEK(NOW()) = C.WEEKDAY 
+        AND TIME(NOW()) BETWEEN C.STARTTIME AND C.ENDTIME)
+        LEFT JOIN DELIVERY_OPEN_HOUR D 
+        ON (A.DELIVERYCOMPANYID = D.DELIVERYCOMPANYID 
+        AND DAYOFWEEK(NOW()) = D.WEEKDAY 
+        AND TIME(NOW()) BETWEEN D.STARTTIME AND D.ENDTIME)
+        WHERE A.NAFLAG!='1' AND A.STATUS ='1' AND A.CUISINETYPE = #{cuisineType}
+        GROUP BY A.RESTAURANTID 
+        ) X
+        LEFT JOIN DELIVERY_OPEN_HOUR Y 
+        ON (X.DELIVERYCOMPANYID = Y.DELIVERYCOMPANYID AND DAYOFWEEK(NOW()) = Y.WEEKDAY)
+    </select>
+    
+    <!--select searched restaurants' cuisine type count for selectRestaurantByAddr  -->
     <select id="selectCuisineTypeByAddr" parameterType="restaurantsearchconditionvo" resultType="cuisinelistvo">
         SELECT
         CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT
@@ -162,13 +214,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         INNER JOIN CODE_MASTER
         ON A.CUISINETYPE = CODE_MASTER.CODE
         WHERE GROUPCD = #{cuisineGCD}
-        <if test="cuisineType != ''">
-            AND CUISINETYPE = #{cuisineType}
-        </if>
         GROUP BY CODE_MASTER.NAME
     </select>
     
-    <!--select searched restaurants' count of cuisine types for selectRestaurantByCity  -->
+    <!--select searched restaurants' cuisine type count for selectRestaurantByCity  -->
     <select id="selectCuisineTypeByCity" parameterType="restaurantsearchconditionvo" resultType="cuisinelistvo">
         SELECT
         CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT
@@ -176,6 +225,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         (SELECT CUISINETYPE
         FROM RESTAURANT_MASTER B
         WHERE NAFLAG!='1' AND STATUS ='1' AND CITY=#{city}) A
+        INNER JOIN CODE_MASTER
+        ON A.CUISINETYPE = CODE_MASTER.CODE
+        WHERE GROUPCD = #{cuisineGCD}
+        GROUP BY CODE_MASTER.NAME
+    </select>
+    
+    <!--select searched restaurants' cuisine type count for selectRestaurantByCity  -->
+    <select id="selectCuisineTypeByCuisine" parameterType="restaurantsearchconditionvo" resultType="cuisinelistvo">
+        SELECT
+        CODE_MASTER.CODE, CODE_MASTER.NAME, COUNT(*) AS COUNT
+        FROM 
+        (SELECT CUISINETYPE
+        FROM RESTAURANT_MASTER B
+        WHERE NAFLAG!='1' AND STATUS ='1' AND CUISINETYPE=#{cuisineType}) A
         INNER JOIN CODE_MASTER
         ON A.CUISINETYPE = CODE_MASTER.CODE
         WHERE GROUPCD = #{cuisineGCD}

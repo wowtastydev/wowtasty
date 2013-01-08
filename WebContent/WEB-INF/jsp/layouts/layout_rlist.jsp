@@ -22,7 +22,7 @@
         <script>
             $(document).ready(function(){
                 hideAllMessages();
-            <s:if test="hasActionMessages()||hasFieldErrors()">
+            <s:if test="hasActionMessages()||hasFieldErrors()||hasActionErrors()">
                     $('.warning').animate({top:"0"}, 500);   
             </s:if>
                 });
@@ -50,6 +50,9 @@
                         </s:if>
                         <s:if test="hasFieldErrors()">
                             <s:iterator value="fieldErrors"><p><s:property escape='false' /></p></s:iterator>
+                        </s:if>
+                        <s:if test="hasActionErrors()">
+                            <s:iterator value="actionErrors"><p><s:property escape='false' /></p></s:iterator>
                         </s:if>
                     </div>
 

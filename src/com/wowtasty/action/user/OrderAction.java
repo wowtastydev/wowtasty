@@ -117,12 +117,21 @@ public class OrderAction extends ActionSupport {
         if (rscVO.getKeyword().equals("Restaurant/Cuisine (Option)")) {
             rscVO.setKeyword("");
         }
+        // Check preOrderDate and preOrderTime patterns
+        if (!rscVO.getPreOrderDate().equals("") && !rscVO.getPreOrderDate().matches("^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.]\\d\\d$")) {
+            returnStr = ERROR;
+            addActionMessage("Preorder Date format is not matched.");
+            if (!rscVO.getPreOrderTime().equals("") && !rscVO.getPreOrderTime().matches("\\w[00-23]:\\w[00-59]")) {
+                addActionMessage("Preorder Time format is not matched.");
+            }
+            return returnStr;
+        }
         // Check search conditions
         if (!"".equals(rscVO.getLocation()) && "".equals(rscVO.getPostalCode())) {
             returnStr = ERROR;
             this.addActionError(this.getText("E0007"));
             return returnStr;
-        }else if (!"".equals(rscVO.getCity())) {
+        } else if (!"".equals(rscVO.getCity())) {
             //Search restaurant by city
             setRestListVO(resDao.getRestaurantByCity(getRscVO()));
             setCuisineListVO(resDao.getCuisineListByCity(getRscVO()));
@@ -131,7 +140,7 @@ public class OrderAction extends ActionSupport {
             setRestListVO(resDao.getRestaurantByAddr(getRscVO()));
             setCuisineListVO(resDao.getCuisineListByAddr(getRscVO()));
         }
-        
+
         if (getRestListVO().isEmpty() || getRestListVO().size() < 1) {
             returnStr = ERROR;
             addActionMessage("No restaurant has been found. \n Please, choose a city");
@@ -153,7 +162,7 @@ public class OrderAction extends ActionSupport {
         setCuisineListVO(resDao.getCuisineListByCuisine(getRscVO()));
         return SUCCESS;
     }
-    
+
     public String viewRestaurant() throws Exception {
         getLogger().info("Call viewRestaurant");
         //@ToDo: call Dao method

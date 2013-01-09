@@ -68,6 +68,7 @@
                 $('#submitBtn2').click(function(){
                     if ($('#preOrderDate').val() == 'DD/MM/YY') $('#preOrderDate').val('');
                     if ($('#preOrderTime').val() == 'HH:MM') $('#preOrderTime').val('');
+                    $('#sfrm2').attr('action','searchRestaurant');
                     $('#sfrm2').submit();
                     return false;
                 });
@@ -156,7 +157,7 @@
                     </div>
                     <ul class="listup">
                         <s:iterator value="restListVO" id="restListVO" status="stat">
-                            <li class="clearfix" >
+                            <li class="clearfix" <s:if test="deliveryOpenStatus!='OPEN'">style="background-color:#E8E8E8"</s:if>>
                                 <p class="thumb" data-gmapping='{"id":"<s:property value="%{restaurantID}"/>","address":"<s:property value="%{address}"/>","city":"<s:property value="%{cityName}"/>","province":"<s:property value="%{provinceName}"/>","tags":"<s:property value='%{(name).replaceAll("\'","")}'/>","image":"<s:property value="%{logoImagePath}"/>"}'>
                                     <img src="<s:property value="%{logoImagePath}"/>" width="115" height="59" /></p>
                                 <p class="name"><a href="javascript:viewRestaurant('<s:property value="%{restaurantID}"/>');" ><span class="title"><s:property value="%{name}"/></span><span class="describe">

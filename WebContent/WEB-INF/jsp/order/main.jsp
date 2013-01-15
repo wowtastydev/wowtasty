@@ -152,9 +152,9 @@
                                             <s:hidden name="rscVO.cuisineType" id="cuisineType"/>
                                         </s:form>
                                         <s:iterator value="cuisineListVO" id="cuisineListVO" status="stat">
-                                            <s:if test="#stat.isFirst()==true"><ul></s:if>
+                                            <s:if test="#stat.isFirst()"><ul></s:if>
                                                 <li><a href="javascript:searchRestaurantByCuisine('<s:property value="code"/>');"><s:property value="name"/> (<s:property value="count"/>)</a></li>
-                                                <s:if test="#stat.isLast()==true"></ul></s:if>
+                                                <s:if test="#stat.isLast()"></ul></s:if>
                                             <s:elseif test="(#stat.index+1)%3==0"></ul><ul></s:elseif>
                                             </s:iterator>
                                     </div>

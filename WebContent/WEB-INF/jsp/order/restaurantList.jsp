@@ -3,7 +3,7 @@
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
 <t:insertDefinition name="rlist.layout">
     <t:putAttribute name="main">
-
+        <link rel="stylesheet"  href="../css/webwidget_tab.css" type="text/css" />
         <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
         <script>
@@ -59,6 +59,14 @@
                 $('#sfrm2').submit();
                 return false;
             };
+            
+            function searchRestaurant(){
+                if ($('#preOrderDate').val() == 'DD/MM/YY') $('#preOrderDate').val('');
+                if ($('#preOrderTime').val() == 'HH:MM') $('#preOrderTime').val('');
+                $('#sfrm2').attr('action','searchRestaurant');
+                $('#sfrm2').submit();
+                return false;
+            }
             
             $(document).ready(function(){ 
                 $('#submitBtn1').click(function(){
@@ -119,7 +127,7 @@
                     <s:hidden id="rscVO.postalCode" name="rscVO.postalCode" value="%{rscVO.postalCode}"/>
                     <s:hidden id="rscVO.city" name="rscVO.city" value="%{rscVO.city}"/>
                     <s:hidden id="cityName" name="rscVO.cityName" value="%{rscVO.cityName}"/>
-                    <s:hidden id="restaurantID" name="restaurantID"/>
+                    <s:hidden id="restaurantID" name="rscVO.restaurantID"/>
                     <div>
                         <div class="order" style="width:435px">
                             <p>Pre-order time<span>
@@ -131,7 +139,7 @@
                         </div>
                         <div class="order" style="padding:0 0 0 30px; width:222px">
                             <p>Cuisine Type <span>
-                                    <s:select name="rscVO.cuisineType" id="rscVO.cuisineType" list="cuisineListVO" listKey="code" listValue="name+' ('+count+')'" headerKey="" headerValue="All" onchange="$('#sfrm2').submit();"/>
+                                    <s:select name="rscVO.cuisineType" id="rscVO.cuisineType" list="cuisineListVO" listKey="code" listValue="name+' ('+count+')'" headerKey="" headerValue="All" onchange="javascript:searchRestaurant();"/>
                                 </span> </p>
                         </div>
                         <div class="order" style="padding:0 0 0 10px; width:191px">
@@ -158,18 +166,18 @@
                     <ul class="listup">
                         <s:iterator value="restListVO" id="restListVO" status="stat">
                             <li class="clearfix" <s:if test="deliveryOpenStatus!='OPEN'">style="background-color:#E8E8E8"</s:if>>
-                                <p class="thumb" data-gmapping='{"id":"<s:property value="%{restaurantID}"/>","address":"<s:property value="%{address}"/>","city":"<s:property value="%{cityName}"/>","province":"<s:property value="%{provinceName}"/>","tags":"<s:property value='%{(name).replaceAll("\'","")}'/>","image":"<s:property value="%{logoImagePath}"/>"}'>
-                                    <img src="<s:property value="%{logoImagePath}"/>" width="115" height="59" /></p>
+                                <p class="thumb" data-gmapping='{"id":"<s:property value="%{restaurantID}"/>","address":"<s:property value="%{address}"/>","city":"<s:property value="%{cityName}"/>","province":"<s:property value="%{provinceName}"/>","telephone":"<s:property value="%{telephone}"/>","tags":"<s:property value='%{(name).replaceAll("\'","")}'/>","image":"../pictures/restaurant/thumb_<s:property value="%{logoImagePath}"/>"}'>
+                                    <img src="../pictures/restaurant/thumb_<s:property value='%{logoImagePath}'/>" width="115" height="59" /></p>
                                 <p class="name"><a href="javascript:viewRestaurant('<s:property value="%{restaurantID}"/>');" ><span class="title"><s:property value="%{name}"/></span><span class="describe">
                                             <s:property value="%{address}"/>, <s:property value="%{cityName}"/> <s:property value="%{provinceName}"/> <s:property value="%{postalCode}"/> 
-                                            <s:property value="%{profile}"/></span></a></p>
+                                            <s:property value="@com.wowtasty.util.StringUtil@substringLimit(profile,35)"/></span></a></p>
                                 <p class="cusine"><s:property value="%{cuisineName}"/></p>
                                 <p class="price">$<s:property value="%{averagePrice}"/></p>
                                 <p class="time">
                                     <s:if test="deliveryOpenStatus=='OPEN'"><s:property value="%{deliveryTime}"/> mins</s:if>
-                                    <s:else>Open: <s:property value="%{startTime}"/>-<s:property value="%{endTime}"/></s:else>
-                                    </p>
-                                    <p class="minorder">$<s:property value="%{minPrice}"/> CAD</p>
+                                    <s:else>Open: <s:property value="%{openHour1}"/> / <s:property value="%{openHour2}"/></s:else>
+                                </p>
+                                <p class="minorder">$<s:property value="%{minPrice}"/> CAD</p>
                                 <p class="option"><s:if test="restaurantType==1">Delivery / Takeout</s:if><s:else>Take out</s:else></p>
                                     <div class="clear"></div>
                                 </li>
@@ -189,15 +197,15 @@
                             var data = $(el).data('gmapping');
                             var lat = '';
                             var lng = '';
-                            //@ToDo: set url with javascript function to call restaurant menu page
-                            var url = '';
+                            var restID = data.id;
                             var imagePath = data.image;
                             var placeName = data.tags;
                             var street = data.address;
                             var city = data.city;
                             var state = data.province;
+                            var telephone = data.telephone;
                             var country = 'CA';
-                            var address = [placeName, street, city, state, country].join(', ')
+                            var address = [placeName, street, city, state, country].join(', ');
                             
                             // Run the Geocoder request for the address.
                             $('#map').gmap('search', {'address': address } , function(result, status) {
@@ -206,12 +214,18 @@
                                     var lat = result[0].geometry.location.lat();
                                     var lng = result[0].geometry.location.lng();
                                     var latlng = new google.maps.LatLng(lat, lng);
-    
+
                                     var infobox = '';
-                                    infobox += '<div class="iw">';
-                                    infobox += '<img src="'+imagePath+'"></img>';
-                                    infobox += '<h2><a href="'+url+'">'+placeName+'</a></h2>';
+                                    infobox += '<div class="maps">';
+                                    infobox += '<div class="close"><a href="#"></a></div>';
+                                    infobox += '<div style="float:left; width:140px"><img src="'+imagePath+'" width="130" height="95"></div>';
+                                    infobox += '<div style="float:right; width:350px" class="mapcont">';
+                                    infobox += '<h2 style="font-size:12px">'+placeName+'</h2>';
                                     infobox += '<p>'+street+', '+city+', '+state+'</p>';
+                                    infobox += '<p>'+telephone+'</p>';
+                                    infobox += '<p style="padding:5px 0 0 0"><a href="javascript:viewRestaurant(\''+restID+'\');" class="btn"><img src="../images/btn-maporder-r.gif"/></a></p>';
+                                    infobox += '</div>';
+                                    infobox += '<div class="clear" ></div>';
                                     infobox += '</div>';
     
 
@@ -232,7 +246,6 @@
                     });//bind
                 });
             </script>
-
         </div>
 
     </t:putAttribute>

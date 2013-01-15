@@ -11,7 +11,6 @@
         <link href="../css/warning.css" type="text/css" rel="stylesheet"  />
         <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/sunny/jquery-ui.css" />
 
-        <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
         <script src="http://code.jquery.com/jquery-latest.min.js"></script>
         <script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
         <script src="../js/common.js"></script>
@@ -42,7 +41,12 @@
                         <h3>Ups, an error ocurred</h3>
                         <p>This is just an error notification message.</p>
                     </div>
-
+                    
+                    <div class="success message">
+                        <h3>Congrats, you did it!</h3>
+                        <p>This is just a success notification message.</p>
+                    </div>
+                    
                     <div class="warning message">
                         <h3>Wait, I must warn you!</h3>
                         <s:if test="hasActionMessages()">
@@ -56,10 +60,6 @@
                         </s:if>
                     </div>
 
-                    <div class="success message">
-                        <h3>Congrats, you did it!</h3>
-                        <p>This is just a success notification message.</p>
-                    </div>
                 </div>
 
                 <div style="position: absolute; height:143px; width:100%; background:url(../images/top-bar-x.png) repeat-x;"></div>

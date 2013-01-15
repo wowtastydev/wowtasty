@@ -3,11 +3,15 @@ package com.wowtasty.action.user;
 import com.opensymphony.xwork2.ActionSupport;
 import com.wowtasty.mybatis.dao.RestaurantDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
-import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.mybatis.vo.RestaurantDeliveryAreaVO;
+import com.wowtasty.mybatis.vo.RestaurantPictVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
 import com.wowtasty.vo.CuisineListVO;
+import com.wowtasty.vo.RestaurantEVO;
 import com.wowtasty.vo.RestaurantListVO;
+import com.wowtasty.vo.RestaurantMenuEVO;
+import com.wowtasty.vo.RestaurantMenuOptionEVO;
 import com.wowtasty.vo.RestaurantSearchConditionVO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,12 +51,21 @@ public class OrderAction extends ActionSupport {
     private List<RestaurantListVO> newListVO = new ArrayList<>();
     private List<RestaurantListVO> mostListVO = new ArrayList<>();
     private List<CuisineListVO> cuisineListVO = new ArrayList<>();
-    private List<RestaurantMasterVO> restListVO = new ArrayList<>();
+    private List<RestaurantEVO> restListVO = new ArrayList<>();
+    private List<RestaurantPictVO> restPictListVO = new ArrayList<>();
+    private List<RestaurantDeliveryAreaVO> restdaListVO = new ArrayList();
+    private List<RestaurantMenuEVO> restMenuListVO = new ArrayList();
+    private List<RestaurantMenuOptionEVO> restMenuOptionListVO = new ArrayList();
+    private RestaurantEVO reVO = new RestaurantEVO();
+    private RestaurantMenuOptionEVO rmoeVO = new RestaurantMenuOptionEVO();
     // search condition VO
     private RestaurantSearchConditionVO rscVO = new RestaurantSearchConditionVO();
     private List<CodeMasterVO> cityList = new ArrayList<>();
     private List<CodeMasterVO> cuisineTypeList = new ArrayList<>();
     private Iterator keywordList = null;
+    //request prameter for orderMenu
+    private String restaurantID = "";
+    private Integer menuID = 0;
     //request parameter for keyword field autocompletion javascript
     private String q = "";
 
@@ -163,9 +176,39 @@ public class OrderAction extends ActionSupport {
         return SUCCESS;
     }
 
+    /**
+     * view restaurant info
+     *
+     * @return
+     * @throws Exception
+     */
     public String viewRestaurant() throws Exception {
         getLogger().info("Call viewRestaurant");
-        //@ToDo: call Dao method
+
+        //Map object for Menu List and Menu Option List
+        Map<String, Object> resultObj = new HashMap<>();
+        RestaurantDao resDao = new RestaurantDao();
+        setReVO(resDao.getRestaurantInfo(getRscVO().getRestaurantID()));
+        setRestPictListVO(resDao.getRestaurantImage(getRscVO().getRestaurantID()));
+        setRestdaListVO(resDao.getRestaurantDeliveryArea(getRscVO().getRestaurantID()));
+        resultObj = resDao.getRestaurantMenu(getRscVO().getRestaurantID());
+        setRestMenuListVO((List<RestaurantMenuEVO>) resultObj.get("RESTAURANT_MENU"));
+        setRestMenuOptionListVO((List<RestaurantMenuOptionEVO>) resultObj.get("RESTAURANT_MENU_OPTION"));
+        return SUCCESS;
+    }
+
+    /**
+     * view restaurant menu and option
+     *
+     * @return
+     * @throws Exception
+     */
+    public String viewMenu() throws Exception {
+        getLogger().info("Call viewMenu");
+
+        RestaurantDao resDao = new RestaurantDao();
+        setRestMenuOptionListVO(resDao.getRestaurantMenuByID(this.getRestaurantID(), this.getMenuID()));
+        getLogger().info("restaurantID: "+this.getRestMenuOptionListVO().size());
         return SUCCESS;
     }
 
@@ -242,14 +285,14 @@ public class OrderAction extends ActionSupport {
     /**
      * @return the restListVO
      */
-    public List<RestaurantMasterVO> getRestListVO() {
+    public List<RestaurantEVO> getRestListVO() {
         return restListVO;
     }
 
     /**
      * @param restListVO the restListVO to set
      */
-    public void setRestListVO(List<RestaurantMasterVO> restListVO) {
+    public void setRestListVO(List<RestaurantEVO> restListVO) {
         this.restListVO = restListVO;
     }
 
@@ -293,5 +336,117 @@ public class OrderAction extends ActionSupport {
      */
     public void setCuisineTypeList(List<CodeMasterVO> cuisineTypeList) {
         this.cuisineTypeList = cuisineTypeList;
+    }
+
+    /**
+     * @return the restPictListVO
+     */
+    public List<RestaurantPictVO> getRestPictListVO() {
+        return restPictListVO;
+    }
+
+    /**
+     * @param restPictListVO the restPictListVO to set
+     */
+    public void setRestPictListVO(List<RestaurantPictVO> restPictListVO) {
+        this.restPictListVO = restPictListVO;
+    }
+
+    /**
+     * @return the restdaListVO
+     */
+    public List<RestaurantDeliveryAreaVO> getRestdaListVO() {
+        return restdaListVO;
+    }
+
+    /**
+     * @param restdaListVO the restdaListVO to set
+     */
+    public void setRestdaListVO(List<RestaurantDeliveryAreaVO> restdaListVO) {
+        this.restdaListVO = restdaListVO;
+    }
+
+    /**
+     * @return the restMenuListVO
+     */
+    public List<RestaurantMenuEVO> getRestMenuListVO() {
+        return restMenuListVO;
+    }
+
+    /**
+     * @param restMenuListVO the restMenuListVO to set
+     */
+    public void setRestMenuListVO(List<RestaurantMenuEVO> restMenuListVO) {
+        this.restMenuListVO = restMenuListVO;
+    }
+
+    /**
+     * @return the reVO
+     */
+    public RestaurantEVO getReVO() {
+        return reVO;
+    }
+
+    /**
+     * @param reVO the reVO to set
+     */
+    public void setReVO(RestaurantEVO reVO) {
+        this.reVO = reVO;
+    }
+
+    /**
+     * @return the restMenuOptionListVO
+     */
+    public List<RestaurantMenuOptionEVO> getRestMenuOptionListVO() {
+        return restMenuOptionListVO;
+    }
+
+    /**
+     * @param restMenuOptionListVO the restMenuOptionListVO to set
+     */
+    public void setRestMenuOptionListVO(List<RestaurantMenuOptionEVO> restMenuOptionListVO) {
+        this.restMenuOptionListVO = restMenuOptionListVO;
+    }
+
+    /**
+     * @return the rmoeVO
+     */
+    public RestaurantMenuOptionEVO getRmoeVO() {
+        return rmoeVO;
+    }
+
+    /**
+     * @param rmoeVO the rmoeVO to set
+     */
+    public void setRmoeVO(RestaurantMenuOptionEVO rmoeVO) {
+        this.rmoeVO = rmoeVO;
+    }
+
+    /**
+     * @return the restaurantID
+     */
+    public String getRestaurantID() {
+        return restaurantID;
+    }
+
+    /**
+     * @param restaurantID the restaurantID to set
+     */
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
+    }
+
+    /**
+     * @return the menuID
+     */
+    public Integer getMenuID() {
+        return menuID;
+    }
+
+    /**
+     * @param menuID the menuID to set
+     */
+    public void setMenuID(Integer menuID) {
+        this.menuID = menuID;
     }
 }

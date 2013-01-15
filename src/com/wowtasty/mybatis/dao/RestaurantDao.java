@@ -1,13 +1,19 @@
 package com.wowtasty.mybatis.dao;
 
 import com.wowtasty.mybatis.FactoryService;
-import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.mybatis.vo.RestaurantDeliveryAreaVO;
+import com.wowtasty.mybatis.vo.RestaurantPictVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.vo.CuisineListVO;
+import com.wowtasty.vo.RestaurantEVO;
 import com.wowtasty.vo.RestaurantListVO;
+import com.wowtasty.vo.RestaurantMenuEVO;
+import com.wowtasty.vo.RestaurantMenuOptionEVO;
 import com.wowtasty.vo.RestaurantSearchConditionVO;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.log4j.Logger;
@@ -128,11 +134,11 @@ public class RestaurantDao {
     /**
      * search restaurant by address and keyword
      *
-     * @return List <RestaurantMasterVO>
+     * @return List <RestaurantEVO>
      */
-    public List<RestaurantMasterVO> getRestaurantByAddr(RestaurantSearchConditionVO vo) {
+    public List<RestaurantEVO> getRestaurantByAddr(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByAddr", vo);
         } catch (Exception e) {
@@ -152,11 +158,11 @@ public class RestaurantDao {
     /**
      * search restaurant by city
      *
-     * @return List <RestaurantMasterVO>
+     * @return List <RestaurantEVO>
      */
-    public List<RestaurantMasterVO> getRestaurantByCity(RestaurantSearchConditionVO vo) {
+    public List<RestaurantEVO> getRestaurantByCity(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByCity", vo);
         } catch (Exception e) {
@@ -172,15 +178,15 @@ public class RestaurantDao {
         }
         return resultObj;
     }
-    
+
     /**
      * search restaurant by cuisine
      *
-     * @return List <RestaurantMasterVO>
+     * @return List <RestaurantEVO>
      */
-    public List<RestaurantMasterVO> getRestaurantByCuisine(RestaurantSearchConditionVO vo) {
+    public List<RestaurantEVO> getRestaurantByCuisine(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantMasterVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByCuisine", vo);
         } catch (Exception e) {
@@ -196,7 +202,7 @@ public class RestaurantDao {
         }
         return resultObj;
     }
-    
+
     /**
      * get cuisine list by address and/or keyword
      *
@@ -220,8 +226,8 @@ public class RestaurantDao {
         }
         return resultObj;
     }
-    
-        /**
+
+    /**
      * get cuisine list by city
      *
      * @return List <RestaurantListVO>
@@ -244,8 +250,8 @@ public class RestaurantDao {
         }
         return resultObj;
     }
-    
-            /**
+
+    /**
      * get cuisine list by cuisine
      *
      * @return List <RestaurantListVO>
@@ -263,6 +269,138 @@ public class RestaurantDao {
                 sqlSession.close();
             } catch (Exception e) {
                 logger.error("!!!!!RestaurantDao getCuisineListByCuisine occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+    /**
+     * get restaurant info
+     *
+     * @return RestaurantEVO
+     */
+    public RestaurantEVO getRestaurantInfo(String restaurantID){
+        SqlSession sqlSession = factory.openSession();
+        RestaurantEVO resultObj = new RestaurantEVO();
+        try{
+            resultObj = sqlSession.selectOne("restaurant.selectRestaurantByID", restaurantID);
+        } catch (Exception e){
+            logger.error("!!!!!RestaurantDao getRestaurantInfo occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantInfo occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+     /**
+     * get restaurant delivery area
+     *
+     * @return RestaurantEVO
+     */
+    public List<RestaurantDeliveryAreaVO> getRestaurantDeliveryArea(String restaurantID){
+        SqlSession sqlSession = factory.openSession();
+        List<RestaurantDeliveryAreaVO> resultObj = new ArrayList<>();
+        try{
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantDeliveryArea", restaurantID);
+        } catch (Exception e){
+            logger.error("!!!!!RestaurantDao getRestaurantDeliveryArea occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantDeliveryArea occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+     /**
+     * get restaurant images
+     *
+     * @return RestaurantEVO
+     */
+    public List<RestaurantPictVO> getRestaurantImage(String restaurantID){
+        SqlSession sqlSession = factory.openSession();
+        List<RestaurantPictVO> resultObj = new ArrayList<>();
+        try{
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantImage", restaurantID);
+        } catch (Exception e){
+            logger.error("!!!!!RestaurantDao getRestaurantImage occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantImage occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+     /**
+     * get restaurant Menu, Category and option
+     *
+     * @return RestaurantEVO
+     */
+    public Map<String, Object> getRestaurantMenu(String restaurantID){
+        SqlSession sqlSession = factory.openSession();
+        Map<String, Object> resultObj = new HashMap<>();
+        List<RestaurantMenuEVO> restMenuList = new ArrayList<>();
+        List<RestaurantMenuOptionEVO> restMenuOptionList = new ArrayList<>();
+        try{
+            //get restaurant menu and category
+            restMenuList = sqlSession.selectList("restaurant.selectRestaurantMenu", restaurantID);
+            resultObj.put("RESTAURANT_MENU", restMenuList);
+            //get restaurant menu option
+            restMenuOptionList = sqlSession.selectList("restaurant.selectRestaurantMenuOption", restaurantID);
+            resultObj.put("RESTAURANT_MENU_OPTION", restMenuOptionList);
+
+        } catch (Exception e){
+            logger.error("!!!!!RestaurantDao getRestaurantMenu occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantMenu occurs error:" + e);
+                throw new RuntimeException(e);
+            }
+        }
+        return resultObj;
+    }
+
+    /**
+     * get restaurant Menu and option by menuID
+     *
+     * @return RestaurantMenuOptionVO
+     */
+    public List<RestaurantMenuOptionEVO> getRestaurantMenuByID(String restaurantID, Integer menuID){
+        SqlSession sqlSession = factory.openSession();
+        Map<String, Object> inputObj = new HashMap<>();
+        inputObj.put("restaurantID", restaurantID);
+        inputObj.put("menuID", menuID);
+        List<RestaurantMenuOptionEVO> resultObj = new ArrayList<>();
+        try{
+            resultObj = sqlSession.selectList("restaurant.selectRestaurantMenuByID", inputObj);
+
+        } catch (Exception e){
+            logger.error("!!!!!RestaurantDao getRestaurantMenuByID occurs error:" + e);
+            throw new RuntimeException(e);
+        } finally {
+            try {
+                sqlSession.close();
+            } catch (Exception e) {
+                logger.error("!!!!!RestaurantDao getRestaurantMenuByID occurs error:" + e);
                 throw new RuntimeException(e);
             }
         }

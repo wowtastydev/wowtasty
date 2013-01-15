@@ -72,4 +72,5 @@
 	<constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>
     <constant name="struts.xwork.chaining.copyErrors" value="true"/>
     <constant name="struts.xwork.chaining.copyMessages" value="true"/>
+    <constant name="struts.ognl.allowStaticMethodAccess" value="true"/>
 </struts>

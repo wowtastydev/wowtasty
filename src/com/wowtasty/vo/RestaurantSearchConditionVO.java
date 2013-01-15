@@ -1,8 +1,6 @@
 package com.wowtasty.vo;
 
 import com.wowtasty.util.Constants;
-import java.sql.Date;
-import java.sql.Time;
 
 /**
  * Restaurant search option
@@ -10,7 +8,8 @@ import java.sql.Time;
  * @author Seunghon Kim <sh.kim@live.com>
  */
 public class RestaurantSearchConditionVO {
-
+    
+    private String restaurantID = "";
     private String location = "";
     private String keyword = "";
     private String postalCode = "";
@@ -224,5 +223,19 @@ public class RestaurantSearchConditionVO {
      */
     public void setCityName(String cityName) {
         this.cityName = cityName;
+    }
+
+    /**
+     * @return the restaurantID
+     */
+    public String getRestaurantID() {
+        return restaurantID;
+    }
+
+    /**
+     * @param restaurantID the restaurantID to set
+     */
+    public void setRestaurantID(String restaurantID) {
+        this.restaurantID = restaurantID;
     }
 }

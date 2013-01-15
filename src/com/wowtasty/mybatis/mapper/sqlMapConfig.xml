@@ -7,7 +7,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<setting name="defaultExecutorType" value="REUSE"/>
 		<setting name="defaultStatementTimeout" value="25000"/>
 	</settings>
-	
+
 	<typeAliases>
 		<!-- Mapping VO -->
 		<typeAlias type="com.wowtasty.mybatis.vo.ActionAuthVO" alias="actionauthvo"/>
@@ -29,18 +29,24 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantMenuOptionVO" alias="restaurantmenuoptionvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantOpenHourVO" alias="restaurantopenhourvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantPictVO" alias="restaurantpictvo"/>
-		
+
 		<!-- List VO -->
 		<typeAlias type="com.wowtasty.vo.OrderListVO" alias="orderlistvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListVO" alias="restaurantlistvo"/>
                 <typeAlias type="com.wowtasty.vo.CuisineListVO" alias="cuisinelistvo"/>
-                
+
 		<!-- Condition VO  -->
 		<typeAlias type="com.wowtasty.vo.OrderListConditionVO" alias="orderlistconditionvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListConditionVO" alias="restaurantlistconditionvo"/>
                 <typeAlias type="com.wowtasty.vo.RestaurantSearchConditionVO" alias="restaurantsearchconditionvo"/>
+
+                <!-- Extended Mapping VO -->
+                <typeAlias type="com.wowtasty.vo.RestaurantEVO" alias="restaurantevo"/>
+                <typeAlias type="com.wowtasty.vo.RestaurantMenuEVO" alias="restaurantmenuevo"/>
+                <typeAlias type="com.wowtasty.vo.RestaurantMenuOptionEVO" alias="restaurantmenuoptionevo"/>
+
 	</typeAliases>
-   
+
 	<environments default="">
 	<environment id="">
 		<transactionManager type="JDBC" />

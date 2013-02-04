@@ -15,13 +15,11 @@ import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.EncryptUtil;
 import com.wowtasty.util.SessionUtil;
 import com.wowtasty.util.ValidationUtil;
-
-
-
 
 /**
  * @author Hak C.
@@ -32,6 +30,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 	
+	/** constants */
 	private static final Integer MAX_LEN = 100;
 	
 	/** Logger */
@@ -62,26 +61,39 @@ public class MemberAction extends ActionSupport implements Preparable {
 	private String memberPasswordStr = "";
 	private String confirmPasswordStr = "";
 	private String selectedMemberID = "";
+	// In case of changing email, true
 	private boolean emailChangeFlag = false;
+	// In case of resseting password, true
 	private boolean pwdResetFlag = false;
 	
 	/**
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
+
 		// set up dropdown menu from codes
 		provinceList = codeMap.get(Constants.KEY_CD_PROVINCE);
 		cityList = codeMap.get(Constants.KEY_CD_CITY);
-		roleList = codeMap.get(Constants.KEY_CD_ROLE);
+		List<CodeMasterVO> orgList = codeMap.get(Constants.KEY_CD_ROLE);
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		// set up roleList with only same or lower level of user's role
+		roleList = CodeUtil.copyCode(orgList);
+		int size = roleList.size();
+		for (int i = 0; i < size; i++) {
+			if (Integer.parseInt(roleList.get(i).getCode()) < Integer.parseInt(uservo.getAuth())) {
+				// In case of the same or lower level of user's role
+				roleList.remove(i--);
+				size--;
+			}
+		}
+		logger.info("<---prepare end --->");
 	}
 	
 	/**
@@ -89,9 +101,9 @@ public class MemberAction extends ActionSupport implements Preparable {
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
-		logger.info("<---Init start --->");
+		logger.info("<---init start --->");
 
-		logger.info("<---Init end --->");
+		logger.info("<---init end --->");
 		return SUCCESS;
 	}
 	
@@ -136,6 +148,8 @@ public class MemberAction extends ActionSupport implements Preparable {
 		int returnCnt = dao.insert(mvo);
 		if (returnCnt > 0) {
 			addActionMessage("Member infomation has been inserted successfully");
+			// Clear Member vo
+			mvo = new MemberMasterVO();
 		}
 		
 		logger.info("<---execute end --->");
@@ -143,7 +157,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
-	 * Save member data
+	 * Edit member data
 	 * @return SUCCESS
 	 */
 	public String save() throws Exception {
@@ -169,6 +183,8 @@ public class MemberAction extends ActionSupport implements Preparable {
 		int returnCnt = dao.update(mvo);
 		if (returnCnt > 0) {
 			addActionMessage("Member infomation has been updated successfully");
+			// Reload MemberMasterdata because postal code will be formatted.
+			mvo = dao.selectByID(mvo.getMemberID());
 		}
 		//Clear Checkbox
 		emailChangeFlag = false;
@@ -211,7 +227,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 						hasError = true;
 					}
 					if ("UPDATE".equals(type) && !"".equals(vo.getEmail()) && !mvo.getMemberID().equals(vo.getMemberID())) {
-						//IUpdate case : The inputted email exists with different ID
+						//Update case : The inputted email exists with different ID
 						addFieldError("mvo.email", getText("E0004", new String[]{"Email"}));
 						hasError = true;
 					}
@@ -257,22 +273,6 @@ public class MemberAction extends ActionSupport implements Preparable {
 				}
 			}
 			
-			//Confirm Password
-			if ("INSERT".equals(type)) {
-				// Insert case
-				// Requirement check
-			    if (ValidationUtil.isBlank(newPasswordStr)) {
-					addFieldError("confirmPasswordStr", getText("E0001_1", new String[]{"Confirm Password"}));
-					hasError = true;			    	
-			    } else {
-			    	// Compare member pwd and confirm pwd
-					if (!memberPasswordStr.equals(confirmPasswordStr)) {
-						addFieldError("confirmPasswordStr", getText("E0005", new String[]{"Password and Confirm Password"}));
-						hasError = true;
-					}
-			    }
-			}
-			
 			//New Password
 			if ("UPDATE".equals(type) && !ValidationUtil.isBlank(newPasswordStr)) {
 				// Type check
@@ -284,6 +284,28 @@ public class MemberAction extends ActionSupport implements Preparable {
 				if (!newPasswordStr.equals(confirmPasswordStr)) {
 					addFieldError("confirmPasswordStr", getText("E0005", new String[]{"New Password and Confirm Password"}));
 					hasError = true;						
+				}
+			}
+			
+			//Confirm Password
+			if ("INSERT".equals(type)) {
+				// Insert case
+				// Requirement check
+			    if (ValidationUtil.isBlank(confirmPasswordStr)) {
+					addFieldError("confirmPasswordStr", getText("E0001_1", new String[]{"Confirm Password"}));
+					hasError = true;			    	
+			    } else {
+			    	// Compare member pwd and confirm pwd
+					if (!memberPasswordStr.equals(confirmPasswordStr)) {
+						addFieldError("confirmPasswordStr", getText("E0005", new String[]{"Password and Confirm Password"}));
+						hasError = true;
+					}
+			    }
+			} else if ("UPDATE".equals(type) && !ValidationUtil.isBlank(confirmPasswordStr)) {
+		    	// Compare member new pwd and confirm pwd
+				if (!newPasswordStr.equals(confirmPasswordStr)) {
+					addFieldError("confirmPasswordStr", getText("E0005", new String[]{"New Password and Confirm Password"}));
+					hasError = true;
 				}
 			}
 		} else {
@@ -305,43 +327,43 @@ public class MemberAction extends ActionSupport implements Preparable {
 		}
 		
 		//Telephone
-		if (ValidationUtil.isTelephone(mvo.getTelephone())) {
+		if (!ValidationUtil.isBlank(mvo.getTelephone()) && !ValidationUtil.isTelephone(mvo.getTelephone())) {
 			addFieldError("mvo.telephone", getText("E0003_1", new String[]{"Telephone Number"}));
 			hasError = true;
 		}
 		
 		//Suite Number
-		if (ValidationUtil.isNumEng(mvo.getSuite())) {
+		if (!ValidationUtil.isBlank(mvo.getSuite()) && !ValidationUtil.isNumEng(mvo.getSuite())) {
 			addFieldError("mvo.suite", getText("E0003_1", new String[]{"Suite Number"}));
 			hasError = true;
 		}
 		
 		//Postal Code
-		if (ValidationUtil.isNumEng(mvo.getPostalCode())) {
+		if (!ValidationUtil.isBlank(mvo.getPostalCode()) && !ValidationUtil.isPostalCode(mvo.getPostalCode())) {
 			addFieldError("mvo.postalCode", getText("E0003_1", new String[]{"Postal Code"}));
 			hasError = true;
 		}
 		
 		//Delivery Telephone
-		if (ValidationUtil.isTelephone(mvo.getDelivTelephone())) {
+		if (!ValidationUtil.isBlank(mvo.getDelivTelephone()) && !ValidationUtil.isTelephone(mvo.getDelivTelephone())) {
 			addFieldError("mvo.delivTelephone", getText("E0003_1", new String[]{"Delivery Telephone Number"}));
 			hasError = true;
 		}
 		
 		//Delivery Suite Number
-		if (ValidationUtil.isNumEng(mvo.getDelivSuite())) {
+		if (!ValidationUtil.isBlank(mvo.getDelivSuite()) && !ValidationUtil.isNumEng(mvo.getDelivSuite())) {
 			addFieldError("mvo.delivSuite", getText("E0003_1", new String[]{"Delivery Suite Number"}));
 			hasError = true;
 		}
 		
 		//Delivery Buzzer Number
-		if (ValidationUtil.isNumEng(mvo.getDelivBuzzer())) {
+		if (!ValidationUtil.isBlank(mvo.getDelivBuzzer()) && !ValidationUtil.isNumEng(mvo.getDelivBuzzer())) {
 			addFieldError("mvo.delivBuzzer", getText("E0003_1", new String[]{"Delivery Buzzer Number"}));
 			hasError = true;
 		}
 		
 		//Delivery Postal Code
-		if (ValidationUtil.isNumEng(mvo.getDelivPostalCode())) {
+		if (!ValidationUtil.isBlank(mvo.getDelivPostalCode()) && !ValidationUtil.isPostalCode(mvo.getDelivPostalCode())) {
 			addFieldError("mvo.delivPostalCode", getText("E0003_1", new String[]{"Delivery Postal Code"}));
 			hasError = true;
 		}
@@ -353,8 +375,8 @@ public class MemberAction extends ActionSupport implements Preparable {
 		}
 		
 		return hasError;
-		
 	}
+	
 	/**
 	 * @return the memberPasswordStr
 	 */

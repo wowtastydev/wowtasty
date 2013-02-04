@@ -31,24 +31,11 @@
 	}
 	
 	// Change Password
-	function save(){
-		var pwd = document.getElementById("newPasswordStr").value;
-		var confirm = document.getElementById('confirmPasswordStr').value;
-
-		// Check password
-		if (pwd != "") {
-			if(!isvalid_password(pwd)){
-				password_info.innerHTML = '<span style="color: #f00;">The type of New Password is invalid.</span>';
-				return;
-			}
+	function changePassword() {
+		if(confirm("Do you want to change the password?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
 		}
-		
-		// Match password and confirm
-		if( pwd != confirm){
-			confirm_info.innerHTML = '<span style="color: #f00;">Password and Confirm are not matched.</span>';
-			return;
-		}
-		document.getElementById("frm").submit();
 	}
 // -->
 </script>
@@ -74,7 +61,7 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="changePassword">
+		<s:form theme="simple" name="frm" id="frm" action="changePassword">
 
 		<h2>Change Password</h2>
 		
@@ -86,30 +73,30 @@
 			
 			<table width="100%">
 				<tr>
-					<td align="right">Current Password : </td>
+					<td align="right">Current Password<FONT color=red>*</FONT> : </td>
 					<td colspan="2"><s:password name="currentPasswordStr" id="currentPasswordStr" value="%{currentPasswordStr}" size="30" maxlength="20"/>
 					</td>
 				</tr>
 				<tr>
-					<td width="200" align="right" valign="top" rowspan="2">New Password : </td>
+					<td width="200" align="right" valign="top" rowspan="2">New Password<FONT color=red>*</FONT> : </td>
 					<td width="200"><s:password name="newPasswordStr" id="newPasswordStr" value="%{newPasswordStr}" size="30" maxlength="20"  onKeyUp="javascript:check_pwd(this.value);"/>
 					</td>
 					<td align="left"><span id="password_info"><b></b></span>
 					</td>
 				</tr>
 				<tr><td colspan="2">
-					<FONT color=red>More than 8 digits with alphabets or symbols</FONT>
+					<FONT color=red>More than 8 digits with alphabets or symbols(e.g: !@#$%^&*?_~)</FONT>
 					</td>
 				</tr>
 				<tr>
-					<td align="right">Confirm : </td>
+					<td align="right">Confirm<FONT color=red>*</FONT> : </td>
 					<td><s:password name="confirmPasswordStr" id="confirmPasswordStr" value="%{confirmPasswordStr}" size="30" maxlength="20" onKeyUp="javascript:match_pwds(this.value);"/></td>
 					<td align="left"><span id="confirm_info"><b></b></span>
 					</td>
 				</tr>
 				<tr>
 					<td></td>
-					<td colspan="2"><input type="button" value="Save" onClick="javascript:save();" /></td>
+					<td colspan="2"><input type="button" value="Save" onClick="javascript:changePassword();" /></td>
 				</tr>
 			</table>
 		</s:form>

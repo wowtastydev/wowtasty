@@ -14,6 +14,7 @@ public class OrderListConditionVO {
 	private String orderMemberTelephone = "";
 	private String orderStatus = "";
 	private String deliveryType = "";
+	private String restaurantID = "";
 
 	/**
 	 * @return the time
@@ -98,5 +99,17 @@ public class OrderListConditionVO {
 	 */
 	public void setDeliveryType(String deliveryType) {
 		this.deliveryType = deliveryType;
+	}
+	/**
+	 * @return the restaurantID
+	 */
+	public String getRestaurantID() {
+		return restaurantID;
+	}
+	/**
+	 * @param restaurantID the restaurantID to set
+	 */
+	public void setRestaurantID(String restaurantID) {
+		this.restaurantID = restaurantID;
 	}
 }

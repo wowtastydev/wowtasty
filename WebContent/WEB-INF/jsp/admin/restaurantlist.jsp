@@ -19,7 +19,7 @@
 	// Go Edit Page
 	function goEdit(index){
 		document.getElementById("selectedID").value = document.getElementById("list[" + index + "].restaurantID").value;
-		document.getElementById("frm").action = "initRestaurantEdit";
+		document.getElementById("frm").action = "initRestaurant";
 		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
@@ -32,6 +32,8 @@
 	$(document).ready( function() {
 		$('#listTable').dataTable( {
 			"bJQueryUI": true,
+			"bStateSave": true,
+			"bAutoWidth": false,
 			"sPaginationType": "full_numbers"
 		} );
 		
@@ -56,10 +58,10 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="searchRestaurant">
+		<s:form theme="simple" name="frm" id="frm" action="searchRestaurant">
 			<s:hidden name="selectedID" id="selectedID"/>
 			
-			<h2>User Account List</h2>
+			<h2>Restaurant List</h2>
 			<s:if test="hasFieldErrors()">
 				<div class="error">
 					<s:fielderror/>
@@ -70,15 +72,15 @@
 				<table width="100%">
 					<tr>
 						<th>Cuisine Type : </th>
-						<td width="200">
+						<td width="190">
 							<s:select name="condition.cuisineType" id="cuisineType" list="cuisineTypeList" listKey="code" listValue="shortName"  headerKey="" headerValue="All"/>
 						</td>
 						<th>City : </th>
-						<td width="200">
+						<td>
 							<s:select name="condition.city" id="city" list="cityList" listKey="code" listValue="shortName" headerKey="" headerValue="All" />
 						</td>
 						<th>Restaurant Type : </th>
-						<td width="200">
+						<td>
 							<s:select name="condition.restaurantType" id="restaurantType" list="restaurantTypeList" listKey="code" listValue="name" headerKey="" headerValue="All" />
 						</td>
 						<td align="right">
@@ -94,7 +96,7 @@
 					<thead>
 					<tr align="center">
 						<th>ID</th>
-						<th>Name</th>
+						<th width="200">Name</th>
 						<th>Cuisine</th>
 						<th>City</th>
 						<th>Address</th>
@@ -138,7 +140,7 @@
 							<s:a href="javascript:goEdit('%{#outerStat.index}');">
 							<s:iterator value="restaurantTypeList" id="restaurantTypeList" status="outerStat">
 								<s:if test='%{code.equals(restaurantType)}'>
-									<s:property value="%{name}"/>
+									<s:property value="%{shortName}"/>
 								</s:if>
 							</s:iterator>
 							</s:a>

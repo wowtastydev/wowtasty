@@ -47,36 +47,50 @@ public class CodeMasterDao {
 			String curGroupCd = "";
 			String newGroupCd = "";
 			for (int i = 0; i < size; i++) {
-				vo = new CodeMasterVO();
 				newGroupCd = codeList.get(i).getGroupCd();
 				if (!curGroupCd.equals(newGroupCd)) {
 					list = new ArrayList<CodeMasterVO>();
 					returnObject.put(newGroupCd, list);
 					curGroupCd = newGroupCd;
 				}
-				vo.setGroupCd(newGroupCd);
-				vo.setCode(codeList.get(i).getCode());
-				vo.setShortName(codeList.get(i).getShortName());
-				vo.setName(codeList.get(i).getName());
-				vo.setSort(codeList.get(i).getSort());
-				vo.setNaFlag(codeList.get(i).getNaFlag());
-				vo.setUpdateID(codeList.get(i).getUpdateID());
-				vo.setUpdateTime(codeList.get(i).getUpdateTime());
+				vo = codeList.get(i);
 				list.add(vo);
 			}
 		} catch (Exception e) {
-			logger.error("!!!!!CodeMasterDao selectList occurs error:" + e);
+			logger.error("!!!!!CodeMasterDao selectAll occurs error:" + e);
         	throw new RuntimeException(e);
 		} finally {
 			try {
 				sqlSession.close();
 			} catch (Exception e) {
-				logger.error("!!!!!CodeMasterDao selectList occurs error:" + e);
+				logger.error("!!!!!CodeMasterDao selectAll occurs error:" + e);
 	        	throw new RuntimeException(e);
 			}
 		}
 		return returnObject;
 	}
 	
+	/**
+	 * @return CodeMasterVO: Code master data
+	 */
+	public int update(CodeMasterVO vo) {
+		// autocommit session open
+		SqlSession sqlSession = factory.openSession(true);
+		int returnObject = 0;
+		try {
+			returnObject = sqlSession.insert("codemaster.update", vo);
+		} catch (Exception e) {
+			logger.error("!!!!!CodeMasterDao update occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!CodeMasterDao update occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
 	
 }

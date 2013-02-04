@@ -40,7 +40,7 @@
 	
 	// Instruction textcounter
 	function countText(obj) {
-		content = obj.value;
+		var content = obj.value;
 		len_info.innerHTML = content.length ;
 	}
 	
@@ -112,7 +112,7 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="saveMember">
+		<s:form theme="simple" name="frm" id="frm" action="saveMember">
 		<s:hidden name="mvo.status" />
 		<s:hidden name="mvo.totalOrderCnt" />
 		<s:hidden name="mvo.naFlag" />
@@ -127,7 +127,7 @@
 			
 			<div id="detailarea">
 				<div id="accordion">
-					<h3>General Information</h3>
+					<h3>General Information / Contact Address</h3>
 					<div>
 						<table width="100%">
 							<tr>
@@ -157,7 +157,10 @@
 								</td>
 								<td colspan=2></td>
 								<td>Password Reset:</td>
-								<td colspan=3><s:checkbox name="pwdResetFlag" id="pwdResetFlag" onclick="javascript:changePassword(this);" /></td>
+								<td colspan=3>
+									<s:checkbox name="pwdResetFlag" id="pwdResetFlag" onclick="javascript:changePassword(this);" />
+									(Reseted to User ID)
+								</td>
 							</tr>
 							<tr>
 								<td>New Password:</td>
@@ -168,16 +171,7 @@
 								<td colspan=2><span id="confirm_info"></span></td>
 							</tr>
 							<tr><td></td>
-								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols</FONT></td>
-							</tr>
-						</table>
-					</div>
-					<h3>Contact Address</h3>
-				    <div>
-						<table width="100%">
-							<tr>
-								<td colspan=4 width="50%"></td>
-								<td colspan=4 width="50%"></td>
+								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols(e.g: !@#$%^&*?_~)</FONT></td>
 							</tr>
 							<tr>
 								<td>First Name<FONT color=red>*</FONT>:</td>
@@ -201,7 +195,14 @@
 								<td>Province:</td>
 								<td><s:select name="mvo.province" id="province" list ="provinceList" listKey="code" listValue="shortName" headerKey="01" headerValue="BC" /></td>
 								<td>Postal Code:</td>
-								<td><s:textfield name="mvo.postalCode" id="postalCode" size="7" maxlength="6"/></td>
+								<td><s:textfield name="mvo.postalCode" id="postalCode" size="8" maxlength="7"/></td>
+							</tr>
+							<tr>
+								<td>Current eCash:</td>
+								<td colspan=7>
+									<s:property value="%{mvo.ecash}" />
+									<s:hidden name="mvo.ecash" />
+								</td>
 							</tr>
 						</table>
 					</div>
@@ -236,23 +237,11 @@
 								<td>Province:</td>
 								<td><s:select name="mvo.delivProvince" id="delivProvince" list ="provinceList" listKey="code" listValue="shortName" headerKey="01" headerValue="BC" /></td>
 								<td>Postal Code:</td>
-								<td><s:textfield name="mvo.delivPostalCode" id="delivPostalCode" size="7" maxlength="6"/></td>
+								<td><s:textfield name="mvo.delivPostalCode" id="delivPostalCode" size="7" maxlength="7"/></td>
 							</tr>
 							<tr>
 								<td>Special Instruction:<br>Text Length: <span id="len_info">0</span><br><font color="#f00">(Max 100 char)</font></td>
-								<td colspan=7><s:textarea rows="2" cols="75" name="mvo.delivInstruction" id="delivInstruction" onkeyup="javascript:countText(this);"></s:textarea></td>
-							</tr>
-						</table>
-					</div>
-					<h3>eCash</h3>
-				    <div>
-						<table width="100%">
-							<tr>
-								<td width="120">Current eCash:</td>
-								<td>
-									<s:property value="%{mvo.ecash}" />
-									<s:hidden name="mvo.ecash" />
-								</td>
+								<td colspan=7><s:textarea rows="2" cols="100" name="mvo.delivInstruction" id="delivInstruction" onkeyup="javascript:countText(this);"></s:textarea></td>
 							</tr>
 						</table>
 					</div>

@@ -7,15 +7,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<sql id="columns"> 
 		RestaurantID,WeekDay,Seq,StartTime,EndTime
 	</sql>
-	
-	<!--selectByID-->
-	<select id="selectByID" parameterType="String" resultType="restaurantopenhourvo">
-	SELECT 
-	<include refid="columns"/>
-	FROM restaurant_open_hour 
-	WHERE RestaurantID = #{restaurantID} 
+
+	<!--selectByID : Restaurant 1st and 2nd Open Hour list -->
+	<select id="selectByID" parameterType="String" resultType="hourlistvo">
+	SELECT RestaurantID AS ID, WeekDay
+		,CAST( MAX(IF(Seq = 1, StartTime, '')) AS CHAR(5)) AS startTime1
+		,CAST( MAX(IF(Seq = 1, EndTime, '')) AS CHAR(5)) AS endTime1
+		,CAST( MAX(IF(Seq = 2, StartTime, '')) AS CHAR(5)) AS startTime2
+		,CAST( MAX(IF(Seq = 2, EndTime, '')) AS CHAR(5)) AS endTime2
+	FROM restaurant_open_hour
+	WHERE RestaurantID = #{id} 
+	GROUP BY RestaurantID, WeekDay
+	ORDER BY WeekDay
 	</select>
-	
+		
 	<!--Insert-->
 	<insert id = "insert" parameterType="restaurantopenhourvo">
 	INSERT INTO restaurant_open_hour

@@ -10,8 +10,9 @@ public class RestaurantDeliveryAreaVO {
 	/** restaurant delivery areas columns*/
 	private String restaurantID = "";
 	private String postalPrefix = "";
-	private Integer seq = 0;
-	private String deliveryCompanyID= "";
+	private Integer seq = 1;
+	private String deliveryCompanyID = "";
+	private String deliveryCompanyType = "";
 	private Float minPrice = 0.00f;
 	private Float deliveryFee = 0.00f;
 	/**
@@ -61,6 +62,18 @@ public class RestaurantDeliveryAreaVO {
 	 */
 	public void setDeliveryCompanyID(String deliveryCompanyID) {
 		this.deliveryCompanyID = deliveryCompanyID;
+	}
+	/**
+	 * @return the deliveryCompanyType
+	 */
+	public String getDeliveryCompanyType() {
+		return deliveryCompanyType;
+	}
+	/**
+	 * @param deliveryCompanyType the deliveryCompanyType to set
+	 */
+	public void setDeliveryCompanyType(String deliveryCompanyType) {
+		this.deliveryCompanyType = deliveryCompanyType;
 	}
 	/**
 	 * @return the minPrice

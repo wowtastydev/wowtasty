@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.FactoryService;
 import com.wowtasty.mybatis.vo.RestaurantOpenHourVO;
+import com.wowtasty.vo.HourListVO;
 
 
 
@@ -30,15 +31,15 @@ public class RestaurantOpenHourDao {
 	}
 	
 	/**
-	 * @param restaurantID: restaurantID
-	 * @return List<RestaurantOpenHourVO>: Restaurant Open Hour list
+	 * @param id: restaurantID
+	 * @return List<HourListVO>: Restaurant 1st and 2nd Open Hour list
 	 */
-	public List<RestaurantOpenHourVO> selectByID(String restaurantID) {
+	public List<HourListVO> selectByID(String id) {
 		SqlSession sqlSession = factory.openSession();
-		List<RestaurantOpenHourVO> returnObject = new ArrayList<RestaurantOpenHourVO>();
+		List<HourListVO> returnObject = new ArrayList<HourListVO>();
 		try {
-			//Get restaurant master data
-			returnObject = sqlSession.selectList("restaurantopenhour.selectByID", restaurantID);
+			//Get 1st and 2nd Open Hour
+			returnObject = sqlSession.selectList("restaurantopenhour.selectByID", id);
 		} catch (Exception e) {
 			logger.error("!!!!!RestaurantOpenHourDao selectByID occurs error:" + e);
         	throw new RuntimeException(e);
@@ -54,7 +55,8 @@ public class RestaurantOpenHourDao {
 	}
 	
 	/**
-	 * @return RestaurantOpenHourVO: Restaurant master data
+	 * @param vo: Restaurant open hour
+	 * @return int: inserted row cnt
 	 */
 	public int insert(RestaurantOpenHourVO vo) {
 		// autocommit session open
@@ -77,7 +79,8 @@ public class RestaurantOpenHourDao {
 	}
 	
 	/**
-	 * @return RestaurantOpenHourVO: Order master data
+	 * @param vo: Restaurant open hour
+	 * @return int: updated row cnt
 	 */
 	public int update(RestaurantOpenHourVO vo) {
 		// autocommit session open

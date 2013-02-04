@@ -14,7 +14,7 @@ public class CodeMasterVO {
 	private String shortName = "";
 	private String name = "";
 	private String value = "";
-	private int sort = 1;
+	private Integer sort = 1;
 	private String naFlag = "0";
 	private String updateID = "";
 	private Timestamp updateTime = null;
@@ -70,13 +70,13 @@ public class CodeMasterVO {
 	/**
 	 * @return the sort
 	 */
-	public int getSort() {
+	public Integer getSort() {
 		return sort;
 	}
 	/**
 	 * @param sort the sort to set
 	 */
-	public void setSort(int sort) {
+	public void setSort(Integer sort) {
 		this.sort = sort;
 	}
 	/**

@@ -19,76 +19,90 @@
 		</global-exception-mappings>
 	
 		<!-- LoginAction -->
+		
+		<!-- initLogin : initialize Login Page -->	
 		<action name="initLogin" class="com.wowtasty.action.LoginAction" method="init">
 			<interceptor-ref name="basicStack"/>
 			<result>/WEB-INF/jsp/admin/login.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
 		</action>
 		
+		<!-- login : login -->	
 		<action name="login" class="com.wowtasty.action.LoginAction">
 			<interceptor-ref name="validationWorkflowStack"/>
 			<result type="chain">initCurrentOrderList</result>
 			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
 		</action>
+		
+		<!-- logout : logout -->	
+		<action name="logout" class="com.wowtasty.action.LoginAction" method="logout">
+			<interceptor-ref name="basicStack"/>
+			<result>/WEB-INF/jsp/admin/login.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/login.jsp</result>
+		</action>
 
-		<!-- OrderListAction -->		
+		<!-- OrderListAction -->
+		
+		<!-- initOrderList : initialize order list page -->
 		<action name="initOrderList" class="com.wowtasty.action.OrderListAction" method="init">
 			<result>/WEB-INF/jsp/admin/orderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/orderlist.jsp</result>
 		</action>
 		
+		<!-- searchOrder : search order list -->
 		<action name="searchOrder" class="com.wowtasty.action.OrderListAction">
-			<interceptor-ref name="wowValidationStack"/>
 			<result>/WEB-INF/jsp/admin/orderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/orderlist.jsp</result>
 		</action>
 		
+		<!-- initCurrentOrderList : initialize current order list page -->
 		<action name="initCurrentOrderList" class="com.wowtasty.action.OrderListAction" method="initCurrent">
 			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
 		
+		<!-- searchCurrentOrder : search current order list -->
 		<action name="searchCurrentOrder" class="com.wowtasty.action.OrderListAction" method="searchCurrent">
-			<interceptor-ref name="wowValidationStack"/>
 			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
 		
+		<!-- changeOrderStatus : change panding status to ordered -->
 		<action name="changeOrderStatus" class="com.wowtasty.action.OrderListAction" method="changeOrderStatus">
-			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result>${forwardPage}</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
 		
+		<!-- setDeliveryMan : set delivery man -->
 		<action name="setDeliveryMan" class="com.wowtasty.action.OrderListAction" method="setDeliveryMan">
-			<result>/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result>${forwardPage}</result>
 			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
 		</action>
 		
 		<!-- OrderAction -->
-		<action name="initOrderEdit" class="com.wowtasty.action.OrderAction" method="init">
+		
+		<!-- initOrderEdit : initialize order edit page -->
+		<action name="initOrderEdit" class="com.wowtasty.action.OrderAction">
 			<result>/WEB-INF/jsp/admin/orderedit.jsp</result>
 		</action>
 		
+		<!-- changeOrderStatusEdit : change order status on the order edit page -->
 		<action name="changeOrderStatusEdit" class="com.wowtasty.action.OrderAction" method="changeOrderStatus">
 			<result>/WEB-INF/jsp/admin/orderedit.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/orderedit.jsp</result>
 		</action>
 		
+		<!-- setDeliveryManEdit : set delivery man on the order edit page -->
 		<action name="setDeliveryManEdit" class="com.wowtasty.action.OrderAction" method="setDeliveryMan">
 			<result>/WEB-INF/jsp/admin/orderedit.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/orderedit.jsp</result>
 		</action>
 		
-		<action name="showMenuDetail" class="com.wowtasty.action.OrderAction" method="showMenuDetail">
-			<result>/WEB-INF/jsp/admin/orderedit.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/orderedit.jsp</result>
-		</action>
-		
+		<!-- goOrderList : go back to order/current order list -->
 		<action name="goOrderList" class="com.wowtasty.action.OrderAction" method="goOrderList">
-			<result type="chain">${page}</result>
+			<result type="chain">${forwardPage}</result>
 			<result name="input">/WEB-INF/jsp/admin/orderedit.jsp</result>
 		</action>
-		
 	</package>
 	
 </struts>

@@ -30,29 +30,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insert" parameterType="ordermenuvo">
 	INSERT INTO 
  			order_menu
-		(	OrderID,
-			RestaurantID,
-			Seq,
-			MenuID,
-			MenuName,
-			Unit,
-			UnitPrice,
-			TotalExtraCharge,
-			CouponNO,
-			CouponPrice,
-			TaxPrice,
-			TotalPrice,
-			TotalPriceWithTax,
-			Instruction) 
+		(	
+		<include refid="columns"/>
+		) 
 	VALUE ( #{orderID},
 			#{restaurantID},
 			#{seq},
 			#{menuID},
-			#{menuName},
+			TRIM(#{menuName}),
 			#{unit},
 			#{unitPrice},
 			#{totalExtraCharge},
-			#{couponNO},
+			TRIM(#{couponNO}),
 			#{couponPrice},
 			#{taxPrice},
 			#{totalPrice},
@@ -66,11 +55,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order_menu  
 	SET 
 		MenuID = #{menuID},
-		MenuName = #{menuName},
+		MenuName = TRIM(#{menuName}),
 		Unit = #{unit},
 		UnitPrice = #{unitPrice},
 		TotalExtraCharge = #{totalExtraCharge},
-		CouponNO = #{couponNO},
+		CouponNO = TRIM(#{couponNO}),
 		CouponPrice = #{couponPrice},
 		TaxPrice = #{taxPrice},
 		TotalPrice = #{totalPrice},

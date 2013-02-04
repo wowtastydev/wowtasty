@@ -5,14 +5,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="restaurantdeliveryarea">
 
 	<sql id="columns"> 
-		RestaurantID,PostalPrefix,Seq,DeliveryCompanyID,MinPrice,DeliveryFee
+		RestaurantID,PostalPrefix,Seq,DeliveryCompanyID,DeliveryCompanyType,MinPrice,DeliveryFee
 	</sql>
 	
-	<!--selectAll-->
-	<select id="selectAll" resultType="restaurantdeliveryareavo">
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="restaurantdeliveryareavo">
 	SELECT 
 	<include refid="columns"/>
-	FROM restaurant_delivery_area 
+	FROM restaurant_delivery_area
+	WHERE RestaurantID = #{id} 
+	Order by PostalPrefix, DeliveryCompanyID
 	</select>
 	
 	<!--Insert-->
@@ -23,29 +25,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	VALUES
 	(	#{restaurantID},
-		#{postalPrefix},
+		UPPER(TRIM(#{postalPrefix})),
 		#{seq},
 		#{deliveryCompanyID},
+		#{deliveryCompanyType},
 		#{minPrice},
 		#{deliveryFee})
 	</insert>
 	
-	<!--Update-->
-	<update id = "update" parameterType="restaurantdeliveryareavo">
-		UPDATE restaurant_delivery_area
-		SET DeliveryCompanyID = #{deliveryCompanyID},
-			MinPrice = #{minPrice},
-			DeliveryFee = #{deliveryFee}
-		WHERE RestaurantID = #{restaurantID} 
-		  AND PostalPrefix = #{postalPrefix}
-		  AND Seq = #{seq}
-	</update>
-	
 	<!--Delete-->
-	<delete id = "delete" parameterType="restaurantdeliveryareavo">
+	<delete id = "delete" parameterType="java.lang.String">
 		DELETE FROM restaurant_delivery_area
-		WHERE RestaurantID = #{restaurantID} 
-		  AND PostalPrefix = #{postalPrefix}
-		  AND Seq = #{seq}
+		WHERE RestaurantID = #{id} 
 	</delete>
 </mapper>

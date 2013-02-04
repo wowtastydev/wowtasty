@@ -79,7 +79,7 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="insertMember">
+		<s:form theme="simple" name="frm" id="frm" action="insertMember">
 		<s:hidden name="mvo.memberID" />
 		<s:hidden name="mvo.status" />
 		<s:hidden name="mvo.totalOrderCnt" />
@@ -95,7 +95,7 @@
 			
 			<div id="detailarea">
 				<div id="accordion">
-					<h3>General Information</h3>
+					<h3>General Information / Contact Address</h3>
 					<div>
 						<table width="100%">
 							<tr>
@@ -103,12 +103,9 @@
 								<td colspan=4 width="50%"></td>
 							</tr>
 							<tr>
-								<th align="left" colspan=8>[General Information]</th>
-							</tr>
-							<tr>
 								<td>E-mail<FONT color=red>*</FONT>:</td>
 								<td colspan=3><s:textfield name="mvo.email" id="email" value ="%{mvo.email}" size="30" maxlength="256"/></td>
-								<td>Member Type:</td>
+								<td>Member Type<FONT color=red>*</FONT>:</td>
 								<td colspan=3><s:select name="mvo.auth" id="auth" list="roleList" listKey="code" listValue="name"  headerKey="" headerValue="" />
 								</td>
 		
@@ -118,22 +115,12 @@
 								<td width="120"><s:password name="memberPasswordStr" id="memberPasswordStr" value ="%{memberPasswordStr}" size="30" maxlength="20" onKeyUp="javascript:check_pwd(this.value);"/>
 								<s:hidden name="mvo.password" />
 								<td colspan=2><span id="password_info"></span></td>
-								</td>
 								<td>Confirm<FONT color=red>*</FONT>:</td>
 								<td width="200"><s:password name="confirmPasswordStr" id="confirmPasswordStr" size="30" maxlength="20" onKeyUp="javascript:match_pwds(this.value);"/></td>
 								<td colspan=2><span id="confirm_info"></span></td>
 							</tr>
 							<tr><td></td>
-								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols</FONT></td>
-							</tr>
-						</table>
-					</div>
-					<h3>Contact Address</h3>
-				    <div>
-						<table width="100%">
-							<tr>
-								<td colspan=4 width="50%"></td>
-								<td colspan=4 width="50%"></td>
+								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols(e.g: !@#$%^&*?_~)</FONT></td>
 							</tr>
 							<tr>
 								<td>First Name<FONT color=red>*</FONT>:</td>
@@ -157,7 +144,7 @@
 								<td>Province:</td>
 								<td><s:select name="mvo.province" id="province" list ="provinceList" listKey="code" listValue="shortName" headerKey="01" headerValue="BC" /></td>
 								<td>Postal Code:</td>
-								<td><s:textfield name="mvo.postalCode" id="postalCode" size="7" maxlength="6"/></td>
+								<td><s:textfield name="mvo.postalCode" id="postalCode" size="8" maxlength="7"/></td>
 							</tr>
 						</table>
 					</div>
@@ -192,23 +179,11 @@
 								<td>Province:</td>
 								<td><s:select name="mvo.delivProvince" id="delivProvince" list ="provinceList" listKey="code" listValue="shortName" headerKey="01" headerValue="BC" /></td>
 								<td>Postal Code:</td>
-								<td><s:textfield name="mvo.delivPostalCode" id="delivPostalCode" size="7" maxlength="6"/></td>
+								<td><s:textfield name="mvo.delivPostalCode" id="delivPostalCode" size="7" maxlength="7"/></td>
 							</tr>
 							<tr>
 								<td>Special Instruction:<br>Text Length: <span id="len_info">0</span><br><font color="#f00">(Max 100 char)</font></td>
-								<td colspan=7><s:textarea rows="2" cols="75" name="mvo.delivInstruction" id="delivInstruction" onkeyup="javascript:countText(this);"></s:textarea></td>
-							</tr>
-						</table>
-					</div>
-					<h3>eCash</h3>
-				    <div>
-						<table width="100%">
-							<tr>
-								<td width="120">Current eCash:</td>
-								<td>
-									<s:property value="%{mvo.ecash}" />
-									<s:hidden name="mvo.ecash" />
-								</td>
+								<td colspan=7><s:textarea rows="2" cols="100" name="mvo.delivInstruction" id="delivInstruction" onkeyup="javascript:countText(this);"></s:textarea></td>
 							</tr>
 						</table>
 					</div>

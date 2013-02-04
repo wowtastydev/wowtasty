@@ -12,6 +12,8 @@ public class Constants {
 	static final public String KEY_CD_ROLE = "006";
 	static final public String KEY_CD_COMMISION_TYPE = "007";
 	static final public String KEY_CD_DAY_TYPE = "008";
+	static final public String KEY_CD_CITY_MAP = "009";
+	static final public String KEY_CD_NAFLAG = "010";
 	static final public String KEY_CD_DELIVERY_TYPE = "101";
 	static final public String KEY_CD_ORDER_TYPE = "102";
 	static final public String KEY_CD_ORDER_STATUS = "103";
@@ -26,6 +28,7 @@ public class Constants {
 	static final public String KEY_CD_RESTAURANT_TYPE = "112";
 	static final public String KEY_CD_MEMBER_STATUS = "201";
 	static final public String KEY_CD_DELIVERYCOMPANY_TYPE = "301";
+	static final public String KEY_CD_SEMI_MONTH_TYPE = "401";
 	
 	/**Code Value */
 	//Member Status
@@ -46,12 +49,31 @@ public class Constants {
 	static public final String CODE_DELIVERY_TYPE_DELIVERY = "1";
 	static public final String CODE_DELIVERY_TYPE_TAKEOUT = "2";
 	
+	//Delivery Company Type
+	static public final String CODE_DELIVERY_COM_TYPE_SELFDELIVERY = "1";
+	static public final String CODE_DELIVERY_COM_TYPE_DELIVERYCOMPANY = "2";
+	
+	//Payment Type
+	static public final String CODE_PAYMENT_TYPE_CASH = "3";
+	
 	//Restaurant Status
-	//static public final String CODE_RESTAURANT_STATUS_OPEN = "1";
-	//static public final String CODE_RESTAURANT_STATUS_APPLIED = "6";
-	//static public final String CODE_RESTAURANT_STATUS_CONFIRMED = "7";
-	//static public final String CODE_RESTAURANT_STATUS_CLOSED = "8";
-	//static public final String CODE_RESTAURANT_STATUS_TERMINATED = "9";
+	static public final String CODE_STATUS_OPEN = "1";
+	static public final String CODE_STATUS_CONFIRMED = "3";
+	static public final String CODE_STATUS_APPLIED = "5";
+	static public final String CODE_STATUS_CLOSED = "7";
+	static public final String CODE_STATUS_DECLINED = "8";
+	static public final String CODE_STATUS_TERMINATED = "9";
+	
+	//NAFlag
+	static public final String CODE_NAFLAG_NA = "1";
+	static public final String CODE_NAFLAG_AVAILABLE = "0";
+	
+	//Bill Company Type
+	static public final String CODE_BILL_COM_TYPE_RESTAURANT = "1";
+	static public final String CODE_BILL_COM_TYPE_DELIVERYCOMPANY = "2";
+	
+	//ROLE
+	static public final String CODE_ROLE_NONMEMBER = "99";
 	
 	/**Mail Contents key */
 	static public final Integer KEY_CONTENTS_SIGNUP_MEM = 1;
@@ -65,8 +87,8 @@ public class Constants {
 	static public final Integer KEY_CONTENTS_DECLINED_REST = 9;
 	static public final Integer KEY_CONTENTS_CANCELED_MEM = 10;
 	static public final Integer KEY_CONTENTS_CANCELED_REST = 11;
+	static public final Integer KEY_CONTENTS_SIGNUP_CONFIRMED = 12;
 	
-
 	/**Session Key*/
 	static public final String KEY_SESSION_USER = "KEY_SESSION_USER";
 	static public final String KEY_SESSION_CODE_LIST = "KEY_SESSION_CODE_LIST";
@@ -79,6 +101,9 @@ public class Constants {
 	static public final String KEY_ORDER_MENU = "KEY_ORDER_MENU";
 	static public final String KEY_ORDER_MENUOPTION = "KEY_ORDER_MENUOPTION";
 	
+	static public final String KEY_BILL_MASTER = "KEY_BILL_MASTER";
+	static public final String KEY_BILL_DETAIL = "KEY_BILL_DETAIL";
+	
 	/**Item Name*/
 	static public final String NAME_FOOD_TAX = "Food Tax";
 	static public final String NAME_DELIVERY_FEE = "Delivery Fee";
@@ -87,18 +112,15 @@ public class Constants {
 	static public final String NAME_TIP = "Tip";
 	static public final String NAME_TOTAL = "Total";
 	
-	/**Config property name*/
-	static public final String CONFIG_REST_PICT_PATH = "restaurantPicturePath";
-	static public final String CONFIG_MENU_PICT_PATH = "menuPicturePath";
-	static public final String CONFIG_THUMBNAIL_DIR = "thumbnailDir";
-	static public final String CONFIG_DELIMETER = "delimiter";
-	static public final String CONFIG_REST_PICT_WIDTH = "restaurantPictureWidth";
-	static public final String CONFIG_REST_PICT_HEIGHT = "restaurantPictureHeight";
-	static public final String CONFIG_REST_PICT_THUMB_WIDTH = "restaurantPictureThumbnailWidth";
-	static public final String CONFIG_REST_PICT_THUMB_HEIGHT = "restaurantPictureThumbnailHeight";
-	static public final String CONFIG_MENU_PICT_WIDTH = "menuPictureWidth";
-	static public final String CONFIG_MENU_PICT_HEIGHT = "menuPictureHeight";
-	static public final String CONFIG_MENU_PICT_THUMB_WIDTH = "menuPictureThumbnailWidth";
-	static public final String CONFIG_MENU_PICT_THUMB_HEIGHT = "menuPictureThumbnailHeight";
+	/**Common Constants*/
+	static public final String BALANCE_TYPE_AVAILABLE = "A";
+	static public final String BALANCE_TYPE_BALANCE = "B";
+	static public final String BALANCE_TYPE_NA = "N";
+	static public final String REPORT_TYPE_RESTAURANT = "RESTAURANT";
+	static public final String REPORT_TYPE_DAY = "DAY";
+	static public final String REPORT_TYPE_DATE = "DATE";
+	static public final String REPORT_TYPE_HOUR = "HOUR";
+	static public final String REPORT_TYPE_DELIVERY = "DELIVERY";
+	static public final String CONSTANT_5DELIVERY_ID = "D00001";
 	
 }

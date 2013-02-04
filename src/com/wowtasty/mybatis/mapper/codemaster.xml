@@ -3,10 +3,29 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="codemaster">
+	<sql id="columns"> 
+		Groupcd, Code, ShortName, Name, Value, Sort, NAFlag, Updateid, Updatetime
+	</sql>
+	
 	<select id="selectAll" resultType="codemastervo">
-		SELECT groupcd, code, shortname, name, sort, naflag, updateid, updatetime 
+		SELECT 
+		<include refid="columns"/> 
 		FROM code_master 
 		WHERE naflag != '1'
 		ORDER BY groupcd, sort
 	</select>
+	
+	<!--Update-->
+	<update id = "update" parameterType="codemastervo">
+		UPDATE code_master
+		SET ShortName = TRIM(#{shortName}),
+			Name = TRIM(#{name}),
+			Value = TRIM(#{value}),
+			Sort = #{sort},
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE Groupcd = #{groupCd}
+		  	AND Code = #{code}
+	</update>
 </mapper>

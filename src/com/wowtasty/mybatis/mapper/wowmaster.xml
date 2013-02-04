@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wowmaster">
+
+	<sql id="columns"> 
+		Seq, Name, Telephone, Fax, Address, Suite, City, Province, PostalCode, LogoImagePath, Website
+  		,Facebook, Email1, Email2, EcashPerCent, EcashBonus, EcashPerCoupon, HoldingFlag, TaxNO, Tax1, Tax2 
+  		,TransactionKey, TransactionLoginID, PaymentValidPeriod, PaymentDate1, PaymentDate2, UpdateID, UpdateTime
+	</sql>
+	
+	<!--selectBySeq-->
+	<select id="selectBySeq" parameterType="String" resultType="wowmastervo">
+	SELECT 
+	<include refid="columns"/>
+	FROM wow_master 
+	WHERE Seq = #{seq}
+	</select>
+
+	<!--Insert-->
+	<insert id = "insert" parameterType="wowmastervo">
+	INSERT INTO wow_master
+	( 	
+	<include refid="columns"/>
+	)
+	VALUES
+	(	null,
+		TRIM(#{name}),
+		TRIM(#{telephone}),
+		TRIM(#{fax}),
+		TRIM(#{address}),
+		TRIM(#{suite}),
+		#{city},
+		#{province},
+		UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+		#{logoImagePath},
+		TRIM(#{website}),
+		TRIM(#{facebook}),
+		TRIM(#{email1}),
+		TRIM(#{email2}),
+		#{ecashPerCent},
+		#{ecashBonus},
+		#{ecashPerCoupon},
+		#{holdingFlag},
+		TRIM(#{taxNO}),
+		#{tax1},
+		#{tax2},
+		TRIM(#{transactionKey}),
+		TRIM(#{transactionLoginID}),
+		#{paymentValidPeriod},
+		#{paymentDate1},
+		#{paymentDate2},
+		#{updateID},
+		now())
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="wowmastervo">
+		UPDATE wow_master
+		SET Name = TRIM(#{name}),
+			Telephone = TRIM(#{telephone}),
+			Fax = TRIM(#{fax}),
+			Address = TRIM(#{address}),
+			Suite = TRIM(#{suite}),
+			City = #{city},
+			Province = #{province},
+			PostalCode = UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+			LogoImagePath = #{logoImagePath},
+			Website = TRIM(#{website}),
+			Facebook = TRIM(#{facebook}),
+			Email1 = TRIM(#{email1}),
+			Email2 = TRIM(#{email2}),
+			EcashPerCent = #{ecashPerCent},
+			EcashBonus = #{ecashBonus},
+			EcashPerCoupon = #{ecashPerCoupon},
+			HoldingFlag = #{holdingFlag},
+			TaxNO = TRIM(#{taxNO}),
+			Tax1 = #{tax1},
+			Tax2 = #{tax2},
+			TransactionKey = TRIM(#{transactionKey}),
+			TransactionLoginID = TRIM(#{transactionLoginID}),
+			PaymentValidPeriod = #{paymentValidPeriod},
+			PaymentDate1 = #{paymentDate1},
+		    PaymentDate2 = #{paymentDate2},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE 
+		  	Seq = #{seq}
+
+	</update>
+</mapper>

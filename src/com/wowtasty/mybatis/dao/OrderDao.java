@@ -15,6 +15,8 @@ import com.wowtasty.mybatis.vo.OrderMenuOptionVO;
 import com.wowtasty.mybatis.vo.OrderMenuVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
 import com.wowtasty.util.Constants;
+import com.wowtasty.vo.BalanceListConditionVO;
+import com.wowtasty.vo.BalanceListVO;
 import com.wowtasty.vo.OrderListConditionVO;
 import com.wowtasty.vo.OrderListVO;
 
@@ -38,6 +40,7 @@ public class OrderDao {
 	}
 	
 	/**
+	 * @param condition: Order List Search Condition
 	 * @return List<OrderListVO>: Order list
 	 */
 	public List<OrderListVO> select(OrderListConditionVO condition) {
@@ -60,6 +63,53 @@ public class OrderDao {
 	}
 	
 	/**
+	 * @param condition: Order List Search Condition on the balance management page
+	 * @return List<BalanceListVO>: Order list on the balance management page
+	 */
+	public List<BalanceListVO> selectBalance(BalanceListConditionVO condition) {
+		SqlSession sqlSession = factory.openSession();
+		List<BalanceListVO> returnObject = new ArrayList<BalanceListVO>();
+		try {
+			returnObject = sqlSession.selectList("ordermaster.selectBalance", condition);
+		} catch (Exception e) {
+			logger.error("!!!!!OrderDao selectBalance occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!OrderDao selectBalance occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @param condition: Order List Search Condition for current balance on the balance management page
+	 * @return List<BalanceListVO>: Order list for current balance on the balance management page
+	 */
+	public List<BalanceListVO> selectCurrentBalance(BalanceListConditionVO condition) {
+		SqlSession sqlSession = factory.openSession();
+		List<BalanceListVO> returnObject = new ArrayList<BalanceListVO>();
+		try {
+			returnObject = sqlSession.selectList("ordermaster.selectCurrentBalance", condition);
+		} catch (Exception e) {
+			logger.error("!!!!!OrderDao selectCurrentBalance occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!OrderDao selectCurrentBalance occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @param condition: Current Order List Search Condition
 	 * @return List<OrderListVO>: Current Order list
 	 */
 	public List<OrderListVO> selectCurrent(OrderListConditionVO condition) {
@@ -83,7 +133,7 @@ public class OrderDao {
 
 	/**
 	 * @param orderID: orderID
-	 * @return Map<Object>: OrderMaster, OrderRestaurant, OrderMenu, OrderOption
+	 * @return Map<Object>: OrderMaster, List<OrderRestaurantVO>, List<OrderMenuVO>, List<OrderMenuOptionVO>
 	 */
 	public Map<String, Object> selectByID(String orderID) {
 		SqlSession sqlSession = factory.openSession();
@@ -124,6 +174,47 @@ public class OrderDao {
 	}
 	
 	/**
+	 * @param orderID: orderID
+	 * @param restaurantID: restaurantID
+	 * @return Map<Object>: OrderMaster, OrderRestaurant, List<OrderMenuVO>
+	 */
+	public Map<String, Object> selectByRestaurantID(String orderID, String restaurantID) {
+		SqlSession sqlSession = factory.openSession();
+		Map<String, Object> returnObject = new HashMap<String, Object>();
+		Map<String, String> paramMap = new HashMap<String, String>();
+		OrderMasterVO master = new OrderMasterVO();
+		OrderRestaurantVO restaurant = new OrderRestaurantVO();
+		List<OrderMenuVO> menuList = new ArrayList<OrderMenuVO>();
+		try {
+			//Get order master data
+			master = sqlSession.selectOne("ordermaster.selectByID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MASTER, master);
+			
+			//Get order restaurant data
+			paramMap.put("orderID", orderID);
+			paramMap.put("restaurantID", restaurantID);
+			restaurant = sqlSession.selectOne("orderrestaurant.selectByID", paramMap);
+			returnObject.put(Constants.KEY_ORDER_RESTAURANT, restaurant);
+			
+			//Get order menu list
+			menuList = sqlSession.selectList("ordermenu.selectByOrderID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MENU, menuList);
+			
+		} catch (Exception e) {
+			logger.error("!!!!!OrderDao selectByRestaurantID occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!OrderDao selectByRestaurantID occurs error:" + e);
+	        	throw new RuntimeException(e);
+	        }
+		}
+		return returnObject;
+	}
+	
+	/**
 	 * @return String: OrderID
 	 */
 	public String selectMaxID() {
@@ -146,7 +237,8 @@ public class OrderDao {
 	}
 	
 	/**
-	 * @return OrderMasterVO: Order master data
+	 * @param OrderMasterVO: Order master data
+	 * @return int: inserted row cnt
 	 */
 	public int insert(OrderMasterVO vo) {
 		// autocommit session open
@@ -169,7 +261,8 @@ public class OrderDao {
 	}
 	
 	/**
-	 * @return OrderMasterVO: Order master data
+	 * @param OrderMasterVO: Order master data
+	 * @return int: updated row cnt
 	 */
 	public int updateMaster(OrderMasterVO vo) {
 		// autocommit session open
@@ -178,13 +271,13 @@ public class OrderDao {
 		try {
 			returnObject = sqlSession.insert("ordermaster.update", vo);
 		} catch (Exception e) {
-			logger.error("!!!!!OrderDao update occurs error:" + e);
+			logger.error("!!!!!OrderDao updateMaster occurs error:" + e);
         	throw new RuntimeException(e);
 		} finally {
 			try {
 				sqlSession.close();
 			} catch (Exception e) {
-				logger.error("!!!!!OrderDao update occurs error:" + e);
+				logger.error("!!!!!OrderDao updateMaster occurs error:" + e);
 	        	throw new RuntimeException(e);
 			}
 		}
@@ -192,7 +285,8 @@ public class OrderDao {
 	}
 	
 	/**
-	 * @return OrderRestaurantVO: Change order status 
+	 * @param OrderRestaurantVO: Order Restaurant master data to update status
+	 * @return int: updated row cnt
 	 */
 	public int changeOrderStatus(OrderRestaurantVO vo) {
 		// autocommit session open
@@ -215,7 +309,8 @@ public class OrderDao {
 	}
 	
 	/**
-	 * @return OrderRestaurantVO: Change order status 
+	 * @param OrderRestaurantVO: Order Restaurant master data to change deliveryman
+	 * @return int: updated row cnt
 	 */
 	public int setDeliveryMan(OrderRestaurantVO vo) {
 		// autocommit session open

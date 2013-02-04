@@ -7,20 +7,20 @@ package com.wowtasty.mybatis.vo;
 public class ContentsTextVO {
 	
 	/** contents_text columns*/
-	private int seq = 1;
+	private Integer seq = 1;
 	private String subject = "";
 	private String contents = "";
 	
 	/**
 	 * @return the seq
 	 */
-	public int getSeq() {
+	public Integer getSeq() {
 		return seq;
 	}
 	/**
 	 * @param seq the seq to set
 	 */
-	public void setSeq(int seq) {
+	public void setSeq(Integer seq) {
 		this.seq = seq;
 	}
 	/**

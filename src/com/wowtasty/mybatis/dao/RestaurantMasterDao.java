@@ -10,6 +10,8 @@ import org.apache.log4j.Logger;
 import com.wowtasty.mybatis.FactoryService;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.vo.RestaurantListConditionVO;
+import com.wowtasty.vo.RestaurantSignupListConditionVO;
+import com.wowtasty.vo.RestaurantSignupListVO;
 
 
 
@@ -53,6 +55,28 @@ public class RestaurantMasterDao {
 	}
 	
 	/**
+	 * @return List<RestaurantMasterVO>: All Available Restaurant list
+	 */
+	public List<RestaurantMasterVO> selectAvailable() {
+		SqlSession sqlSession = factory.openSession();
+		List<RestaurantMasterVO> returnObject = new ArrayList<RestaurantMasterVO>();
+		try {
+			returnObject = sqlSession.selectList("restaurantmaster.selectAvailable");
+		} catch (Exception e) {
+			logger.error("!!!!!RestaurantDao selectAvailable occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!RestaurantDao selectAvailable occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
 	 * @return List<RestaurantMasterVO>: Restaurant list
 	 */
 	public List<RestaurantMasterVO> select(RestaurantListConditionVO condition) {
@@ -68,6 +92,29 @@ public class RestaurantMasterDao {
 				sqlSession.close();
 			} catch (Exception e) {
 				logger.error("!!!!!RestaurantDao select occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	
+	/**
+	 * @return List<RestaurantSignupListVO>: Signup Restaurant list
+	 */
+	public List<RestaurantSignupListVO> selectSignupList(RestaurantSignupListConditionVO condition) {
+		SqlSession sqlSession = factory.openSession();
+		List<RestaurantSignupListVO> returnObject = new ArrayList<RestaurantSignupListVO>();
+		try {
+			returnObject = sqlSession.selectList("restaurantmaster.selectSignupList", condition);
+		} catch (Exception e) {
+			logger.error("!!!!!RestaurantDao selectSignupList occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!RestaurantDao selectSignupList occurs error:" + e);
 	        	throw new RuntimeException(e);
 			}
 		}
@@ -144,7 +191,7 @@ public class RestaurantMasterDao {
 	}
 	
 	/**
-	 * @return RestaurantMasterVO: Order master data
+	 * @return RestaurantMasterVO: Restaurant master data
 	 */
 	public int update(RestaurantMasterVO vo) {
 		// autocommit session open
@@ -160,6 +207,29 @@ public class RestaurantMasterDao {
 				sqlSession.close();
 			} catch (Exception e) {
 				logger.error("!!!!!RestaurantDao update occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @return RestaurantMasterVO: Restaurant master data
+	 */
+	public int updateStatus(RestaurantMasterVO vo) {
+		// autocommit session open
+		SqlSession sqlSession = factory.openSession(true);
+		int returnObject = 0;
+		try {
+			returnObject = sqlSession.insert("restaurantmaster.updateStatus", vo);
+		} catch (Exception e) {
+			logger.error("!!!!!RestaurantDao updateStatus occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!RestaurantDao updateStatus occurs error:" + e);
 	        	throw new RuntimeException(e);
 			}
 		}

@@ -12,7 +12,6 @@ import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
-import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
@@ -63,7 +62,7 @@ public class RestaurantListAction extends ActionSupport implements Preparable {
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		// set up dropdown menu from codes
@@ -75,25 +74,25 @@ public class RestaurantListAction extends ActionSupport implements Preparable {
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		logger.info("<---prepare end --->");
 	}
 	
 	/**
-	 * Initiate MemberList, MemberAdd, MemberEdit page
+	 * Initiate Restaurant List page
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
-		logger.info("<---Init start --->");
+		logger.info("<---init start --->");
 		
 		RestaurantMasterDao dao = new RestaurantMasterDao();
 		list = dao.selectAll();
 
-		logger.info("<---Init end --->");
+		logger.info("<---init end --->");
 		return SUCCESS;
 	}
 	
 	/**
-	 * Insert member data
+	 * Search Restaurant List
 	 * @return SUCCESS
 	 */
 	@Override

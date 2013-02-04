@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="../css/table_jui.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="../css/jquery.multiselect.css" type="text/css" media="screen" />
 <script src="../js/jquery.dataTables.min.js"></script>
-<script src="../js/jquery.multiselect.js"></script>
+<script src="../js/jquery.multiselect.min.js"></script>
 
 <script>
 <!--
@@ -58,7 +58,7 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="searchMember">
+		<s:form theme="simple" name="frm" id="frm" action="searchMember">
 			<s:hidden name="selectedMemberID" id="selectedMemberID"/>
 			
 			<h2>User Account List</h2>
@@ -99,13 +99,7 @@
 					<s:iterator value="list" id="list" status="outerStat">
 					<tr>
 						<td align="center">
-							<s:a href="javascript:goEdit('%{#outerStat.index}');">
-							<s:iterator value="roleList" id="roleList" status="outerStat">
-								<s:if test='%{code.equals(auth)}'>
-									<s:property value="%{shortName}"/>
-								</s:if>
-							</s:iterator>
-							</s:a>
+							<s:a href="javascript:goEdit('%{#outerStat.index}');"><s:property value="%{authName}"/></s:a>
 						</td>
 						<td>
 							<s:a href="javascript:goEdit('%{#outerStat.index}');"><s:property value="%{email}"/></s:a>

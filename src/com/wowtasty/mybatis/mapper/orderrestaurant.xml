@@ -6,7 +6,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<sql id="columns"> 
 		OrderID, RestaurantID, RestaurantName, RestaurantEmail, DeliveryType, DeliveryPrice, DeliveryTaxPrice, FoodTotalPrice, FoodTaxPrice, TotalPrice, TipPrice, TotalPriceWithTax,
-		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliverymanID, DeliverymanTelephone, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
+		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliveryCompanyType, DeliverymanID, DeliverymanTelephone, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
 		DeliveryAddress, DeliverySuite, DeliveryBuzzer, DeliveryCity, DeliveryProvince, DeliveryPostalCode, DeliveryInstruction, ReviewRate, UpdateID, UpdateTime, DeliverymanName
 	</sql>
 	
@@ -31,37 +31,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insert" parameterType="orderrestaurantvo">
 		INSERT INTO 
 			order_restaurant
-		(   OrderID,
-			RestaurantID,
-			RestaurantName,
-			RestaurantEmail,
-			DeliveryType,
-			DeliveryPrice,
-			DeliveryTaxPrice,
-			FoodTotalPrice,
-			FoodTaxPrice,
-			TotalPrice,
-			TipPrice,
-			TotalPriceWithTax,
-			OrderStatus,
-			DeclinedReason,
-			DeliveryCompanyID,
-			DeliveryManID,
-			DeliverymanName,
-			DeliverymanTelephone,
-			DeliveryFirstName,
-			DeliveryLastName,
-			DeliveryTelephone,
-			DeliveryAddress,
-			DeliverySuite,
-			DeliveryBuzzer,
-			DeliveryCity,
-			DeliveryProvince,
-			DeliveryPostalCode,
-			DeliveryInstruction,
-			ReviewRate,
-			UpdateID,
-			UpdateTime) 
+		(   
+		<include refid="columns"/>
+		) 
 		VALUE (
 			#{orderID},
 			#{restaurantID},
@@ -78,6 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			#{orderStatus},
 			#{declinedReason},
 			#{deliveryCompanyID},
+			#{deliveryCompanyType},
 			#{deliveryManID},
 			#{deliverymanName},
 			#{deliverymanTelephone},
@@ -93,7 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			#{deliveryInstruction},
 			#{reviewRate},
 			#{updateID},
-			#{updateTime})
+			NOW())
 	</insert>
 	
 	<!--Update-->
@@ -114,6 +87,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			OrderStatus = #{orderStatus},
 			DeclinedReason = #{declinedReason},
 			DeliveryCompanyID = #{deliveryCompanyID},
+			DeliveryCompanyType = #{deliveryCompanyType},
 			DeliverymanID = #{deliverymanID},
 			DeliverymanName = #{deliverymanName}, 
 			DeliverymanTelephone = #{deliverymanTelephone},
@@ -141,6 +115,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			order_restaurant  
 		SET 
 			OrderStatus = #{orderStatus},
+			DeclinedReason = #{declinedReason},
 			UpdateID = #{updateID},
 			UpdateTime = NOW()
 		WHERE 

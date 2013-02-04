@@ -18,10 +18,9 @@
 		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
 		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
 		document.getElementById("selectedOrderMemberEmail").value = document.getElementById("list[" + index + "].orderMemberEmail").value;
-		document.getElementById("selectedRestaurantEmail").value = document.getElementById("list[" + index + "].restaurantEmail").value;
-
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+		document.getElementById("forwardPage").value = "/WEB-INF/jsp/admin/currentorderlist.jsp";
 		document.getElementById("frm").action = "changeOrderStatus";
+		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
 	// Set Delivery Man
@@ -29,9 +28,9 @@
 		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
 		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
 		document.getElementById("selectedDeliverymanID").value = document.getElementById("list[" + index + "].deliverymanID").value;
-
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+		document.getElementById("forwardPage").value = "/WEB-INF/jsp/admin/currentorderlist.jsp";
 		document.getElementById("frm").action = "setDeliveryMan";
+		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
 	
@@ -39,6 +38,7 @@
 	function goEdit(index){
 		document.getElementById("selectedOrderID").value = document.getElementById("list[" + index + "].orderID").value;
 		document.getElementById("selectedRestaurantID").value = document.getElementById("list[" + index + "].restaurantID").value;
+		document.getElementById("forwardPage").value = "initCurrentOrderList";
 		document.getElementById("frm").action = "initOrderEdit";
 		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
@@ -48,12 +48,16 @@
 
 <script>
 <!--
-	// Set up List table
+	
 	$(document).ready( function() {
+		// Set up List table
 		$('#listTable').dataTable( {
 			"bJQueryUI": true,
+			"bStateSave": true,
 			"sPaginationType": "full_numbers"
 		} );
+		
+		// Set up button
 		$( "input[type=button]" ).button();
 	} );
 //-->
@@ -68,13 +72,12 @@
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="searchCurrentOrder">
+		<s:form theme="simple" name="frm" id="frm" action="searchCurrentOrder">
 			<s:hidden name="selectedOrderID" id="selectedOrderID"/>
 			<s:hidden name="selectedRestaurantID" id="selectedRestaurantID"/>
 			<s:hidden name="selectedDeliverymanID" id="selectedDeliverymanID"/>
 			<s:hidden name="selectedOrderMemberEmail" id="selectedOrderMemberEmail"/>
-			<s:hidden name="selectedRestaurantEmail" id="selectedRestaurantEmail"/>
-			<s:hidden name="page" id="page" value="initCurrentOrderList"/>
+			<s:hidden name="forwardPage" id="forwardPage"/>
 			
 			<h2>Current Order List</h2>
 			
@@ -89,11 +92,11 @@
 					<tr>
 						<th>Order Time : </th>
 						<td>
-							<s:radio name="condition.time" id="condition.time" list="timeList" listKey="key" listValue="name" />
+							<s:radio name="condition.time" id="condition.time" list="timeMap" listKey="key" listValue="value" />
 						</td>
 						<th>Order Status : </th>
 						<td>
-							<s:radio name="condition.orderStatus" id="condition.orderStatus" list="orderStatusRList" listKey="key" listValue="name" />
+							<s:radio name="condition.orderStatus" id="condition.orderStatus" list="orderStatusMap" listKey="key" listValue="value" />
 						</td>
 						<td align="right"><input type="button" value="Search" onClick="javascript:search();" /></td>
 					</tr>
@@ -151,8 +154,10 @@
 								<s:a href="javascript:goEdit('%{#outerStat.index}');"><s:property value="%{orderStatusName}"/></s:a>
 							</s:else>
 						</td>
-						<td>
-							<s:select name="list[%{#outerStat.index}].deliverymanID" id="list[%{#outerStat.index}].deliverymanID" list="deliverymanList" listKey="deliverymanID" listValue="firstName" headerKey="" headerValue="" onchange="javascript:setDeliveryMan('%{#outerStat.index}');"/>
+						<td align="center">
+							<s:if test='%{"1".equals(deliveryType)}'>
+								<s:select name="list[%{#outerStat.index}].deliverymanID" id="list[%{#outerStat.index}].deliverymanID" list="deliverymanList" listKey="deliverymanID" listValue="firstName" headerKey="" headerValue="" onchange="javascript:setDeliveryMan('%{#outerStat.index}');"/>
+							</s:if>
 						</td>
 					</tr>
 					</s:iterator>

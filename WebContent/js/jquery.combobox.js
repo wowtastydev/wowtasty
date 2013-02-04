@@ -10,7 +10,7 @@
                 wrapper = this.wrapper = $( "<span>" )
                     .addClass( "ui-combobox" )
                         .insertAfter( select );
-                var getwid = this.element.width(); // Added Hak 2012/12/07
+                var getwid = this.element.width(); // Change width:Added Hak 2012/12/07
  
                 function removeIfInvalid(element) {
                     var value = $( element ).val(),
@@ -67,6 +67,7 @@
                         that._trigger( "selected", event, {
                             item: ui.item.option
                         });
+                        select.trigger("change"); // Change event trig:Added Hak 2012/12/15
                     },
                     change: function( event, ui ) {
                         if ( !ui.item )
@@ -74,6 +75,9 @@
                     }
                 })
                 .addClass( "ui-widget ui-widget-content ui-corner-left" );
+                
+                // Set default value of the combobox :Added Hak 2012/12/20
+                input.val(selected.text());
  
                 input.width(getwid);  // Added Hak 2012/12/07
                 input.data( "autocomplete" )._renderItem = function( ul, item ) {

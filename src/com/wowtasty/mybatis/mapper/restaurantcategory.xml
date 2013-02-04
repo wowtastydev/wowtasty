@@ -13,6 +13,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	SELECT 
 	<include refid="columns"/>
 	FROM restaurant_category 
+	ORDER BY RestaurantID, Sort
+	</select>
+	
+	<!--selectByRestaurant-->
+	<select id="selectByRestaurant" parameterType="String" resultType="restaurantcategoryvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_category 
+	WHERE RestaurantID = #{restaurantID}
+	ORDER BY Sort
 	</select>
 	
 	<!--Insert-->
@@ -24,21 +34,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	VALUES
 	(	#{restaurantID},
 		#{categoryID},
-		#{name},
-		#{Sort})
+		TRIM(#{name}),
+		#{sort})
 	</insert>
 	
 	<!--Update-->
 	<update id = "update" parameterType="restaurantcategoryvo">
 		UPDATE restaurant_category
-		SET Name = #{name},
+		SET Name = TRIM(#{name}),
 			Sort = #{sort}
 		WHERE RestaurantID = #{restaurantID} AND CategoryID = #{categoryID}
 	</update>
 	
 	<!--Delete-->
-	<delete id = "delete" parameterType="restaurantcategoryvo">
+	<delete id = "delete" parameterType="String">
 		DELETE FROM restaurant_category
-		WHERE RestaurantID = #{restaurantID} AND CategoryID = #{categoryID}
+		WHERE RestaurantID = #{restaurantID}
 	</delete>
 </mapper>

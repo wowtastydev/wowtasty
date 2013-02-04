@@ -24,6 +24,7 @@ public class OrderRestaurantVO {
 	private String orderStatus = "";
 	private String declinedReason = "";
 	private String deliveryCompanyID = "";
+	private String deliveryCompanyType = "";
 	private Integer deliverymanID = 0;
 	private String deliverymanName = "";
 	private String deliverymanTelephone = "";
@@ -219,6 +220,18 @@ public class OrderRestaurantVO {
 	 */
 	public void setDeliveryCompanyID(String deliveryCompanyID) {
 		this.deliveryCompanyID = deliveryCompanyID;
+	}
+	/**
+	 * @return the deliveryCompanyType
+	 */
+	public String getDeliveryCompanyType() {
+		return deliveryCompanyType;
+	}
+	/**
+	 * @param deliveryCompanyType the deliveryCompanyType to set
+	 */
+	public void setDeliveryCompanyType(String deliveryCompanyType) {
+		this.deliveryCompanyType = deliveryCompanyType;
 	}
 	/**
 	 * @return the deliverymanID

@@ -11,6 +11,7 @@ import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.EncryptUtil;
+import com.wowtasty.util.ValidationUtil;
 
 /**
  * @author Hak C.
@@ -43,15 +44,19 @@ public class PasswordAction extends ActionSupport implements Preparable {
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 	
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		logger.info("<---prepare end --->");
 	}
 	
+	/**
+	 * Initiate Change password page
+	 * @return SUCCESS
+	 */
 	public String init() throws Exception {
 		logger.debug("init start --->");
 		
@@ -59,29 +64,28 @@ public class PasswordAction extends ActionSupport implements Preparable {
 		return SUCCESS;
 	}
 	
+	/**
+	 * Change password
+	 * @return SUCCESS
+	 */
 	@Override
 	public String execute() throws Exception {
 		logger.debug("execute start --->");
 		
-		String encryptedPassword = "";
+		// Check Validation
+		boolean hasError = checkValidation();
 		
-		// Current Password Encryption
-		EncryptUtil en = new EncryptUtil();
-		en.encrypt(currentPasswordStr);
-		encryptedPassword = en.getPassword();
-
-		// Match password with user data
-		if (!encryptedPassword.equals(uservo.getPassword())) {
-			// Password is not matched
-			addFieldError("currentPasswordStr", getText("E0005", new String[]{"Current Passwords"}));
+		// In case of validation error, return INPUT
+		if (hasError) {
 			return INPUT;
 		}
 		
 		// New Password Encryption
+		EncryptUtil en = new EncryptUtil();
 		en.encrypt(newPasswordStr);
-		encryptedPassword = en.getPassword();
+		
 		// Update Session
-		uservo.setPassword(encryptedPassword);
+		uservo.setPassword(en.getPassword());
 		
 		// Update DB
 		MemberMasterDao dao = new MemberMasterDao();
@@ -91,6 +95,66 @@ public class PasswordAction extends ActionSupport implements Preparable {
 		
 		logger.debug("execute end --->");
 		return SUCCESS;
+	}
+	
+	/**
+	 * Validation check
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidation() {
+		
+		boolean hasError = false;
+		EncryptUtil en = new EncryptUtil();
+		String encryptedPassword = "";
+		
+		//Current Password
+		if (ValidationUtil.isBlank(currentPasswordStr)) {
+			addFieldError("currentPasswordStr", getText("E0001_1", new String[]{"Current Password"}));
+			hasError = true;
+		} else {
+			// Valid type
+			if (!ValidationUtil.isPassword(currentPasswordStr)) {
+				addFieldError("currentPasswordStr", getText("E0003_1", new String[]{"Current Password"}));
+				hasError = true;
+			} else {
+				// Current Password Encryption
+				en.encrypt(currentPasswordStr);
+				encryptedPassword = en.getPassword();
+
+				// Match password with user data
+				if (!encryptedPassword.equals(uservo.getPassword())) {
+					// Password is not matched
+					addFieldError("currentPasswordStr", getText("E0005", new String[]{"Current Password and DB Password"}));
+					hasError = true;
+				}
+			}
+		}
+		
+		//New Password
+		if (ValidationUtil.isBlank(newPasswordStr)) {
+			addFieldError("newPasswordStr", getText("E0001_1", new String[]{"New Password"}));
+			hasError = true;
+		} else {
+			// Type check
+			if (!ValidationUtil.isPassword(newPasswordStr)) {
+				addFieldError("newPasswordStr", getText("E0003_1", new String[]{"New Password"}));
+				hasError = true;					
+			}
+		}
+		
+		//Confirm Password
+	    if (ValidationUtil.isBlank(confirmPasswordStr)) {
+			addFieldError("confirmPasswordStr", getText("E0001_1", new String[]{"Confirm Password"}));
+			hasError = true;			    	
+	    } else {
+	    	// Compare member pwd and confirm pwd
+			if (!newPasswordStr.equals(confirmPasswordStr)) {
+				addFieldError("confirmPasswordStr", getText("E0005", new String[]{"New Password and Confirm Password"}));
+				hasError = true;
+			}
+	    }
+		
+		return hasError;
 	}
 
 	/**
@@ -176,6 +240,11 @@ public class PasswordAction extends ActionSupport implements Preparable {
 	public void setConfirmPasswordStr(String confirmPasswordStr) {
 		this.confirmPasswordStr = confirmPasswordStr;
 	}
-	
-	
+
+	/**
+	 * @return the uservo
+	 */
+	public MemberMasterVO getUservo() {
+		return uservo;
+	}
 }

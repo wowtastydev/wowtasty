@@ -29,20 +29,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<insert id="insert" parameterType="ordermenuoptionvo">
 	INSERT INTO 
 		order_menu_option
-	(	OrderID,
-		RestaurantID,
-		Seq,
-		OptionID,
-		OptionName,
-		MenuID,
-		Unit,
-		ExtraCharge) 
+	(	
+	<include refid="columns"/>
+	) 
 	VALUE (
 		#{orderID},
 		#{restaurantID},
 		#{seq},
 		#{optionID},
-		#{optionName},
+		TRIM(#{optionName}),
 		#{menuID},
 		#{unit},
 		#{extraCharge})
@@ -53,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	UPDATE 
 		order_menu_option  
 	SET 
-		OptionName = #{optionName},
+		OptionName = TRIM(#{optionName}),
 		MenuID = #{menuID},
 		Unit = #{unit},
 		ExtraCharge = #{extraCharge}

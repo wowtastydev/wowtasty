@@ -19,13 +19,15 @@
 		</global-exception-mappings>
 		
 		<!-- PasswordAction -->
+		
+		<!-- initPassword : initialize Password change Page -->	
 		<action name="initPassword" class="com.wowtasty.action.PasswordAction" method="init">
 			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
 		</action>
 		
+		<!-- changePassword : change password -->	
 		<action name="changePassword" class="com.wowtasty.action.PasswordAction">
-			<interceptor-ref name="wowValidationStack"/>
 			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
 		</action>
@@ -40,7 +42,7 @@
 		
 		<!-- insertMember : insert new member account Page -->	
 		<action name="insertMember" class="com.wowtasty.action.MemberAction">
-			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
+			<result>/WEB-INF/jsp/admin/memberadd.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
 		</action>
 		
@@ -57,11 +59,14 @@
 		</action>
 		
 		<!-- MemberListAction -->
+		
+		<!-- initMemberList : initialize Member list Page -->
 		<action name="initMemberList" class="com.wowtasty.action.MemberListAction" method="init">
 			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
 		</action>
 		
+		<!-- searchMember : search member list -->
 		<action name="searchMember" class="com.wowtasty.action.MemberListAction">
 			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>

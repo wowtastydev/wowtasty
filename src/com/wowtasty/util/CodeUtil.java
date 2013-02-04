@@ -1,9 +1,8 @@
 package com.wowtasty.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 
@@ -25,12 +24,15 @@ public class CodeUtil {
 		}
 		String codeName = "";
 		List<CodeMasterVO> codeList = map.get(groupCD);
-		for (CodeMasterVO vo : codeList) {
-			if (code.equals(vo.getCode())) {
-				codeName = vo.getName();
-				break;
+		if (codeList != null) {
+			for (CodeMasterVO vo : codeList) {
+				if (code.equals(vo.getCode())) {
+					codeName = vo.getName();
+					break;
+				}
 			}
 		}
+
 		return codeName;
 	}
 	/**
@@ -52,5 +54,33 @@ public class CodeUtil {
 			}
 		}
 		return codeName;
+	}
+	
+	/**
+	 * @param orgList : code list
+	 * @return List<CodeMasterVO> : copied new code list
+	 */
+	static public List<CodeMasterVO> copyCode(List<CodeMasterVO> orgList) {
+		if (orgList == null || orgList.size() == 0) {
+			return orgList;
+		}
+		
+		List<CodeMasterVO> newList = new ArrayList<CodeMasterVO>();
+		CodeMasterVO vo = null;
+
+		for (CodeMasterVO orgvo : orgList) {
+			vo = new CodeMasterVO();
+			vo.setGroupCd(orgvo.getGroupCd());
+			vo.setCode(orgvo.getCode());
+			vo.setName(orgvo.getName());
+			vo.setShortName(orgvo.getShortName());
+			vo.setSort(orgvo.getSort());
+			vo.setValue(orgvo.getValue());
+			vo.setNaFlag(orgvo.getNaFlag());
+			vo.setUpdateID(orgvo.getUpdateID());
+			vo.setUpdateTime(orgvo.getUpdateTime());
+			newList.add(vo);
+		}
+		return newList;
 	}
 }

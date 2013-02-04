@@ -39,11 +39,13 @@
 		$.unblockUI = function(opts) { remove(window, opts); };
 
 		// convenience method for quick growl-like notifications  (http://www.google.com/search?q=growl)
-		$.growlUI = function(title, message, timeout, onClose) {
+		$.growlUI = function(title, message, timeout, onClose, backgroundColor, color) {
 			var $m = $('<div class="growlUI" style="text-align:left" ></div>');
 			//if (title) $m.append('<h3>'+title+'</h3>');
-			if (message) $m.append('<b><font color="#fff">'+message+'</font></b>');
+			if (color === undefined) color = '#fff';
+			if (message) $m.append('<b><font color="'+ color +'">'+message+'</font></b>');
 			if (timeout === undefined) timeout = 3000;
+			if (backgroundColor === undefined) backgroundColor = '#000';
 			$.blockUI({
 				message: $m, fadeIn: 700, fadeOut: 1000, centerY: false,
 				timeout: timeout, showOverlay: false,
@@ -55,11 +57,10 @@
 	                right: '', 
 	                border: 'none', 
 	                padding: '5px', 
-	                backgroundColor: '#000', 
+	                backgroundColor: backgroundColor, 
 	                '-webkit-border-radius': '10px', 
 	                '-moz-border-radius': '10px', 
-	                opacity: .6, 
-	                color: '#fff' 
+	                opacity: .6 
 	            }
 			});
 		};

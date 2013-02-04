@@ -10,7 +10,7 @@ public class DeliveryManVO {
 	
 	/** delivery_man columns*/
 	private String deliveryCompanyID = "";
-	private int deliverymanID = 0;
+	private Integer deliverymanID = 0;
 	private String firstName = "";
 	private String lastName = "";
 	private String telephone = "";
@@ -38,13 +38,13 @@ public class DeliveryManVO {
 	/**
 	 * @return the deliverymanID
 	 */
-	public int getDeliverymanID() {
+	public Integer getDeliverymanID() {
 		return deliverymanID;
 	}
 	/**
 	 * @param deliverymanID the deliverymanID to set
 	 */
-	public void setDeliverymanID(int deliverymanID) {
+	public void setDeliverymanID(Integer deliverymanID) {
 		this.deliverymanID = deliverymanID;
 	}
 	/**

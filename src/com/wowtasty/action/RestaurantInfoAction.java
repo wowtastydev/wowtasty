@@ -1,7 +1,6 @@
 package com.wowtasty.action;
 
 import java.io.File;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,14 +8,21 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import com.wowtasty.mybatis.dao.DeliveryAreaDao;
+import com.wowtasty.mybatis.dao.DeliveryMasterDao;
+import com.wowtasty.mybatis.dao.DeliveryOpenHourDao;
+import com.wowtasty.mybatis.dao.RestaurantDeliveryAreaDao;
 import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.dao.RestaurantOpenHourDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
+import com.wowtasty.mybatis.vo.DeliveryAreaVO;
+import com.wowtasty.mybatis.vo.DeliveryMasterVO;
 import com.wowtasty.mybatis.vo.DeliveryOpenHourVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.mybatis.vo.RestaurantDeliveryAreaVO;
@@ -27,9 +33,8 @@ import com.wowtasty.util.FileUtil;
 import com.wowtasty.util.SessionUtil;
 import com.wowtasty.util.StringConvertUtil;
 import com.wowtasty.util.ValidationUtil;
-
-
-
+import com.wowtasty.vo.DeliveryAreaListConditionVO;
+import com.wowtasty.vo.HourListVO;
 
 /**
  * @author Hak C.
@@ -41,10 +46,23 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private static final long serialVersionUID = 1L;
 	
 	/** constants */
-	private static final Integer MAX_LEN = 100;
+	private static final Long MAX_SIZE = 2*1024*1024l;
+	private static final Integer MAX_LEN = 500;
+	private static final Integer MAX_LEN_MAP = 1500;
 	private static final String EVERYDAY = "0";
-	private static final String SET_BY_DAY = "1";
-	private static final String TIME_PATTERN = "HH:mm";
+	private static final Integer FIRST_OPEN_HOUR = 1;
+	private static final Integer SECOND_OPEN_HOUR = 2;
+	private static final Integer DAY_SIZE = 7;
+	private static final Float MIN_PRICE = 0.00f;
+	private static final Float MAX_PRICE = 999.99f;
+	private static final Float MIN_COMMISSION = 0.00f;
+	private static final Float MAX_COMMISSION = 100.00f;
+	private static final Integer ALL = 9;
+	private static final Integer MASTER = 0;
+	private static final Integer OPENHOUR = 1;
+	private static final Integer DELIVHOUR = 2;
+	private static final Integer AREA = 3;
+	private static final String DELIMITER = ",";
 	
 	/** Logger */
 	private static Logger logger = Logger.getLogger(RestaurantInfoAction.class);
@@ -56,7 +74,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private List<CodeMasterVO> cityList = new ArrayList<CodeMasterVO>();
 	private List<CodeMasterVO> restaurantStatusList = new ArrayList<CodeMasterVO>();
 	private List<CodeMasterVO> dayTypeList = new ArrayList<CodeMasterVO>();
-
+	private List<DeliveryMasterVO> deliveryCompanyList = new ArrayList<DeliveryMasterVO>();
+	private List<CodeMasterVO> cityMapList = new ArrayList<CodeMasterVO>();
 	
 	/** codemaster map */
 	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
@@ -74,26 +93,25 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	
 	/** Restaurant Vos Columns */
 	private RestaurantMasterVO vo = new RestaurantMasterVO();
-	private List<RestaurantOpenHourVO> openHour1list = new ArrayList<RestaurantOpenHourVO>();
-	private List<DeliveryOpenHourVO> openHourDeliv1list = new ArrayList<DeliveryOpenHourVO>();
-	private List<RestaurantOpenHourVO> openHour2list = new ArrayList<RestaurantOpenHourVO>();
-	private List<DeliveryOpenHourVO> openHourDeliv2list = new ArrayList<DeliveryOpenHourVO>();
+	private List<HourListVO> openHourlist = new ArrayList<HourListVO>();
+	private List<HourListVO> openHourDelivlist = new ArrayList<HourListVO>();
 	private List<RestaurantDeliveryAreaVO> restDelivArealist = new ArrayList<RestaurantDeliveryAreaVO>();
+	private List<DeliveryAreaVO> delivArealist = new ArrayList<DeliveryAreaVO>();
 
 	/** Parameter */
 	private String selectedID = "";
 	private String bizHourType = ""; // 0:Every day 1:Set by day
 	private String bizHourDelivType = ""; // 0:Every day 1:Set by day
 	
-	private Time bizAll1Start = null;
-	private Time bizAll1End = null;
-	private Time bizAll2Start = null;
-	private Time bizAll2End = null;
-	private Time bizDelivAll1Start = null;
-	private Time bizDelivAll1End = null;
-	private Time bizDelivAll2Start = null;
-	private Time bizDelivAll2End = null;
-	
+	private String bizAll1Start = "";
+	private String bizAll1End = "";
+	private String bizAll2Start = "";
+	private String bizAll2End = "";
+	private String bizDelivAll1Start = "";
+	private String bizDelivAll1End = "";
+	private String bizDelivAll2Start = "";
+	private String bizDelivAll2End = "";
+	private boolean naDelivFlag = true;
 	
 	/** Files upload */
 	private File logofile = null;
@@ -104,7 +122,10 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private String mainfileContentType = "";
 	private String mainfileFileName = "";
 	
-	
+	/** Delivery Area Parameter */
+	private DeliveryAreaListConditionVO condition = new DeliveryAreaListConditionVO();
+	// jsp accordion active index
+	private Integer active = 0;
 	
 	/**
 	 * Prepared method
@@ -120,6 +141,15 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 		cityList = codeMap.get(Constants.KEY_CD_CITY);
 		restaurantStatusList = codeMap.get(Constants.KEY_CD_RESTAURANT_STATUS);
 		dayTypeList = codeMap.get(Constants.KEY_CD_DAY_TYPE);
+		cityMapList = codeMap.get(Constants.KEY_CD_CITY_MAP);
+
+		// Search delivery company list 
+		DeliveryMasterDao dmdao = new DeliveryMasterDao();
+		deliveryCompanyList = dmdao.selectAll();
+		
+		// Search Delivery area list
+		DeliveryAreaDao dadao = new DeliveryAreaDao();
+		delivArealist = dadao.selectAll();
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
@@ -129,40 +159,55 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
-	 * Initiate MemberAdd page
+	 * Initiate Restraurant Information page
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
-		logger.info("<---Init start --->");
+		logger.info("<---init start --->");
 		
-		addOpenHours();
+		if ("".equals(selectedID)) {
+			// Add Restaurant
+			// Add empty open hour list
+			addOpenHours();
+			addDelivOpenHours();
+		} else {
+			// Edit Restaurant
+			RestaurantMasterDao dao = new RestaurantMasterDao();
+			vo = dao.selectByID(selectedID);
+			
+			// Select open hours
+			RestaurantOpenHourDao odao = new RestaurantOpenHourDao();
+			openHourlist = odao.selectByID(selectedID);
+			if (openHourlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addOpenHours();
+			}
+			
+			// Select Delivery open hours		
+			DeliveryOpenHourDao ddao = new DeliveryOpenHourDao();
+			openHourDelivlist = ddao.selectHourListByID(vo.getDeliveryCompanyID());
+			if (openHourDelivlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addDelivOpenHours();
+			} else {
+				// Set N/A checkbox off
+				naDelivFlag = false;
+			}
+			
+			// Select Delivery areas
+			RestaurantDeliveryAreaDao rddao = new RestaurantDeliveryAreaDao();
+			restDelivArealist = rddao.selectByID(selectedID);
+		}
 		
-		logger.info("<---Init end --->");
-		return SUCCESS;
-	}
-	
-	/**
-	 * Initiate MemberEdit page
-	 * @return SUCCESS
-	 */
-	public String initEdit() throws Exception {
-		logger.info("<---initEdit start --->");
-		
-		RestaurantMasterDao dao = new RestaurantMasterDao();
-		vo = dao.selectByID(selectedID);
-		
-		// Select open hours
-		RestaurantOpenHourDao odao = new RestaurantOpenHourDao();
-		List<RestaurantOpenHourVO> hourlist = new ArrayList<RestaurantOpenHourVO>();
-		hourlist = odao.selectByID(selectedID);
-		setHourList(hourlist);
+		// set MASTER accordion open
+		active = MASTER;
 
-		logger.info("<---initEdit end --->");
+		logger.info("<---init end --->");
 		return SUCCESS;
 	}
 	
 	/**
-	 * Insert/Edit restaurant data
+	 * Insert/Edit Restraurant Information data
 	 * @return SUCCESS
 	 */
 	@Override
@@ -175,35 +220,46 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 		
 		// In case of validation error, return INPUT
 		if (hasError) {
+			// Reload Restaurant Information
+			reload(MASTER);
 			return INPUT;
 		}
-		
+
 		RestaurantMasterDao dao = new RestaurantMasterDao();
 		int returnCnt = 0;
+		
 		if ("".equals(vo.getRestaurantID())) {
 			//　Insert
 			// Take maxID
-			// Set memberID,status
 			vo.setRestaurantID(dao.selectMaxID());
 			
 			// Upload Images
 			upload();
 			
-			//Insert MemberMasterdata
-			dao = new RestaurantMasterDao();
+			// Set default data
+			vo.setStatus(Constants.CODE_STATUS_APPLIED);
+			vo.setUpdateID(uservo.getMemberID());
+			//refine keywords
+			vo.setKeyword(refineKeywords(vo.getKeyword()));
+			
+			// Insert Masterdata
 			returnCnt = dao.insert(vo);
 			if (returnCnt > 0) {
 				addActionMessage("Restaurant infomation has been inserted successfully");
 			}
 			// Add empty open hours
 			addOpenHours();
+			addDelivOpenHours();
 		} else {
-			
+			// Update
 			// Upload Images
 			upload();
-						
+					
+			// Set default data
+			vo.setUpdateID(uservo.getMemberID());
+			//refine keywords
+			vo.setKeyword(refineKeywords(vo.getKeyword()));
 			// Update
-			dao = new RestaurantMasterDao();
 			returnCnt = dao.update(vo);
 			if (returnCnt > 0) {
 				addActionMessage("Restaurant infomation has been updated successfully");
@@ -211,22 +267,41 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 			
 			// Select open hours
 			RestaurantOpenHourDao odao = new RestaurantOpenHourDao();
-			List<RestaurantOpenHourVO> hourlist = new ArrayList<RestaurantOpenHourVO>();
-			hourlist = odao.selectByID(vo.getRestaurantID());
-			setHourList(hourlist);
+			openHourlist = odao.selectByID(vo.getRestaurantID());
+			if (openHourlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addOpenHours();
+			}
+			
+			// Select Delivery open hours		
+			DeliveryOpenHourDao ddao = new DeliveryOpenHourDao();
+			openHourDelivlist = ddao.selectHourListByID(vo.getDeliveryCompanyID());
+			if (openHourDelivlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addDelivOpenHours();
+			}
 		}
+		
+		// Reload All Restaurant Information
+		reload(ALL);
+		
+		// set MASTER accordion open
+		active = MASTER;
+		
+		// set parameter restaurantID
 		selectedID = vo.getRestaurantID();
+		
 		logger.info("<---execute end --->");
 		return SUCCESS;
 	}
 	
 	/**
-	 * Save Business Hours
+	 * Save Restaurant Business Hours
 	 * @return SUCCESS
 	 */
 	public String saveBizHour() throws Exception {
 		logger.info("<---saveBizHour start --->");
-		if ("".equals(selectedID)) {
+		if ("".equals(vo.getRestaurantID())) {
 			addActionError("Please save Restaurant General Information first.");
 			return INPUT;
 		}
@@ -239,85 +314,111 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 		
 		// In case of validation error, return INPUT
 		if (hasError) {
+			// Reload Restaurant Information
+			reload(OPENHOUR);
 			return INPUT;
 		}
-		
-		int daySize = 7;
 				
 		RestaurantOpenHourDao dao = new RestaurantOpenHourDao();
+		boolean isInsert = true;
+		String id = "";
 		// In case of Every day 
 		if (EVERYDAY.equals(bizHourType)) {
-			// Set business hours
-			// First Open Hour
-			RestaurantOpenHourVO vo = new RestaurantOpenHourVO();
-			vo.setRestaurantID(selectedID);
-			vo.setSeq(1);
-			vo.setStartTime(bizAll1Start);
-			vo.setEndTime(bizAll1End);
+			RestaurantOpenHourVO ovo = null;
 			
-			for (int i = 0; i < daySize; i++) {
-				if ("".equals(openHour1list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					vo.setWeekDay(i);
-					dao.insert(vo);
+			for (int i = 0; i < DAY_SIZE; i++) {
+				// Check wheather insert or update
+				if ("".equals(openHourlist.get(i).getID())) {
+					id = vo.getRestaurantID();
 				} else {
-					// Update
-					vo.setWeekDay(i);
-					dao.update(vo);
+					id = openHourlist.get(i).getID();
+					isInsert = false;
 				}
-			}
-			
-			// Second Open Hour
-			vo = new RestaurantOpenHourVO();
-			vo.setRestaurantID(selectedID);
-			vo.setSeq(2);
-			vo.setStartTime(bizAll2Start);
-			vo.setEndTime(bizAll2End);
-			
-			for (int i = 0; i < daySize; i++) {
-				if ("".equals(openHour2list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					vo.setWeekDay(i);
-					dao.insert(vo);
-				} else {
-					// Update
-					vo.setWeekDay(i);
-					dao.update(vo);
-				}
-			}
-			
-		} else {
-			// In case of Set by day 
-			for (int i = 0; i < daySize; i++) {
+				
 				// First Open Hour
-				if ("".equals(openHour1list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					openHour1list.get(i).setRestaurantID(selectedID);
-					dao.insert(openHour1list.get(i));
+				ovo = new RestaurantOpenHourVO();
+				ovo.setRestaurantID(id);
+				ovo.setSeq(FIRST_OPEN_HOUR);
+				ovo.setWeekDay(i);
+				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll1Start));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll1End));
+				
+				if (isInsert) {
+					dao.insert(ovo);
 				} else {
-					// Update
-					dao.update(openHour1list.get(i));
+					dao.update(ovo);
 				}
 				
 				// Second Open Hour
-				if ("".equals(openHour2list.get(i).getRestaurantID())) {
+				ovo = new RestaurantOpenHourVO();
+				ovo.setRestaurantID(id);
+				ovo.setSeq(SECOND_OPEN_HOUR);
+				ovo.setWeekDay(i);
+				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll2Start));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll2End));
+				
+				if (isInsert) {
+					dao.insert(ovo);
+				} else {
+					dao.update(ovo);
+				}
+			}
+		} else {
+			// In case of Set by day 
+			RestaurantOpenHourVO ovo = null;
+			for (int i = 0; i < DAY_SIZE; i++) {
+				// Check wheather insert or update
+				if ("".equals(openHourlist.get(i).getID())) {
+					id = vo.getRestaurantID();
+				} else {
+					id = openHourlist.get(i).getID();
+					isInsert = false;
+				}
+				
+				// First Open Hour
+				ovo = new RestaurantOpenHourVO();
+				ovo.setRestaurantID(id);
+				ovo.setSeq(FIRST_OPEN_HOUR);
+				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
+				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime1()));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime1()));
+
+				if (isInsert) {
 					// In case insert, Restaurant ID is ""
-					openHour2list.get(i).setRestaurantID(selectedID);
-					dao.insert(openHour2list.get(i));
+					dao.insert(ovo);
 				} else {
 					// Update
-					dao.update(openHour2list.get(i));
+					dao.update(ovo);
+				}
+				
+				// Second Open Hour
+				ovo = new RestaurantOpenHourVO();
+				ovo.setRestaurantID(id);
+				ovo.setSeq(SECOND_OPEN_HOUR);
+				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
+				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime2()));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime2()));
+
+				if (isInsert) {
+					// In case insert, Restaurant ID is ""
+					dao.insert(ovo);
+				} else {
+					// Update
+					dao.update(ovo);
 				}
 			}
 		}
 
 		addActionMessage("Restaurant Business Hours has been updated successfully");
 		
-		// Select open hours
-		RestaurantOpenHourDao odao = new RestaurantOpenHourDao();
-		List<RestaurantOpenHourVO> hourlist = new ArrayList<RestaurantOpenHourVO>();
-		hourlist = odao.selectByID(vo.getRestaurantID());
-		setHourList(hourlist);
+		// Reload All information
+		reload(ALL);
+		
+		// set OPENHOUR accordion open
+		active = OPENHOUR;
+		
+		// set parameter restaurantID
+		selectedID = vo.getRestaurantID();
 
 		logger.info("<---saveBizHour end --->");
 		return SUCCESS;
@@ -329,96 +430,239 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	 */
 	public String saveBizHourDeliv() throws Exception {
 		logger.info("<---saveBizHourDeliv start --->");
-		if ("".equals(selectedID)) {
+		if ("".equals(vo.getRestaurantID())) {
 			addActionError("Please save Restaurant General Information first.");
 			return INPUT;
 		}
 		
-		// See if the company has Delivery Company Data already
-		RestaurantMasterDao mdao = new RestaurantMasterDao();
-		vo = mdao.selectByID(selectedID);
+		// If there is no delivery company saved, add delivery comapny master with Restaurant info
 		if ("".equals(vo.getDeliveryCompanyID())) {
-			// Insert Delivery Company
-		}
+			// Get Restaurant information
+			RestaurantMasterDao rmdao = new RestaurantMasterDao();
+			vo = rmdao.selectByID(vo.getRestaurantID());
+			
+			DeliveryMasterVO dmvo = new DeliveryMasterVO();
+			DeliveryMasterDao dmdao = new DeliveryMasterDao();
+			
+			// Copy restaurant data to delivery master
+			dmvo.setDeliveryCompanyID(dmdao.selectMaxID());
+			dmvo.setDeliveryCompanyType(Constants.CODE_DELIVERY_COM_TYPE_SELFDELIVERY);
+			dmvo.setName(vo.getName());
+			dmvo.setMemberID(vo.getMemberID());
+			dmvo.setFirstName(vo.getFirstName());
+			dmvo.setLastName(vo.getLastName());
+			dmvo.setTelephone(vo.getTelephone());
+			dmvo.setFax(vo.getFax());
+			dmvo.setAddress(vo.getAddress());
+			dmvo.setSuite(vo.getSuite());
+			dmvo.setCity(vo.getCity());
+			dmvo.setProvince(vo.getProvince());
+			dmvo.setPostalCode(vo.getPostalCode());
+			dmvo.setWebsite(vo.getWebsite());
+			dmvo.setFacebook(vo.getFacebook());
+			dmvo.setEmail1(vo.getEmail1());
+			dmvo.setEmail2(vo.getEmail2());
+			dmvo.setStatus(Constants.CODE_STATUS_APPLIED);
+			dmvo.setUpdateID(uservo.getMemberID());
 
-		int daySize = 7;
+			//Insert Delivery Masterdata
+			int returnCnt = dmdao.insert(dmvo);
+			if (returnCnt > 0) {
+				addActionMessage("Delivery master infomation has been inserted successfully");
+				// Update Restaurant Masterdata with delivery company ID
+				vo.setDeliveryCompanyID(dmvo.getDeliveryCompanyID());
+				rmdao.update(vo);
+			}
+		}
+		
+		// Validation Check
+		// Check Information Validation
+		boolean hasError = false;
+		hasError = checkValidationDelivOpenHour();
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			// Reload Restaurant Information
+			reload(DELIVHOUR);
+			return INPUT;
+		}
 				
-		RestaurantOpenHourDao dao = new RestaurantOpenHourDao();
+		DeliveryOpenHourDao dao = new DeliveryOpenHourDao();
+		boolean isInsert = true;
+		String id = "";
 		// In case of Every day 
-		if (EVERYDAY.equals(bizHourType)) {
-			// Set business hours
-			// First Open Hour
-			RestaurantOpenHourVO vo = new RestaurantOpenHourVO();
-			vo.setRestaurantID(selectedID);
-			vo.setSeq(1);
-			vo.setStartTime(bizAll1Start);
-			vo.setEndTime(bizAll1End);
+		if (EVERYDAY.equals(bizHourDelivType)) {
+			DeliveryOpenHourVO ovo = null;
 			
-			for (int i = 0; i < daySize; i++) {
-				if ("".equals(openHour1list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					vo.setWeekDay(i);
-					dao.insert(vo);
+			for (int i = 0; i < DAY_SIZE; i++) {
+				// Check wheather insert or update
+				if ("".equals(openHourDelivlist.get(i).getID())) {
+					id = vo.getDeliveryCompanyID();
 				} else {
-					// Update
-					vo.setWeekDay(i);
-					dao.update(vo);
+					id = openHourDelivlist.get(i).getID();
+					isInsert = false;
 				}
-			}
-			
-			// Second Open Hour
-			vo = new RestaurantOpenHourVO();
-			vo.setRestaurantID(selectedID);
-			vo.setSeq(2);
-			vo.setStartTime(bizAll2Start);
-			vo.setEndTime(bizAll2End);
-			
-			for (int i = 0; i < daySize; i++) {
-				if ("".equals(openHour2list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					vo.setWeekDay(i);
-					dao.insert(vo);
-				} else {
-					// Update
-					vo.setWeekDay(i);
-					dao.update(vo);
-				}
-			}
-			
-		} else {
-			// In case of Set by day 
-			for (int i = 0; i < daySize; i++) {
+				
 				// First Open Hour
-				if ("".equals(openHour1list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					openHour1list.get(i).setRestaurantID(selectedID);
-					dao.insert(openHour1list.get(i));
+				ovo = new DeliveryOpenHourVO();
+				ovo.setDeliveryCompanyID(id);
+				ovo.setSeq(FIRST_OPEN_HOUR);
+				ovo.setWeekDay(i);
+				ovo.setStartTime(StringConvertUtil.convertString2Time(bizDelivAll1Start));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(bizDelivAll1End));
+				
+				if (isInsert) {
+					dao.insert(ovo);
 				} else {
-					// Update
-					dao.update(openHour1list.get(i));
+					dao.update(ovo);
 				}
 				
 				// Second Open Hour
-				if ("".equals(openHour2list.get(i).getRestaurantID())) {
-					// In case insert, Restaurant ID is ""
-					openHour2list.get(i).setRestaurantID(selectedID);
-					dao.insert(openHour2list.get(i));
+				ovo = new DeliveryOpenHourVO();
+				ovo.setDeliveryCompanyID(id);
+				ovo.setSeq(SECOND_OPEN_HOUR);
+				ovo.setWeekDay(i);
+				ovo.setStartTime(StringConvertUtil.convertString2Time(bizDelivAll2Start));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(bizDelivAll2End));
+				
+				if (isInsert) {
+					dao.insert(ovo);
 				} else {
-					// Update
-					dao.update(openHour2list.get(i));
+					dao.update(ovo);
+				}
+			}
+		} else {
+			// In case of Set by day 
+			DeliveryOpenHourVO ovo = null;
+			for (int i = 0; i < DAY_SIZE; i++) {
+				// Check wheather insert or update
+				if ("".equals(openHourDelivlist.get(i).getID())) {
+					id = vo.getDeliveryCompanyID();
+				} else {
+					id = openHourDelivlist.get(i).getID();
+					isInsert = false;
+				}
+				
+				// First Open Hour
+				ovo = new DeliveryOpenHourVO();
+				ovo.setDeliveryCompanyID(id);
+				ovo.setSeq(FIRST_OPEN_HOUR);
+				ovo.setWeekDay(openHourDelivlist.get(i).getWeekDay());
+				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getStartTime1()));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getEndTime1()));
+
+				if (isInsert) {
+					dao.insert(ovo);
+				} else {
+					dao.update(ovo);
+				}
+				
+				// Second Open Hour
+				ovo = new DeliveryOpenHourVO();
+				ovo.setDeliveryCompanyID(id);
+				ovo.setSeq(SECOND_OPEN_HOUR);
+				ovo.setWeekDay(openHourDelivlist.get(i).getWeekDay());
+				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getStartTime2()));
+				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getEndTime2()));
+
+				if (isInsert) {
+					dao.insert(ovo);
+				} else {
+					dao.update(ovo);
 				}
 			}
 		}
 
-		addActionMessage("Restaurant Business Hours has been updated successfully");
+		addActionMessage("Delivery Business Hours has been updated successfully");
 		
-		// Select open hours
-		RestaurantOpenHourDao odao = new RestaurantOpenHourDao();
-		List<RestaurantOpenHourVO> hourlist = new ArrayList<RestaurantOpenHourVO>();
-		hourlist = odao.selectByID(vo.getRestaurantID());
-		setHourList(hourlist);
+		// Reload All information
+		reload(ALL);
+		
+		// set DELIVHOUR accordion open
+		active = DELIVHOUR;
+		
+		// set parameter restaurantID
+		selectedID = vo.getRestaurantID();
 
 		logger.info("<---saveBizHourDeliv end --->");
+		return SUCCESS;
+	}
+	
+
+	/**
+	 * Save delivery areas
+	 * @return SUCCESS
+	 */
+	public String saveDeliveryArea() throws Exception {
+		logger.info("<---saveDeliveryArea start --->");
+
+		if ("".equals(vo.getRestaurantID())) {
+			addActionError("Please save Restaurant General Information first.");
+			return INPUT;
+		}
+		
+		// Set new Delivery Area
+		int size = restDelivArealist.size();
+		List<RestaurantDeliveryAreaVO> newlist = new ArrayList<RestaurantDeliveryAreaVO>();
+		
+		int sizeNew = 0;
+		String deliveryCompanyID = "";
+		String postalPrefix = "";
+		boolean hasPrefix = false;
+		RestaurantDeliveryAreaVO rdvo = null;
+		
+		for (int i = 0; i < size; i++) {
+			hasPrefix = false;
+			rdvo = restDelivArealist.get(i);
+			if (rdvo != null) {
+				deliveryCompanyID = rdvo.getDeliveryCompanyID();
+				postalPrefix = rdvo.getPostalPrefix().toUpperCase();
+				// Compare same delivery id and same prefix with new area
+				sizeNew = newlist.size();
+				for (int j = 0; j < sizeNew; j++) {
+					if (deliveryCompanyID.equals(newlist.get(j).getDeliveryCompanyID())
+							&& postalPrefix.equals(newlist.get(j).getPostalPrefix().toUpperCase())) {
+						// If there is same delivery id and same prefix already, don't insert.
+						hasPrefix = true;
+						break;
+					}
+				}
+				
+				if (!hasPrefix) {
+					// Add area to newlist
+					newlist.add(rdvo);
+				}
+			}
+		}
+		
+		// Validation Check
+		// Check Delivery Area Validation
+		boolean hasError = false;
+		hasError = checkValidationDelivArea(newlist);
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			// Reload Restaurant Information
+			reload(AREA);
+			return INPUT;
+		}
+		
+		// Delete all areas and insert inputted areas
+		RestaurantDeliveryAreaDao rddao = new RestaurantDeliveryAreaDao();
+		rddao.updateAll(newlist);
+		
+		addActionMessage("Delivery Areas has been updated successfully");
+
+		// Reload Restaurant Information
+		reload(ALL);
+		
+		// set AREA accordion open
+		active = AREA;
+		
+		// set parameter restaurantID
+		selectedID = vo.getRestaurantID();
+		
+		logger.info("<---saveDeliveryArea end --->");
 		return SUCCESS;
 	}
 	
@@ -429,6 +673,7 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private boolean checkValidationInfo() {
 		
 		boolean hasError = false;
+		Float tmpAmt = 0.00f;
 	
 		// Restaurant Name Validation Check
 		if (ValidationUtil.isBlank(vo.getName())) {
@@ -489,7 +734,7 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 			addFieldError("vo.postalCode", getText("E0001_1", new String[]{"Postal Code"}));
 			hasError = true;
 		} else {
-			if (!ValidationUtil.isNumEng(vo.getPostalCode())) {
+			if (!ValidationUtil.isPostalCode(vo.getPostalCode())) {
 				addFieldError("vo.postalCode", getText("E0003_1", new String[]{"Postal Code"}));
 				hasError = true;
 			}			
@@ -512,16 +757,78 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 			hasError = true;
 		}
 		
-		//Commission Validation Check
-		if (ValidationUtil.isBlank(vo.getCommission().toString())) {
-			addFieldError("vo.commission", getText("E0001_1", new String[]{"Commission"}));
-			hasError = true;
-		} else {
-			if (!ValidationUtil.isNum(vo.getCommission().toString())) {
-				addFieldError("vo.commission", getText("E0003_1", new String[]{"Commission"}));
+		//Logo Image Validation
+		if (logofile != null) {
+			// File size MAX_SIZE
+			if (logofile.length() > MAX_SIZE) {
+				addFieldError("vo.logoImagePath", getText("E0006", new String[]{"Logo File size", MAX_SIZE.toString()}));
 				hasError = true;
-			}			
+			}
+			// File type
+			if (!logofileContentType.startsWith("image/")) {
+				addFieldError("vo.logoImagePath", getText("E0003_1", new String[]{"Logo File"}));
+				hasError = true;
+			}
 		}
+
+		//Main Image Image File size MAX_SIZE
+		if (mainfile != null) {
+			// File size MAX_SIZE
+			if (mainfile.length() > MAX_SIZE) {
+				addFieldError("vo.mainImagePath", getText("E0006", new String[]{"Main Image File size", MAX_SIZE.toString()}));
+				hasError = true;
+			}
+			// File type
+			if (!mainfileContentType.startsWith("image/")) {
+				addFieldError("vo.mainImagePath", getText("E0003_1", new String[]{"Main Image File"}));
+				hasError = true;
+			}
+		}
+		
+		//Google Map Validation Check
+		if (!ValidationUtil.isBlank(vo.getGoogleMapURL()) && vo.getGoogleMapURL().length() > MAX_LEN_MAP) {
+			addFieldError("vo.googleMapURL", getText("E0006", new String[]{"Google Map", MAX_LEN_MAP.toString()}));
+			hasError = true;
+		}
+		
+		//Restaurant Profile Validation Check
+		if (!ValidationUtil.isBlank(vo.getProfile()) && vo.getProfile().length() > MAX_LEN) {
+			addFieldError("vo.profile", getText("E0006", new String[]{"Restaurant Profile", MAX_LEN.toString()}));
+			hasError = true;
+		}
+		
+		//Search Key Words Validation Check
+		if (!ValidationUtil.isBlank(vo.getKeyword()) && vo.getKeyword().length() > MAX_LEN) {
+			addFieldError("vo.keyword", getText("E0006", new String[]{"Search Key Words", MAX_LEN.toString()}));
+			hasError = true;
+		}
+		
+		//Commission Validation Check
+		tmpAmt = vo.getCommission();
+		if (tmpAmt != null) {
+			if (tmpAmt < MIN_COMMISSION || tmpAmt > MAX_COMMISSION ) {
+				// 0 < Commission < 99.99
+				addFieldError("vo.commission", getText("E0008", new String[]{"NonCash Commission", MIN_COMMISSION.toString(), MAX_COMMISSION.toString()}));
+				hasError = true;
+			}
+		} else {
+			addFieldError("vo.commission", getText("E0001_1", new String[]{"NonCash Commission"}));
+			hasError = true;
+		}
+		
+		//Cash Commission Validation Check
+		tmpAmt = vo.getCashCommission();
+		if (tmpAmt != null) {
+			if (tmpAmt < MIN_COMMISSION || tmpAmt > MAX_COMMISSION ) {
+				// 0 < Cash Commission < 99.99
+				addFieldError("vo.cashCommission", getText("E0008", new String[]{"Cash Commission", MIN_COMMISSION.toString(), MAX_COMMISSION.toString()}));
+				hasError = true;
+			}
+		} else {
+			addFieldError("vo.cashCommission", getText("E0001_1", new String[]{"Cash Commission"}));
+			hasError = true;
+		}
+
 		
 		//Delivery/Take-out Validation Check
 		if (ValidationUtil.isBlank(vo.getRestaurantType())) {
@@ -530,15 +837,23 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 		}
 
 		//Min. Order Validation Check
-		if (!ValidationUtil.isBlank(vo.getMinPrice().toString()) && !ValidationUtil.isNum(vo.getMinPrice().toString())) {
-			addFieldError("vo.minPrice", getText("E0003_1", new String[]{"Min. Order"}));
-			hasError = true;
+		tmpAmt = vo.getMinPrice();
+		if (tmpAmt != null) {
+			if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+				// 0 < Min. Order < 999.99
+				addFieldError("vo.minPrice", getText("E0008", new String[]{"Min. Order", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+				hasError = true;
+			}
 		}
 		
 		//Ave. Price Validation Check
-		if (!ValidationUtil.isBlank(vo.getAveragePrice().toString()) && !ValidationUtil.isNum(vo.getAveragePrice().toString())) {
-			addFieldError("vo.averagePrice", getText("E0003_1", new String[]{"Ave. Price"}));
-			hasError = true;
+		tmpAmt = vo.getAveragePrice();
+		if (tmpAmt != null) {
+			if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+				// 0 < Delivery Fee < 999.99
+				addFieldError("vo.averagePrice", getText("E0008", new String[]{"Ave. Price", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+				hasError = true;
+			}
 		}
 		
 		//Billing Account Validation Check
@@ -562,13 +877,129 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private boolean checkValidationOpenHour() {
 		
 		boolean hasError = false;
-		if (!ValidationUtil.isTime("23:59", TIME_PATTERN)) {
-			// Date(from) is not datetype
-			addFieldError("condition.fromDate", getText("E0003_1", new String[]{"Date(from)"}));
-			hasError = false;
-	
-		}
+		if (EVERYDAY.equals(bizHourType)) {
+			if (ValidationUtil.isBlank(bizAll1Start)) {
+				// Open1(From) is required
+				addFieldError("bizAll1Start", getText("E0001_1", new String[]{"Open1(From)"}));
+				hasError = true;
 		
+			}
+			if (ValidationUtil.isBlank(bizAll1End)) {
+				// Open1(To) is required
+				addFieldError("bizAll1End", getText("E0001_1", new String[]{"Open1(To)"}));
+				hasError = true;
+			}
+		} else {
+			for (int i = 0; i < DAY_SIZE; i++) {
+				if (!openHourlist.get(i).isCloseFlag()) {
+					if (ValidationUtil.isBlank(openHourlist.get(i).getStartTime1())) {
+						// Open1(From) is required
+						addFieldError("openHourlist[" + i + "].startTime1", getText("E0001_1", new String[]{"Open1(From)"}));
+						hasError = true;
+					}
+					if (ValidationUtil.isBlank(openHourlist.get(i).getEndTime1())) {
+						// Open1(To) is required
+						addFieldError("openHourlist[" + i + "].endTime1", getText("E0001_1", new String[]{"Open1(To)"}));
+						hasError = true;
+					}
+				}
+			}
+		}
+		return hasError;
+	}
+	
+	/**
+	 * Validation check(Delivery Open Hour)
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidationDelivOpenHour() {
+		
+		boolean hasError = false;
+		if (EVERYDAY.equals(bizHourDelivType)) {
+			if (ValidationUtil.isBlank(bizDelivAll1Start)) {
+				// Open1(From) is required
+				addFieldError("bizDelivAll1Start", getText("E0001_1", new String[]{"Open1(From)"}));
+				hasError = true;
+		
+			}
+			if (ValidationUtil.isBlank(bizDelivAll1End)) {
+				// Open1(To) is required
+				addFieldError("bizDelivAll1End", getText("E0001_1", new String[]{"Open1(To)"}));
+				hasError = true;
+			}
+		} else {
+			for (int i = 0; i < DAY_SIZE; i++) {
+				if (!openHourDelivlist.get(i).isCloseFlag()) {
+					if (ValidationUtil.isBlank(openHourDelivlist.get(i).getStartTime1())) {
+						// Open1(From) is required
+						addFieldError("openHourDelivlist[" + i + "].startTime1", getText("E0001_1", new String[]{"Open1(From)"}));
+						hasError = true;
+					}
+					if (ValidationUtil.isBlank(openHourDelivlist.get(i).getEndTime1())) {
+						// Open1(To) is required
+						addFieldError("openHourDelivlist[" + i + "].endTime1", getText("E0001_1", new String[]{"Open1(To)"}));
+						hasError = true;
+					}
+				}
+			}
+		}
+		return hasError;
+	}
+	
+	/**
+	 * Validation check(Delivery Area)
+	 * @param list : delivery area to insert
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidationDelivArea(List<RestaurantDeliveryAreaVO> list) {
+		
+		boolean hasError = false;
+		int size = list.size();
+		String tmpStr = "";
+		Float tmpAmt = 0.00f;
+		for (int i = 0; i < size; i++) {
+			// Prefix Validation Check
+			tmpStr = list.get(i).getPostalPrefix();
+			if (ValidationUtil.isBlank(tmpStr)) {
+				// Prefix is required
+				addFieldError("restDelivArealist[" + i + "].postalPrefix", getText("E0001_1", new String[]{"Postal Code Prefix"}));
+				hasError = true;
+			} else {
+				if (!ValidationUtil.isNumEng(tmpStr)) {
+					// Prefix is NumEng
+					addFieldError("restDelivArealist[" + i + "].postalPrefix", getText("E0003_1", new String[]{"Postal Code Prefix"}));
+					hasError = true;
+				}
+			}
+			
+			// Min Price Validation Check
+			tmpAmt = list.get(i).getMinPrice();
+			if (tmpAmt != null) {
+				if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+					// 0 < Min Price < 999.99
+					addFieldError("restDelivArealist[" + i + "].minPrice", getText("E0008", new String[]{"Min. Price", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+					hasError = true;
+				}
+			} else {
+				// Min Price is required
+				addFieldError("restDelivArealist[" + i + "].minPrice", getText("E0001_1", new String[]{"Min. Price"}));
+				hasError = true;
+			}
+			
+			// Delivery Fee Validation Check
+			tmpAmt = list.get(i).getDeliveryFee();
+			if (tmpAmt != null) {
+				if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+					// 0 < Delivery Fee < 999.99
+					addFieldError("restDelivArealist[" + i + "].deliveryFee", getText("E0008", new String[]{"Delivery Fee", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+					hasError = true;
+				}
+			} else {
+				// Delivery Fee is required
+				addFieldError("restDelivArealist[" + i + "].deliveryFee", getText("E0001_1", new String[]{"Delivery Fee"}));
+				hasError = true;
+			}
+		}
 		return hasError;
 	}
 	
@@ -576,19 +1007,18 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	 * File upload
 	 */	
 	private void upload() {
-		FileUtil util = new FileUtil();
 		StringBuilder sb = new StringBuilder();
 		// Logo file
 		if (logofile != null) {
 			sb.append(vo.getRestaurantID()).append("_logo.jpg");
-			util.writePict(logofile, "RESTAURANT", sb.toString());
+			FileUtil.writePict(logofile, FileUtil.RESTAURANT_DIR, sb.toString());
 			vo.setLogoImagePath(sb.toString());
 		}
 		sb.setLength(0);
 		// Main Image file
 		if (mainfile != null) {
 			sb.append(vo.getRestaurantID()).append("_main.jpg");
-			util.writePict(mainfile, "RESTAURANT", sb.toString());
+			FileUtil.writePict(mainfile, FileUtil.RESTAURANT_DIR, sb.toString());
 			vo.setMainImagePath(sb.toString());
 		}
 
@@ -598,50 +1028,88 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	 */		
 	private void addOpenHours() {
 
-		RestaurantOpenHourVO rvo = null;
-		DeliveryOpenHourVO dvo = null;
-		for (int i = 0; i < 7; i++) {
-			rvo = new RestaurantOpenHourVO();
-			rvo.setSeq(1);
-			rvo.setWeekDay(i);
-			rvo.setStartTime(StringConvertUtil.convertString2Time("11:00"));
-			rvo.setEndTime(StringConvertUtil.convertString2Time("15:00"));
-			openHour1list.add(rvo);
-			rvo = new RestaurantOpenHourVO();
-			rvo.setSeq(2);
-			rvo.setWeekDay(i);
-			rvo.setStartTime(StringConvertUtil.convertString2Time("17:00"));
-			rvo.setEndTime(StringConvertUtil.convertString2Time("22:00"));
-			openHour2list.add(rvo);
-			
-			dvo = new DeliveryOpenHourVO();
-			dvo.setSeq(1);
-			dvo.setWeekDay(i);
-			rvo.setStartTime(StringConvertUtil.convertString2Time("11:00"));
-			rvo.setEndTime(StringConvertUtil.convertString2Time("15:00"));
-			openHourDeliv1list.add(dvo);
-			dvo = new DeliveryOpenHourVO();
-			dvo.setSeq(2);
-			dvo.setWeekDay(i);
-			rvo.setStartTime(StringConvertUtil.convertString2Time("17:00"));
-			rvo.setEndTime(StringConvertUtil.convertString2Time("22:00"));
-			openHourDeliv2list.add(dvo);
+		// Input empty open hour VOs
+		openHourlist.clear();
+		HourListVO vo = null;
+		for (int i =0; i < DAY_SIZE; i++) {
+			vo = new HourListVO();
+			vo.setWeekDay(i);
+			openHourlist.add(vo);
 		}
 	}
 	
 	/**
-	 *  Set Hour list to list1 and list2
-	 *  @param list : all restaurant open hour list
+	 *  Input empty delivery open hour VOs
 	 */		
-	private void setHourList(List<RestaurantOpenHourVO> hourlist) {
-		int size = hourlist.size();
-		for (int i =0; i < size; i++) {
-			if (hourlist.get(i).getSeq() == 1) {
-				openHour1list.add(hourlist.get(i));
-			} else {
-				openHour2list.add(hourlist.get(i));
+	private void addDelivOpenHours() {
+
+		// Input empty open hour VOs
+		openHourDelivlist.clear();
+		HourListVO vo = null;
+		for (int i =0; i < DAY_SIZE; i++) {
+			
+			vo = new HourListVO();
+			vo.setWeekDay(i);
+			openHourDelivlist.add(vo);
+		}
+	}
+	
+	/**
+	 *  reload restaurant information
+	 *  @param type: reload type ALL, AREA, DELIVHOUR, OPENHOUR, MASTER
+	 */		
+	private void reload(Integer type) {
+
+		// Reload Restaurant Master except case of saving master
+		if (type != MASTER) {
+			RestaurantMasterDao mdao = new RestaurantMasterDao();
+			vo = mdao.selectByID(vo.getRestaurantID());		
+		}
+
+		
+		// Reload open hours except case of saving open hours 
+		if (type != OPENHOUR) {
+			RestaurantOpenHourDao rodao = new RestaurantOpenHourDao();
+			openHourlist = rodao.selectByID(vo.getRestaurantID());
+			if (openHourlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addOpenHours();
 			}
 		}
+		
+		// Reload delivery open hours except case of saving delivery open hours	
+		if (type != DELIVHOUR) {
+			DeliveryOpenHourDao dodao = new DeliveryOpenHourDao();
+			openHourDelivlist = dodao.selectHourListByID(vo.getDeliveryCompanyID());
+			if (openHourDelivlist.size() == 0) {
+				// In case no open hours, add empty open hour list
+				addDelivOpenHours();
+			}
+		}
+		
+		// Reload delivery areas except case of saving delivery areas	
+		if (type != AREA) {
+			// Select Delivery areas
+			RestaurantDeliveryAreaDao rddao = new RestaurantDeliveryAreaDao();
+			restDelivArealist = rddao.selectByID(vo.getRestaurantID());
+		}
+	}
+	
+	/**
+	 *  refine keywords :trim spaces and split by comma
+	 *  @param value: inputted keywords String
+	 *  @return String: refined keywords
+	 */		
+	private String refineKeywords(String value) {
+		if (value == null || "".equals(value)) {
+			return "";
+		}
+		// refine keywords : trim spaces
+		String[] arrayKeywords = value.split(DELIMITER);
+		for (int i = 0; i < arrayKeywords.length; i++) {
+			arrayKeywords[i] = arrayKeywords[i].trim();
+		}
+		return StringUtils.join(arrayKeywords, DELIMITER);
 	}
 	
 	/**
@@ -764,33 +1232,6 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the openHour1list
-	 */
-	public List<RestaurantOpenHourVO> getOpenHour1list() {
-		return openHour1list;
-	}
-
-	/**
-	 * @param openHour1list the openHour1list to set
-	 */
-	public void setOpenHour1list(List<RestaurantOpenHourVO> openHour1list) {
-		this.openHour1list = openHour1list;
-	}
-	/**
-	 * @return the openHour2list
-	 */
-	public List<RestaurantOpenHourVO> getOpenHour2list() {
-		return openHour2list;
-	}
-
-	/**
-	 * @param openHour2list the openHour2list to set
-	 */
-	public void setOpenHour2list(List<RestaurantOpenHourVO> openHour2list) {
-		this.openHour2list = openHour2list;
-	}
-
-	/**
 	 * @return the logofile
 	 */
 	public File getLogofile() {
@@ -908,145 +1349,116 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	public void setBizHourDelivType(String bizHourDelivType) {
 		this.bizHourDelivType = bizHourDelivType;
 	}
-
 	/**
 	 * @return the bizAll1Start
 	 */
-	public Time getBizAll1Start() {
+	public String getBizAll1Start() {
 		return bizAll1Start;
 	}
 
 	/**
 	 * @param bizAll1Start the bizAll1Start to set
 	 */
-	public void setBizAll1Start(Time bizAll1Start) {
+	public void setBizAll1Start(String bizAll1Start) {
 		this.bizAll1Start = bizAll1Start;
 	}
 
 	/**
 	 * @return the bizAll1End
 	 */
-	public Time getBizAll1End() {
+	public String getBizAll1End() {
 		return bizAll1End;
 	}
 
 	/**
 	 * @param bizAll1End the bizAll1End to set
 	 */
-	public void setBizAll1End(Time bizAll1End) {
+	public void setBizAll1End(String bizAll1End) {
 		this.bizAll1End = bizAll1End;
 	}
 
 	/**
 	 * @return the bizAll2Start
 	 */
-	public Time getBizAll2Start() {
+	public String getBizAll2Start() {
 		return bizAll2Start;
 	}
 
 	/**
 	 * @param bizAll2Start the bizAll2Start to set
 	 */
-	public void setBizAll2Start(Time bizAll2Start) {
+	public void setBizAll2Start(String bizAll2Start) {
 		this.bizAll2Start = bizAll2Start;
 	}
 
 	/**
 	 * @return the bizAll2End
 	 */
-	public Time getBizAll2End() {
+	public String getBizAll2End() {
 		return bizAll2End;
 	}
 
 	/**
 	 * @param bizAll2End the bizAll2End to set
 	 */
-	public void setBizAll2End(Time bizAll2End) {
+	public void setBizAll2End(String bizAll2End) {
 		this.bizAll2End = bizAll2End;
 	}
 
 	/**
 	 * @return the bizDelivAll1Start
 	 */
-	public Time getBizDelivAll1Start() {
+	public String getBizDelivAll1Start() {
 		return bizDelivAll1Start;
 	}
 
 	/**
 	 * @param bizDelivAll1Start the bizDelivAll1Start to set
 	 */
-	public void setBizDelivAll1Start(Time bizDelivAll1Start) {
+	public void setBizDelivAll1Start(String bizDelivAll1Start) {
 		this.bizDelivAll1Start = bizDelivAll1Start;
 	}
 
 	/**
 	 * @return the bizDelivAll1End
 	 */
-	public Time getBizDelivAll1End() {
+	public String getBizDelivAll1End() {
 		return bizDelivAll1End;
 	}
 
 	/**
 	 * @param bizDelivAll1End the bizDelivAll1End to set
 	 */
-	public void setBizDelivAll1End(Time bizDelivAll1End) {
+	public void setBizDelivAll1End(String bizDelivAll1End) {
 		this.bizDelivAll1End = bizDelivAll1End;
 	}
 
 	/**
 	 * @return the bizDelivAll2Start
 	 */
-	public Time getBizDelivAll2Start() {
+	public String getBizDelivAll2Start() {
 		return bizDelivAll2Start;
 	}
 
 	/**
 	 * @param bizDelivAll2Start the bizDelivAll2Start to set
 	 */
-	public void setBizDelivAll2Start(Time bizDelivAll2Start) {
+	public void setBizDelivAll2Start(String bizDelivAll2Start) {
 		this.bizDelivAll2Start = bizDelivAll2Start;
 	}
 
 	/**
 	 * @return the bizDelivAll2End
 	 */
-	public Time getBizDelivAll2End() {
+	public String getBizDelivAll2End() {
 		return bizDelivAll2End;
 	}
 
 	/**
 	 * @param bizDelivAll2End the bizDelivAll2End to set
 	 */
-	public void setBizDelivAll2End(Time bizDelivAll2End) {
+	public void setBizDelivAll2End(String bizDelivAll2End) {
 		this.bizDelivAll2End = bizDelivAll2End;
-	}
-
-	/**
-	 * @return the openHourDeliv1list
-	 */
-	public List<DeliveryOpenHourVO> getOpenHourDeliv1list() {
-		return openHourDeliv1list;
-	}
-
-	/**
-	 * @param openHourDeliv1list the openHourDeliv1list to set
-	 */
-	public void setOpenHourDeliv1list(List<DeliveryOpenHourVO> openHourDeliv1list) {
-		this.openHourDeliv1list = openHourDeliv1list;
-	}
-
-	/**
-	 * @return the openHourDeliv2list
-	 */
-	public List<DeliveryOpenHourVO> getOpenHourDeliv2list() {
-		return openHourDeliv2list;
-	}
-
-	/**
-	 * @param openHourDeliv2list the openHourDeliv2list to set
-	 */
-	public void setOpenHourDeliv2list(List<DeliveryOpenHourVO> openHourDeliv2list) {
-		this.openHourDeliv2list = openHourDeliv2list;
 	}
 
 	/**
@@ -1062,5 +1474,96 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	public void setRestDelivArealist(
 			List<RestaurantDeliveryAreaVO> restDelivArealist) {
 		this.restDelivArealist = restDelivArealist;
+	}
+
+	/**
+	 * @return the openHourlist
+	 */
+	public List<HourListVO> getOpenHourlist() {
+		return openHourlist;
+	}
+
+	/**
+	 * @param openHourlist the openHourlist to set
+	 */
+	public void setOpenHourlist(List<HourListVO> openHourlist) {
+		this.openHourlist = openHourlist;
+	}
+
+	/**
+	 * @return the openHourDelivlist
+	 */
+	public List<HourListVO> getOpenHourDelivlist() {
+		return openHourDelivlist;
+	}
+
+	/**
+	 * @param openHourDelivlist the openHourDelivlist to set
+	 */
+	public void setOpenHourDelivlist(List<HourListVO> openHourDelivlist) {
+		this.openHourDelivlist = openHourDelivlist;
+	}
+
+	/**
+	 * @return the naDelivFlag
+	 */
+	public boolean isNaDelivFlag() {
+		return naDelivFlag;
+	}
+
+	/**
+	 * @param naDelivFlag the naDelivFlag to set
+	 */
+	public void setNaDelivFlag(boolean naDelivFlag) {
+		this.naDelivFlag = naDelivFlag;
+	}
+
+	/**
+	 * @return the delivArealist
+	 */
+	public List<DeliveryAreaVO> getDelivArealist() {
+		return delivArealist;
+	}
+
+	/**
+	 * @param delivArealist the delivArealist to set
+	 */
+	public void setDelivArealist(List<DeliveryAreaVO> delivArealist) {
+		this.delivArealist = delivArealist;
+	}
+
+	/**
+	 * @return the deliveryCompanyList
+	 */
+	public List<DeliveryMasterVO> getDeliveryCompanyList() {
+		return deliveryCompanyList;
+	}
+
+	/**
+	 * @return the condition
+	 */
+	public DeliveryAreaListConditionVO getCondition() {
+		return condition;
+	}
+
+	/**
+	 * @param condition the condition to set
+	 */
+	public void setCondition(DeliveryAreaListConditionVO condition) {
+		this.condition = condition;
+	}
+
+	/**
+	 * @return the cityMapList
+	 */
+	public List<CodeMasterVO> getCityMapList() {
+		return cityMapList;
+	}
+
+	/**
+	 * @return the active
+	 */
+	public Integer getActive() {
+		return active;
 	}
 }

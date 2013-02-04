@@ -10,8 +10,8 @@ public class RestaurantCategoryVO {
 	/** restaurant menu columns*/
 	private String restaurantID = "";
 	private Integer categoryID = 0;
-	private String Name = "";
-	private Integer sort = 0;
+	private String name = "";
+	private Integer sort = 1;
 	/**
 	 * @return the restaurantID
 	 */
@@ -40,13 +40,13 @@ public class RestaurantCategoryVO {
 	 * @return the name
 	 */
 	public String getName() {
-		return Name;
+		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
 	/**
 	 * @return the sort

@@ -15,6 +15,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.MemberMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
 
@@ -58,40 +59,58 @@ public class MemberListAction extends ActionSupport implements Preparable {
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
+		
 		// set up dropdown menu from codes
-		roleList = codeMap.get(Constants.KEY_CD_ROLE);
+		List<CodeMasterVO> orgList = codeMap.get(Constants.KEY_CD_ROLE);
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		// set up roleList with only same or lower level of user's role
+		roleList = CodeUtil.copyCode(orgList);
+		int size = roleList.size();
+		for (int i = 0; i < size; i++) {
+			if (Integer.parseInt(roleList.get(i).getCode()) < Integer.parseInt(uservo.getAuth())) {
+				// In case of the same or lower level of user's role
+				roleList.remove(i--);
+				size--;
+			}
+		}
+		logger.info("<---prepare end --->");
 	}
 	
 	/**
-	 * Initiate MemberList, MemberAdd, MemberEdit page
+	 * Initiate MemberList page
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
-		logger.info("<---Init start --->");
+		logger.info("<---init start --->");
 		
 		MemberMasterDao dao = new MemberMasterDao();
-		list = dao.selectAll();
+		
+		// Select all memember by same or lower level of user's role
+		int size = roleList.size();
+		conditionRoles.clear();
+		for (int i = 0; i < size; i++) {
+			conditionRoles.add(roleList.get(i).getCode());
+		}
+		list = dao.select(conditionRoles);
 
-		logger.info("<---Init end --->");
+		logger.info("<---init end --->");
 		return SUCCESS;
 	}
 	
 	/**
-	 * Insert member data
+	 * Select member list
 	 * @return SUCCESS
 	 */
 	@Override
 	public String execute() throws Exception {
-		logger.info("<---Execute start --->");
+		logger.info("<---execute start --->");
 		MemberMasterDao dao = new MemberMasterDao();
 		if (conditionRoles.size() == 0) {
 			// Date(from) is not datetype
@@ -102,7 +121,7 @@ public class MemberListAction extends ActionSupport implements Preparable {
 		
 		list = dao.select(conditionRoles);
 		
-		logger.info("<---Execute end --->");
+		logger.info("<---execute end --->");
 		return SUCCESS;
 	}
 

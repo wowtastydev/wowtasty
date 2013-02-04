@@ -22,12 +22,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	SELECT 
 	<include refid="columns"/>
 	FROM delivery_master 
-	WHERE DeliveryCompanyID = #{deliveryCompanyID}
+	WHERE DeliveryCompanyID = #{id}
 	</select>
 	
 	<!--selectMaxID-->
-	<select id="selectMaxID" resultType="java.lang.String">
-	SELECT Create_MaxID(3)
+	<select id="selectMaxID" resultType="String">
+	SELECT Create_MaxID(4)
 	</select>
 	
 	<!--Insert-->
@@ -39,26 +39,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	VALUES
 	(	#{deliveryCompanyID},
 	    #{deliveryCompanyType},
-		#{name},
+		TRIM(#{name}),
 		#{memberID},
-		#{firstName},
-		#{lastName},
-		#{telephone},
-		#{fax},
-		#{address},
-		#{suite},
+		TRIM(#{firstName}),
+		TRIM(#{lastName}),
+		TRIM(#{telephone}),
+		TRIM(#{fax}),
+		TRIM(#{address}),
+		TRIM(#{suite}),
 		#{city},
 		#{province},
-		#{postalCode},
-		#{logoImagePath},
-		#{website},
-		#{facebook},
-		#{email1},
-		#{email2},
+		UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+		TRIM(#{website}),
+		TRIM(#{facebook}),
+		TRIM(#{email1}),
+		TRIM(#{email2}),
+		TRIM(#{logoImagePath}),
 		#{commissionType},
-		#{commission},
+		TRIM(#{commission}),
 		#{status},
-		#{registerDate},
+		now(),
 		#{naFlag},
 		#{updateID},
 		now())
@@ -68,24 +68,24 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id = "update" parameterType="deliverymastervo">
 		UPDATE delivery_master
 		SET DeliveryCompanyType = #{deliveryCompanyType},
-			Name = #{name},
+			Name = TRIM(#{name}),
 			MemberID = #{memberID},
-			FirstName = #{firstName},
-			LastName = #{lastName},
-			Telephone = #{telephone},
-			Fax = #{fax},
-			Address = #{address},
-			Suite = #{suite},
+			FirstName = TRIM(#{firstName}),
+			LastName = TRIM(#{lastName}),
+			Telephone = TRIM(#{telephone}),
+			Fax = TRIM(#{fax}),
+			Address = TRIM(#{address}),
+			Suite = TRIM(#{suite}),
 			City = #{city},
 			Province = #{province},
-			PostalCode = #{postalCode},
-			LogoImagePath = #{logoImagePath},
-			Website = #{website},
-			Facebook = #{facebook},
-			Email1 = #{email1},
-			Email2 = #{email2},
+			PostalCode = UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+			LogoImagePath = TRIM(#{logoImagePath}),
+			Website = TRIM(#{website}),
+			Facebook = TRIM(#{facebook}),
+			Email1 = TRIM(#{email1}),
+			Email2 = TRIM(#{email2}),
 			CommissionType = #{commissionType},
-			Commission = #{commission},
+			Commission = TRIM(#{commission}),
 			Status = #{status},
 			RegisterDate = #{registerDate},
 			NAFlag = #{naFlag},

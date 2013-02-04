@@ -15,6 +15,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	FROM delivery_area 
 	</select>
 	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="deliveryareavo">
+	SELECT 
+	<include refid="columns"/>
+	FROM delivery_area
+	WHERE DeliveryCompanyID = #{id} 
+	</select>
+	
 	<!--Insert-->
 	<insert id = "insert" parameterType="deliveryareavo">
 	INSERT INTO delivery_area
@@ -23,27 +31,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		)
 	VALUES
 	(	#{deliveryCompanyID},
-		#{postalPrefix},
+		UPPER(TRIM(#{postalPrefix})),
 		#{seq},
-		#{minPrice},
-		#{deliveryFee})
+		TRIM(#{minPrice}),
+		TRIM(#{deliveryFee}))
 	</insert>
-	
-	<!--Update-->
-	<update id = "update" parameterType="deliveryareavo">
-		UPDATE delivery_area
-		SET MinPrice = #{minPrice},
-			DeliveryFee = #{deliveryFee}
-		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
-		  AND PostalPrefix = #{postalPrefix}
-		  AND Seq = #{seq}
-	</update>
 	
 	<!--Delete-->
 	<delete id = "delete" parameterType="deliveryareavo">
 		DELETE FROM delivery_area
 		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
-		  AND PostalPrefix = #{postalPrefix}
-		  AND Seq = #{seq}
 	</delete>
+
 </mapper>

@@ -109,9 +109,10 @@ public class ValidationUtil {
 		if (value.length() < 8) {
 			return false;
 		}
-		if(!value.matches("[a-zA-Z]+") && !value.matches("[!,@,#,$,%,^,&,*,?,_,~]+")) {
+		if(!value.matches("[0-9a-zA-Z!@#$%^&*?_~]+")) {
 			return false;
 		}
+
 		return true;
 	}
 	
@@ -170,6 +171,22 @@ public class ValidationUtil {
 			return false;
 		}
 		if(!value.matches("[0-9]+")) {
+			return false;
+		}
+		return true;
+	}
+	
+	
+	/**
+	 * check if string is valid Candian postal code 
+	 * @param value Candian postal code
+	 * @return boolean: true-valid, false-invalid 
+	 */
+	public static boolean isPostalCode(String value) {
+		if (value == null || value.trim().length() == 0) {
+			return false;
+		}
+		if(!value.matches("[a-zA-Z]{1}\\d{1}[a-zA-Z]{1} *\\d{1}[a-zA-Z]{1}\\d{1}$")) {
 			return false;
 		}
 		return true;

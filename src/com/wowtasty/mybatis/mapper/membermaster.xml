@@ -11,17 +11,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		, Ecash, Status, TotalOrderCnt, RegisterDate, NAFlag, UpdateID, UpdateTime
 	</sql>
 	
-	<!--selectAll-->
-	<select id="selectAll" resultType="membermastervo">
-	SELECT 
-	<include refid="columns"/>
-	FROM member_master ORDER BY MemberID
-	</select>
-	
 	<!--select-->
 	<select id="select" parameterType="java.util.List" resultType="membermastervo">
 	SELECT 
-	<include refid="columns"/>
+		MemberID, Email, Password, Auth, Get_CdShortName('006', Auth) as AuthName
+		, FirstName, LastName, Telephone, Address
+		, Suite, City, Province, PostalCode, DelivFirstName, DelivLastName, DelivTelephone
+		, DelivAddress, DelivSuite, DelivBuzzer, DelivCity, DelivProvince, DelivPostalCode, DelivInstruction
+		, Ecash, Status, TotalOrderCnt, RegisterDate, NAFlag, UpdateID, UpdateTime
 	FROM member_master 
 	WHERE auth in 
 	<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
@@ -54,60 +51,36 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--Insert-->
 	<insert id = "insert" parameterType="membermastervo">
 	INSERT INTO member_master
-	( 	MemberID,
-		Email,
-		Password,
-		Auth,
-		FirstName,
-		LastName,
-		Telephone,
-		Address,
-		Suite,
-		City,
-		Province,
-		PostalCode,
-		DelivFirstName,
-		DelivLastName,
-		DelivTelephone,
-		DelivAddress,
-		DelivSuite,
-		DelivBuzzer,
-		DelivCity,
-		DelivProvince,
-		DelivPostalCode,
-		DelivInstruction,
-		Ecash,
-		Status,
-		RegisterDate,
-		NAFlag,
-		UpdateID,
-		UpdateTime)
+	( 	
+	<include refid="columns"/>
+	)
 	VALUES
 	(	#{memberID},
 		TRIM(#{email}),
 		#{password},
 		#{auth},
-		#{firstName},
-		#{lastName},
-		#{telephone},
-		#{address},
-		#{suite},
+		TRIM(#{firstName}),
+		TRIM(#{lastName}),
+		TRIM(#{telephone}),
+		TRIM(#{address}),
+		TRIM(#{suite}),
 		#{city},
 		#{province},
-		TRIM(REPLACE(#{postalCode},' ','')),
-		#{delivFirstName},
-		#{delivLastName},
-		#{delivTelephone},
-		#{delivAddress},
-		#{delivSuite},
-		#{delivBuzzer},
+		UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+		TRIM(#{delivFirstName}),
+		TRIM(#{delivLastName}),
+		TRIM(#{delivTelephone}),
+		TRIM(#{delivAddress}),
+		TRIM(#{delivSuite}),
+		TRIM(#{delivBuzzer}),
 		#{delivCity},
 		#{delivProvince},
-		TRIM(REPLACE(#{delivPostalCode},' ','')),
-		#{delivInstruction},
-		#{ecash},
+		UPPER(TRIM(REPLACE(#{delivPostalCode},' ',''))),
+		TRIM(#{delivInstruction}),
+		TRIM(#{ecash}),
 		#{status},
-		#{registerDate},
+		#{totalOrderCnt},
+		now(),
 		#{naFlag},
 		#{updateID},
 		now())
@@ -116,29 +89,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--Update-->
 	<update id = "update" parameterType="membermastervo">
 		UPDATE member_master
-		SET Email = #{email},
+		SET Email = TRIM(#{email}),
 			Password = #{password},
 			Auth = #{auth},
-			FirstName = #{firstName},
-			LastName = #{lastName},
-			Telephone = #{telephone},
-			Address = #{address},
-			Suite = #{suite},
+			FirstName = TRIM(#{firstName}),
+			LastName = TRIM(#{lastName}),
+			Telephone = TRIM(#{telephone}),
+			Address = TRIM(#{address}),
+			Suite = TRIM(#{suite}),
 			City = #{city},
 			Province = #{province},
-			PostalCode = TRIM(REPLACE(#{postalCode},' ','')),
-			DelivFirstName = #{delivFirstName},
-			DelivLastName = #{delivLastName},
-			DelivTelephone = #{delivTelephone},
-			DelivAddress = #{delivAddress},
-			DelivSuite = #{delivSuite},
-			DelivBuzzer = #{delivBuzzer},
+			PostalCode = UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+			DelivFirstName = TRIM(#{delivFirstName}),
+			DelivLastName = TRIM(#{delivLastName}),
+			DelivTelephone = TRIM(#{delivTelephone}),
+			DelivAddress = TRIM(#{delivAddress}),
+			DelivSuite = TRIM(#{delivSuite}),
+			DelivBuzzer = TRIM(#{delivBuzzer}),
 			DelivCity = #{delivCity},
 			DelivProvince = #{delivProvince},
-			DelivPostalCode = TRIM(REPLACE(#{delivPostalCode},' ','')),
-			DelivInstruction = #{delivInstruction},
-			Ecash = #{ecash},
+			DelivPostalCode = UPPER(TRIM(REPLACE(#{delivPostalCode},' ',''))),
+			DelivInstruction = TRIM(#{delivInstruction}),
+			Ecash = TRIM(#{ecash}),
 			Status = #{status},
+			TotalOrderCnt = #{totalOrderCnt}, 
 			RegisterDate = #{registerDate},
 			NAFlag = #{naFlag},
 			UpdateID = #{updateID},

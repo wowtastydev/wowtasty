@@ -1,0 +1,639 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="bill" pageWidth="612" pageHeight="792" columnWidth="532" leftMargin="40" rightMargin="40" topMargin="30" bottomMargin="40" uuid="9949b486-9074-4bc6-a4b3-6c2d7539e8cd">
+	<property name="ireport.zoom" value="1.40197559792557"/>
+	<property name="ireport.x" value="60"/>
+	<property name="ireport.y" value="716"/>
+	<import value="com.wowtasty.mybatis.vo.*"/>
+	<import value="com.wowtasty.mybatis.vo.BillMasterVO.*"/>
+	<parameter name="BillingID" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="CompanyName" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="BillAccountNO" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="IssuedDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="BillAddress" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="BillAddress2" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="PaymentAmount" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="BillFrom" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="BillTo" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="Food" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="CashCommission" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="Commission" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="Delivery" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="Tip" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="Adjustment" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="LastIssuedDate" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="LastPaymentAmount" class="java.lang.Double" isForPrompting="false"/>
+	<parameter name="TaxNO" class="java.lang.String" isForPrompting="false"/>
+	<field name="deliveryTime" class="java.sql.Timestamp"/>
+	<field name="totalMenuName" class="java.lang.String"/>
+	<field name="foodPriceWithTax" class="java.lang.Double"/>
+	<field name="totalPrice" class="java.lang.Double"/>
+	<field name="adjustPrice" class="java.lang.Double"/>
+	<field name="deliveryPriceWithTax" class="java.lang.Double"/>
+	<field name="tipPrice" class="java.lang.Double"/>
+	<field name="commissionPrice" class="java.lang.Double"/>
+	<field name="deliveryTypeName" class="java.lang.String"/>
+	<field name="paymentTypeName" class="java.lang.String"/>
+	<variable name="SUBTOTAL" class="java.lang.Float">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="114" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="6332d70c-7497-472b-a0ff-5bf83e1b4052" x="0" y="0" width="187" height="55"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="28" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Service Bill]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="70a396be-43bb-4b83-a99b-6ac027c60e7a" x="0" y="37" width="106" height="25"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Wowtasty.com
+]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="c080e483-2377-4ea1-9423-c1f1b71ce2e8" x="385" y="15" width="164" height="35"/>
+				<imageExpression><![CDATA["D:\\eclipse\\workspace\\WowTasty\\WebContent\\images\\wowlogo.jpg"]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement uuid="c748d9dc-23ba-4bd0-aefd-a2f70e3d3980" x="90" y="66" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillingID}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="290c6ae1-cb8d-4bf7-923d-c4c8d6a00724" x="0" y="66" width="87" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Invoice Number :  ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bf09df24-fa97-4126-afa6-1b3115c06039" x="0" y="93" width="100" height="20"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Account Details]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="11b8746e-6d60-46ba-a589-6a1b25c91ba8" x="25" y="59" width="150" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="9eb3e844-ee5b-4b9f-a139-3652eabbc9a1" x="152" y="32" width="1" height="35" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="9c29e6f1-35b9-45db-be72-cac121decfb6" x="426" y="93" width="100" height="20" forecolor="#0000FF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom"/>
+				<text><![CDATA[* Including TAX]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="8bed652b-6c9f-46b2-be84-33150cb60955" x="0" y="1" width="45" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b4585b8a-8a5c-462f-b2bf-c673fb47db8c" x="160" y="1" width="124" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Item]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a003737e-65aa-49d1-974b-2bb3aec4ad96" x="45" y="1" width="35" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Time]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="df216469-2883-419d-9e0a-bc5da9bd0f5a" x="0" y="24" width="530" height="1" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="33cf4dca-67c9-4d3f-8478-eb80a0f7f701" x="284" y="1" width="55" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Food *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="33cf4dca-67c9-4d3f-8478-eb80a0f7f701" x="339" y="1" width="45" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Fees *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="33cf4dca-67c9-4d3f-8478-eb80a0f7f701" x="385" y="1" width="40" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Deliv.*]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="33cf4dca-67c9-4d3f-8478-eb80a0f7f701" x="426" y="1" width="40" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Tip]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9d809b7c-1b35-4a48-894e-420b1204b399" x="467" y="1" width="63" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a003737e-65aa-49d1-974b-2bb3aec4ad96" x="80" y="1" width="40" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="a003737e-65aa-49d1-974b-2bb3aec4ad96" x="120" y="1" width="40" height="23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Pay]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField pattern="MM/dd/yy">
+				<reportElement uuid="df1e6464-773b-4515-95a1-ab3a7c6c571b" x="0" y="1" width="45" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryTime}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm">
+				<reportElement uuid="71a2c387-07e6-4d12-a314-6fb58e34fbc4" x="45" y="1" width="35" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryTime}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="695065a8-4f48-451a-8388-f4193e123c55" x="160" y="1" width="124" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalMenuName}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement uuid="b4dbfa3f-db76-48a3-a188-06059c13a708" x="426" y="1" width="40" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipPrice}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement uuid="b4dbfa3f-db76-48a3-a188-06059c13a708" x="284" y="1" width="55" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{foodPriceWithTax}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement uuid="b4dbfa3f-db76-48a3-a188-06059c13a708" x="339" y="1" width="45" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{commissionPrice}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement uuid="b4dbfa3f-db76-48a3-a188-06059c13a708" x="385" y="1" width="40" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryPriceWithTax}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,##0.00">
+				<reportElement uuid="ffff33ed-2595-4d5f-9b0a-77be5c3033bc" x="467" y="1" width="63" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="695065a8-4f48-451a-8388-f4193e123c55" x="80" y="1" width="40" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deliveryTypeName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="695065a8-4f48-451a-8388-f4193e123c55" x="120" y="1" width="40" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paymentTypeName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement uuid="a5a72e2b-4f3b-4bde-889f-2220471e842f" x="475" y="1" width="25" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement uuid="fba13efc-6a0d-4d21-a2e0-ca1f028ecdfd" x="505" y="1" width="25" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9385c60a-8420-4b26-9cb3-aad96e349fe9" x="500" y="1" width="5" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[/]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="2c550f01-625c-4500-b0a4-aa3917c8ddf5" x="445" y="1" width="30" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Page]]></text>
+			</staticText>
+		</band>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="fca88145-6d96-497b-b873-58042c3c6cd1" x="8" y="7" width="518" height="45"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false" isUnderline="false"/>
+					<paragraph lineSpacing="Fixed" lineSpacingSize="10.0"/>
+				</textElement>
+				<text><![CDATA[CUSTOMER SERVICE  : 9AM - 9PM Mon - Sat (604) 968-3333 / www.wowtasty.com/cs
+info@wowtasty.com  / 609-510 West Hastings St. Vancouver BC V6B 1L8]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="14ad4e04-b7af-48bb-9968-54278e2bdd81" x="-5" y="4" width="140" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="558d35a5-16cb-4b11-adf2-0b72b3482050" x="4" y="-7" width="1" height="45" forecolor="#999999"/>
+			</line>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="722" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="117a0006-31a3-4630-90e1-62715342cba3" x="57" y="481" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Delivery Fees *]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="532b2b0c-d942-4567-a944-041d689dd66b" isPrintRepeatedValues="false" x="300" y="417" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Commission}]]></textFieldExpression>
+			</textField>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ac2a8c3b-2be6-40bf-a200-477031258f89" isPrintRepeatedValues="false" x="300" y="512" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Tip}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="8cfc88d8-d7a6-4abe-9dc7-808658c95292" x="2" y="292" width="85" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillFrom}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="413ad548-ce2e-4daa-aa42-b4667fb4b9ff" x="225" y="272" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Issued Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="1b28ae69-f4af-4336-8313-3eff0fb0b245" x="57" y="417" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Commission(Non-Cash) *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="290c6ae1-cb8d-4bf7-923d-c4c8d6a00724" x="2" y="105" width="87" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Issued For]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ade2e334-739b-425d-82ae-201be2948afd" x="57" y="385" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Food Total *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="502ded00-d686-4a64-bc2a-ad324c969a67" x="57" y="512" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Tips / Gratuities]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement uuid="594b8283-83e0-4b6b-9bc2-11a6d798868a" isPrintRepeatedValues="false" x="225" y="127" width="160" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillAccountNO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="d1fb452e-a6c1-488b-8bf7-f9415cc1e35a" isPrintRepeatedValues="false" x="2" y="165" width="198" height="25"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillAddress}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="a28e750a-9eea-4bdc-a8dc-b8f9cf34d4b1" isPrintRepeatedValues="false" x="225" y="292" width="125" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{IssuedDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="ee466515-010d-41ac-944a-239669338506" x="225" y="105" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Account Number]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="6aed9d3a-9d7b-423a-b683-2605d4fc36df" isPrintRepeatedValues="false" x="300" y="481" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Delivery}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="7f1feb68-fe2f-4d00-9d21-335dbff976b2" x="399" y="272" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Payment Amount]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d34e1b82-0ca8-4a36-8dcc-0b368ff0dcf6" x="300" y="599" width="170" height="30"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="15" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PaymentAmount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="398a3ef7-5737-4ffd-97d7-574849aaa894" isPrintRepeatedValues="false" x="2" y="127" width="198" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="16" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CompanyName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="7f1feb68-fe2f-4d00-9d21-335dbff976b2" x="57" y="599" width="200" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="15" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Total Amount *]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="6c920b8a-6fde-479c-b215-8e0865655585" isPrintRepeatedValues="false" x="300" y="385" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Food}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cf8b881c-3e84-47d5-98c7-4967e7fdc9ba" x="57" y="543" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Adjustment *]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d1fb452e-a6c1-488b-8bf7-f9415cc1e35a" isPrintRepeatedValues="false" x="2" y="190" width="198" height="25"/>
+				<textElement verticalAlignment="Top">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillAddress2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="6d461114-4997-431b-9523-1a36f068a7bf" x="104" y="292" width="85" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillTo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="bf0d102c-734f-49ab-97d4-1fb63dfb2d00" x="57" y="449" width="220" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Commission(Cash) *]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9e809914-905a-43a2-b253-4dbc9cc2e2e6" x="89" y="292" width="13" height="35"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[~]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="094763a5-6716-4533-bdb0-07a31db8a89d" isPrintRepeatedValues="false" x="300" y="449" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{CashCommission}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="0a7d870c-27a2-4164-9e98-9dcfafb36217" x="2" y="350" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Account Summary]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d34e1b82-0ca8-4a36-8dcc-0b368ff0dcf6" isPrintRepeatedValues="false" x="399" y="292" width="124" height="35"/>
+				<textElement verticalAlignment="Middle">
+					<font size="14" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PaymentAmount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="59648d5c-552a-46ef-9568-3474bb88d3ba" x="2" y="272" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Sales Period]]></text>
+			</staticText>
+			<image>
+				<reportElement uuid="c080e483-2377-4ea1-9423-c1f1b71ce2e8" x="385" y="15" width="164" height="35"/>
+				<imageExpression><![CDATA["D:\\eclipse\\workspace\\WowTasty\\WebContent\\images\\wowlogo.jpg"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="6332d70c-7497-472b-a0ff-5bf83e1b4052" x="0" y="0" width="187" height="55"/>
+				<textElement verticalAlignment="Middle">
+					<font size="28" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Service Bill
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="70a396be-43bb-4b83-a99b-6ac027c60e7a" x="0" y="37" width="106" height="25"/>
+				<textElement verticalAlignment="Top">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[Wowtasty.com
+]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="290c6ae1-cb8d-4bf7-923d-c4c8d6a00724" x="0" y="66" width="87" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Invoice Number :  ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c748d9dc-23ba-4bd0-aefd-a2f70e3d3980" x="90" y="66" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BillingID}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement uuid="ad19438c-c19f-4407-ac70-ca44bd9cb96a" mode="Transparent" x="25" y="593" width="480" height="41"/>
+				<graphicElement>
+					<pen lineWidth="3.0" lineColor="#999999"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="fca88145-6d96-497b-b873-58042c3c6cd1" x="8" y="677" width="518" height="45"/>
+				<textElement verticalAlignment="Middle">
+					<font size="12" isBold="false" isUnderline="false"/>
+					<paragraph lineSpacing="Fixed" lineSpacingSize="10.0"/>
+				</textElement>
+				<text><![CDATA[CUSTOMER SERVICE  : 9AM - 9PM Mon - Sat (604) 968-3333 / www.wowtasty.com/cs
+info@wowtasty.com  / 609-510 West Hastings St. Vancouver BC V6B 1L8]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="5ec87d46-3f44-4f0e-99c8-d9a379eed833" x="-5" y="676" width="140" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="bfa9984c-1e7f-476f-82c7-d6ae843abb8e" x="4" y="664" width="1" height="45" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="aa9b8cfb-fb87-423b-a111-404298ffc8b0" x="25" y="59" width="150" height="1" forecolor="#999999"/>
+			</line>
+			<line>
+				<reportElement uuid="223d6fbe-b54c-4494-9122-ad8cb7c5ce45" x="152" y="32" width="1" height="35" forecolor="#999999"/>
+			</line>
+			<staticText>
+				<reportElement uuid="2c550f01-625c-4500-b0a4-aa3917c8ddf5" x="445" y="649" width="30" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Page]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="a5a72e2b-4f3b-4bde-889f-2220471e842f" x="475" y="649" width="25" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9385c60a-8420-4b26-9cb3-aad96e349fe9" x="500" y="649" width="5" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[/]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement uuid="fba13efc-6a0d-4d21-a2e0-ca1f028ecdfd" x="505" y="649" width="25" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="9c29e6f1-35b9-45db-be72-cac121decfb6" x="27" y="647" width="100" height="20" forecolor="#0000FF"/>
+				<textElement/>
+				<text><![CDATA[* Including TAX]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="ac2a8c3b-2be6-40bf-a200-477031258f89" isPrintRepeatedValues="false" x="300" y="543" width="170" height="25"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="14" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Adjustment}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="59648d5c-552a-46ef-9568-3474bb88d3ba" x="396" y="105" width="125" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Last Payment Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="7f1feb68-fe2f-4d00-9d21-335dbff976b2" x="396" y="161" width="127" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Last Payment Amount]]></text>
+			</staticText>
+			<textField pattern="$ #,###,##0.00" isBlankWhenNull="true">
+				<reportElement uuid="d34e1b82-0ca8-4a36-8dcc-0b368ff0dcf6" isPrintRepeatedValues="false" x="396" y="181" width="127" height="30"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{LastPaymentAmount}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement uuid="a28e750a-9eea-4bdc-a8dc-b8f9cf34d4b1" isPrintRepeatedValues="false" x="396" y="127" width="125" height="30"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11" isBold="true" pdfFontName="Helvetica-Bold" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{LastIssuedDate}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement uuid="61b0ba1a-2e5f-4b33-ada6-3dca1e8aa0c8" x="2" y="264" width="527" height="1"/>
+				<graphicElement>
+					<pen lineStyle="Dotted" lineColor="#999999"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement uuid="290c6ae1-cb8d-4bf7-923d-c4c8d6a00724" x="380" y="66" width="49" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[TAX NO :  ]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="c748d9dc-23ba-4bd0-aefd-a2f70e3d3980" x="430" y="66" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{TaxNO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

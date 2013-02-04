@@ -1,9 +1,7 @@
 package com.wowtasty.action;
 
-import java.io.File;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -13,17 +11,12 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.RestaurantMasterDao;
-import com.wowtasty.mybatis.vo.CodeMasterVO;
+import com.wowtasty.mybatis.dao.RestaurantPictDao;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.mybatis.vo.RestaurantPictVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.FileUtil;
-import com.wowtasty.util.SessionUtil;
-import com.wowtasty.util.ValidationUtil;
-
-
-
 
 /**
  * @author Hak C.
@@ -33,12 +26,14 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 	
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
+	
+	/** constants */
+	private static final Integer MAX_ROW = 5;
+	private static final Long MAX_SIZE = 2*1024*1024l;
+	private static final String DELIMITER = ",";
 
 	/** Logger */
 	private static Logger logger = Logger.getLogger(RestaurantPhotoAction.class);
-	
-	/** codemaster map */
-	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
@@ -51,27 +46,20 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 	// Meta Description : Restaurant Name,City Name,Postal prefix, Cuisine Type, Delivery/Take out
 	private String metaDescription = "Description FoodDelivery,WowStaty,Vancouver";
 	
+	/** Restaurant VO*/
+	private RestaurantMasterVO restVO = new RestaurantMasterVO();
+	
 	/** Restaurant Vos Columns */
-	private RestaurantMasterVO vo = new RestaurantMasterVO();
-	private RestaurantPictVO pictvo = new RestaurantPictVO();
 	private String selectedID = "";
-	
-	/** Files upload */
-	private File logofile = null;
-	private String logofileContentType = "";
-	private String logofileFileName = "";
-	
-	private File mainfile = null;
-	private String mainfileContentType = "";
-	private String mainfileFileName = "";
+	private List<RestaurantPictVO> pictureList = new ArrayList<RestaurantPictVO>();
+	private List<RestaurantPictVO> pictureUploadList = new ArrayList<RestaurantPictVO>();
+	private String sortStr = "";
 	
 	/**
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
 		logger.info("<---Prepare start --->");
-		// codes from session
-		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
@@ -81,234 +69,216 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
-	 * Initiate MemberAdd page
+	 * Initiate Restaurant Photo page
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
 		logger.info("<---Init start --->");
 		
+		if ("".equals(selectedID)) {
+			return INPUT;
+		}
+		
+		// Restaurant Master
+		RestaurantMasterDao rdao = new RestaurantMasterDao();
+		restVO = rdao.selectByID(selectedID);
+		
+		// Select current picture
+		RestaurantPictDao dao = new RestaurantPictDao();
+		pictureList = dao.selectByID(selectedID);
+		
+		// Add Upload picture
+		RestaurantPictVO rpvo = null; 
+		pictureUploadList.clear();
+		for (int i = 0; i < MAX_ROW; i++) {
+			rpvo = new RestaurantPictVO();
+			rpvo.setRestaurantID(selectedID);
+			rpvo.setSeq(i + pictureList.size() + 1);
+			pictureUploadList.add(rpvo);
+		}
+
 		logger.info("<---Init end --->");
 		return SUCCESS;
 	}
-	
-	/**
-	 * Initiate MemberEdit page
-	 * @return SUCCESS
-	 */
-	public String initEdit() throws Exception {
-		logger.info("<---initEdit start --->");
-		
-		RestaurantMasterDao dao = new RestaurantMasterDao();
-		vo = dao.selectByID(selectedID);
 
-		logger.info("<---initEdit end --->");
-		return SUCCESS;
-	}
-	
 	/**
-	 * Insert/Edit restaurant data
+	 * Insert restaurant photo
 	 * @return SUCCESS
 	 */
 	@Override
 	public String execute() throws Exception {
 		logger.info("<---execute start --->");
 		
-		// Check Information Validation
+		RestaurantPictDao rpdao = new RestaurantPictDao();
+		
+		// Upload Images
+		int size = pictureUploadList.size();
+		
+		// Validation check
 		boolean hasError = false;
-		hasError = checkValidationInfo();
+		RestaurantPictVO rpvo = null;
+		long filesize = 0;
+		String fileContentType = "";
+		
+		for (int i = 0; i < size; i++) {
+			rpvo = pictureUploadList.get(i);
+			if (rpvo != null && rpvo.getFile() != null) {
+				// File size MAX_SIZE
+				filesize = rpvo.getFile().length();
+				if (filesize > MAX_SIZE) {
+					addFieldError("pictureUploadList[" + i + "].file", getText("E0006", new String[]{"Image", MAX_SIZE.toString()}));
+					hasError = true;
+				}
+				
+				// File type
+				fileContentType = rpvo.getFileContentType();
+				if (!fileContentType.startsWith("image/")) {
+					addFieldError("pictureUploadList[" + i + "].file", getText("E0003_1", new String[]{"Image"}));
+					hasError = true;
+				}
+			}
+		}
 		
 		// In case of validation error, return INPUT
 		if (hasError) {
 			return INPUT;
 		}
 		
-		RestaurantMasterDao dao = new RestaurantMasterDao();
-		int returnCnt = 0;
-		if ("".equals(vo.getRestaurantID())) {
-			//　Insert
-			// Take maxID
-			// Set memberID,status
-			vo.setRestaurantID(dao.selectMaxID());
-			
-			// Upload Images
-			upload();
-			
-			//Insert MemberMasterdata
-			dao = new RestaurantMasterDao();
-			returnCnt = dao.insert(vo);
-			if (returnCnt > 0) {
-				addActionMessage("Restaurant infomation has been inserted successfully");
-			}
-		} else {
-			
-			// Upload Images
-			upload();
-						
-			// Update
-			dao = new RestaurantMasterDao();
-			returnCnt = dao.update(vo);
-			if (returnCnt > 0) {
-				addActionMessage("Restaurant infomation has been updated successfully");
+		// Upload files
+		for (int i = 0; i < size; i++) {
+			rpvo = pictureUploadList.get(i);
+			if (rpvo != null && rpvo.getFile() != null) {
+				filesize = rpvo.getFile().length();
+				rpvo.setFileSize(filesize);
+				upload(rpvo);
+				
+				// Insert new pictures
+				rpvo.setUpdateID(uservo.getMemberID());
+				rpdao.insert(rpvo);
 			}
 		}
-
+		
+		// Select current picture
+		pictureList = rpdao.selectByID(selectedID);
+		
+		// Add Upload picture
+		pictureUploadList.clear();
+		for (int i = 0; i < MAX_ROW; i++) {
+			rpvo = new RestaurantPictVO();
+			rpvo.setRestaurantID(selectedID);
+			rpvo.setSeq(i + pictureList.size() + 1);
+			pictureUploadList.add(rpvo);
+		}
+		
+		addActionMessage("Restaurant photos have been inserted successfully");
+		
 		logger.info("<---execute end --->");
 		return SUCCESS;
 	}
 	
 	/**
-	 * Validation check(Restaurant Information)
-	 * @return true : validation error, false: no error
-	 */	
-	private boolean checkValidationInfo() {
+	 * Edit restaurant photo
+	 * @return SUCCESS
+	 */
+	public String edit() throws Exception {
+		try{
+		logger.info("<---edit start --->");
+		String[] sortArray = sortStr.split(DELIMITER);
+		RestaurantPictDao rpdao = new RestaurantPictDao();
+		String orgFileName = "";
+		String newFileName = "";
+		StringBuilder sb = new StringBuilder();
+		List<RestaurantPictVO> newList = new ArrayList<RestaurantPictVO>();
 		
-		boolean hasError = false;
-	
-		// Restaurant Name Validation Check
-		if (ValidationUtil.isBlank(vo.getName())) {
-			addFieldError("vo.name", getText("E0001_1", new String[]{"Restaurant Name"}));
-			hasError = true;
+		// Change all original files to temp files
+		int size = pictureList.size();
+		for (int i = 0; i < size; i++) {
+			orgFileName = pictureList.get(i).getFileName();
+			sb.setLength(0);
+			newFileName = sb.append(orgFileName).append(FileUtil.STR_TEMP).toString();
+			FileUtil.renameRestImage(orgFileName, newFileName);
 		}
+
+		// Change Images
+		String newSeq = "";
+		RestaurantPictVO newVo = null;
+		RestaurantPictVO orgVo = null;
 		
-		// Cuisine Type Validation Check
-		if (ValidationUtil.isBlank(vo.getCuisineType())) {
-			addFieldError("vo.cuisineType", getText("E0001_1", new String[]{"Cuisine Type"}));
-			hasError = true;
-		}
-		
-		//Telephone Validation Check
-		if (ValidationUtil.isBlank(vo.getTelephone())) {
-			addFieldError("vo.telephone", getText("E0001_1", new String[]{"Telephone Number"}));
-			hasError = true;
-		} else {
-			// Valid check
-			if (!ValidationUtil.isTelephone(vo.getTelephone())) {
-				addFieldError("vo.telephone", getText("E0003_1", new String[]{"Telephone Number"}));
-				hasError = true;
+		for (int i = 0; i < sortArray.length; i++) {
+			// Sorted new sequence
+			newSeq = sortArray[i];
+			// If new sequence is not the same as original sequence, because of changing orders or delete pictures
+			if (!"".equals(newSeq)) {
+				// change seqence
+				orgVo = pictureList.get(Integer.parseInt(newSeq) - 1);
+				newVo = new RestaurantPictVO();
+				newVo.setRestaurantID(orgVo.getRestaurantID());
+				newVo.setSeq(i + 1);
+				newVo.setFileSize(orgVo.getFileSize());
+				newVo.setFilePath(orgVo.getFilePath());
+				newVo.setUpdateID(uservo.getMemberID());
+				sb.setLength(0);
+				orgFileName = sb.append(orgVo.getFileName()).append(FileUtil.STR_TEMP).toString();
+				sb.setLength(0);
+				newFileName = sb.append(newVo.getRestaurantID()).append("_").append(String.format("%03d", newVo.getSeq())).append(".jpg").toString();
+				FileUtil.renameRestImage(orgFileName, newFileName);
+				newVo.setFileName(newFileName);
+				
+				newList.add(newVo);
 			}
 		}
-		
-		// Fax Validation Check
-		if (!ValidationUtil.isBlank(vo.getFax()) && !ValidationUtil.isTelephone(vo.getFax())) {
-			addFieldError("vo.fax", getText("E0003_1", new String[]{"Fax Number"}));
-			hasError = true;
-		}
-
-		//Address Validation Check
-		if (ValidationUtil.isBlank(vo.getAddress())) {
-			addFieldError("vo.address", getText("E0001_1", new String[]{"Address"}));
-			hasError = true;
+		// Delete original's temp file if there is any
+		for (int i = 0; i < size; i++) {
+			FileUtil.deleteRestTempImage(pictureList.get(i).getFileName());
 		}
 		
-		//City Validation Check
-		if (ValidationUtil.isBlank(vo.getCity())) {
-			addFieldError("vo.city", getText("E0001_1", new String[]{"City"}));
-			hasError = true;
-		}
-		
-		//Province Validation Check
-		if (ValidationUtil.isBlank(vo.getProvince())) {
-			addFieldError("vo.province", getText("E0001_1", new String[]{"Province"}));
-			hasError = true;
-		}
-		
-		//Suite Number Validation Check
-		if (!ValidationUtil.isBlank(vo.getSuite()) && !ValidationUtil.isNumEng(vo.getSuite())) {
-			addFieldError("vo.suite", getText("E0003_1", new String[]{"Suite Number"}));
-			hasError = true;
-		}
-		
-		//Postal Code Validation Check
-		if (ValidationUtil.isBlank(vo.getPostalCode())) {
-			addFieldError("vo.postalCode", getText("E0001_1", new String[]{"Postal Code"}));
-			hasError = true;
+		// Update db table
+		if (newList.size() == 0) {
+			// Delete all
+			rpdao.delete(selectedID);
 		} else {
-			if (!ValidationUtil.isNumEng(vo.getPostalCode())) {
-				addFieldError("vo.postalCode", getText("E0003_1", new String[]{"Postal Code"}));
-				hasError = true;
-			}			
+			rpdao.updateAll(newList);
 		}
 		
-		//Email1 Validation Check
-		if (ValidationUtil.isBlank(vo.getEmail1())) {
-			addFieldError("vo.email1", getText("E0001_1", new String[]{"Email1"}));
-			hasError = true;
-		} else {
-			if (!ValidationUtil.isEmail(vo.getEmail1())) {
-				addFieldError("vo.email1", getText("E0003_1", new String[]{"Email1"}));
-				hasError = true;
-			}			
+		
+		// Select current picture
+		pictureList = rpdao.selectByID(selectedID);
+		
+		// Add Upload picture
+		pictureUploadList.clear();
+		RestaurantPictVO rpvo = null;  
+		for (int i = 0; i < MAX_ROW; i++) {
+			rpvo = new RestaurantPictVO();
+			rpvo.setRestaurantID(selectedID);
+			rpvo.setSeq(i + pictureList.size() + 1);
+			pictureUploadList.add(rpvo);
 		}
 		
-		//Email2 Validation Check
-		if (!ValidationUtil.isBlank(vo.getEmail2()) && !ValidationUtil.isEmail(vo.getEmail2())) {
-			addFieldError("vo.email2", getText("E0003_1", new String[]{"Email2"}));
-			hasError = true;
+		addActionMessage("Restaurant photos have been edited successfully");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		//Commission Validation Check
-		if (ValidationUtil.isBlank(vo.getCommission().toString())) {
-			addFieldError("vo.commission", getText("E0001_1", new String[]{"Commission"}));
-			hasError = true;
-		} else {
-			if (!ValidationUtil.isNum(vo.getCommission().toString())) {
-				addFieldError("vo.commission", getText("E0003_1", new String[]{"Commission"}));
-				hasError = true;
-			}			
-		}
-		
-		//Delivery/Take-out Validation Check
-		if (ValidationUtil.isBlank(vo.getRestaurantType())) {
-			addFieldError("vo.restaurantType", getText("E0001_1", new String[]{"Delivery/Take-out"}));
-			hasError = true;
-		}
-
-		//Min. Order Validation Check
-		if (!ValidationUtil.isBlank(vo.getMinPrice().toString()) && !ValidationUtil.isNum(vo.getMinPrice().toString())) {
-			addFieldError("vo.minPrice", getText("E0003_1", new String[]{"Min. Order"}));
-			hasError = true;
-		}
-		
-		//Ave. Price Validation Check
-		if (!ValidationUtil.isBlank(vo.getAveragePrice().toString()) && !ValidationUtil.isNum(vo.getAveragePrice().toString())) {
-			addFieldError("vo.averagePrice", getText("E0003_1", new String[]{"Ave. Price"}));
-			hasError = true;
-		}
-		
-		//Billing Account Validation Check
-		if (ValidationUtil.isBlank(vo.getBillAccountNO())) {
-			addFieldError("vo.billAccountNO", getText("E0001_1", new String[]{"Billing Account No"}));
-			hasError = true;
-		} else {
-			if (!ValidationUtil.isNumEng(vo.getBillAccountNO())) {
-				addFieldError("vo.billAccountNO", getText("E0003_1", new String[]{"Billing Account No"}));
-				hasError = true;
-			}			
-		}	
-		
-		return hasError;
-	}
+		logger.info("<---edit end --->");
+		return SUCCESS;
+	}	
 	
 	/**
 	 * File upload
+	 * @param rpvo : Restaurant picture vo
 	 */	
-	private void upload() {
-		FileUtil util = new FileUtil();
+	private void upload(RestaurantPictVO rpvo) {
 		StringBuilder sb = new StringBuilder();
-		// Logo file
-		if (logofile != null) {
-			sb.append(vo.getRestaurantID()).append("_logo.jpg");
-			util.writePict(logofile, "RESTAURANT", sb.toString());
-			vo.setLogoImagePath(sb.toString());
-		}
-		sb.setLength(0);
-		// Main Image file
-		if (mainfile != null) {
-			sb.append(vo.getRestaurantID()).append("_main.jpg");
-			util.writePict(mainfile, "RESTAURANT", sb.toString());
-			vo.setMainImagePath(sb.toString());
-		}
+		// File Upload
+		sb.append(rpvo.getRestaurantID()).append("_").append(String.format("%03d", rpvo.getSeq())).append(".jpg");
+		FileUtil.writePict(rpvo.getFile(), FileUtil.RESTAURANT_DIR, sb.toString());
+		rpvo.setFileName(sb.toString());
+	}
 
+	/**
+	 * @param pictureList the pictureList to set
+	 */
+	public void setPictureList(List<RestaurantPictVO> pictureList) {
+		this.pictureList = pictureList;
 	}
 
 	/**
@@ -368,17 +338,24 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the vo
+	 * @return the pictureUploadList
 	 */
-	public RestaurantMasterVO getVo() {
-		return vo;
+	public List<RestaurantPictVO> getPictureUploadList() {
+		return pictureUploadList;
 	}
 
 	/**
-	 * @param vo the vo to set
+	 * @param pictureUploadList the pictureUploadList to set
 	 */
-	public void setVo(RestaurantMasterVO vo) {
-		this.vo = vo;
+	public void setPictureUploadList(List<RestaurantPictVO> pictureUploadList) {
+		this.pictureUploadList = pictureUploadList;
+	}
+
+	/**
+	 * @return the pictureList
+	 */
+	public List<RestaurantPictVO> getPictureList() {
+		return pictureList;
 	}
 
 	/**
@@ -396,101 +373,30 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the pictvo
+	 * @return the sortStr
 	 */
-	public RestaurantPictVO getPictvo() {
-		return pictvo;
+	public String getSortStr() {
+		return sortStr;
 	}
 
 	/**
-	 * @param pictvo the pictvo to set
+	 * @param sortStr the sortStr to set
 	 */
-	public void setPictvo(RestaurantPictVO pictvo) {
-		this.pictvo = pictvo;
+	public void setSortStr(String sortStr) {
+		this.sortStr = sortStr;
 	}
 
 	/**
-	 * @return the logofile
+	 * @return the restVO
 	 */
-	public File getLogofile() {
-		return logofile;
+	public RestaurantMasterVO getRestVO() {
+		return restVO;
 	}
 
 	/**
-	 * @param logofile the logofile to set
+	 * @param restVO the restVO to set
 	 */
-	public void setLogofile(File logofile) {
-		this.logofile = logofile;
+	public void setRestVO(RestaurantMasterVO restVO) {
+		this.restVO = restVO;
 	}
-
-	/**
-	 * @return the logofileContentType
-	 */
-	public String getLogofileContentType() {
-		return logofileContentType;
-	}
-
-	/**
-	 * @param logofileContentType the logofileContentType to set
-	 */
-	public void setLogofileContentType(String logofileContentType) {
-		this.logofileContentType = logofileContentType;
-	}
-
-	/**
-	 * @return the logofileFileName
-	 */
-	public String getLogofileFileName() {
-		return logofileFileName;
-	}
-
-	/**
-	 * @param logofileFileName the logofileFileName to set
-	 */
-	public void setLogofileFileName(String logofileFileName) {
-		this.logofileFileName = logofileFileName;
-	}
-
-	/**
-	 * @return the mainfile
-	 */
-	public File getMainfile() {
-		return mainfile;
-	}
-
-	/**
-	 * @param mainfile the mainfile to set
-	 */
-	public void setMainfile(File mainfile) {
-		this.mainfile = mainfile;
-	}
-
-	/**
-	 * @return the mainfileContentType
-	 */
-	public String getMainfileContentType() {
-		return mainfileContentType;
-	}
-
-	/**
-	 * @param mainfileContentType the mainfileContentType to set
-	 */
-	public void setMainfileContentType(String mainfileContentType) {
-		this.mainfileContentType = mainfileContentType;
-	}
-
-	/**
-	 * @return the mainfileFileName
-	 */
-	public String getMainfileFileName() {
-		return mainfileFileName;
-	}
-
-	/**
-	 * @param mainfileFileName the mainfileFileName to set
-	 */
-	public void setMainfileFileName(String mainfileFileName) {
-		this.mainfileFileName = mainfileFileName;
-	}
-	
 }

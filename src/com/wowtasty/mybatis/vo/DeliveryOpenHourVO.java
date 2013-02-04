@@ -11,7 +11,7 @@ public class DeliveryOpenHourVO {
 	/** delivery open hours columns*/
 	private String deliveryCompanyID = "";
 	private Integer weekDay = 0;
-	private Integer seq = 0;
+	private Integer seq = 1;
 	private Time startTime = null;
 	private Time endTime = null;
 

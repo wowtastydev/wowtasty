@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="billmaster">
+
+	<sql id="columns"> 
+		billingID, yearMonth, semiMonthType, billFrom, billTo, issueDate, companyType, companyID, companyName, billAddress, billSuite, billCity,
+		billProvince, billPostalCode, billAccountNO, salesAmount, foodAmount, commissionAmount, cashCommissionAmount,
+		deliveryAmount, tipAmount, adjustmentAmount, updateID, updateTime	
+	</sql>
+	
+	<!--selectMaxID-->
+	<select id="selectMaxID" resultType="String">
+	SELECT Create_MaxID(5)
+	</select>
+	
+	<!--select-->
+	<select id="select" parameterType="billinglistconditionvo" resultType="billinglistvo">
+	SELECT 
+		BillingID, CONCAT(SUBSTRING(YearMonth,1,4),'/',SUBSTRING(YearMonth,5,2)) AS YearMonth
+		, SemiMonthType, CompanyID, CompanyName
+	FROM bill_master 
+	WHERE 1=1
+		<if test="fromDate != ''">
+		AND YearMonth >= #{fromDate}
+		</if>
+		<if test="toDate != ''">
+		<![CDATA[
+		AND YearMonth <= #{toDate}
+		]]>
+		</if>
+	</select>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="billmastervo">
+	SELECT 
+		<include refid="columns"/>
+	FROM bill_master
+	WHERE BillingID = #{id}
+	</select>
+	
+	<!--selectLastPayment-->
+	<select id="selectLastPayment" parameterType="Map" resultType="billmastervo">
+	SELECT
+		<include refid="columns"/> 
+	FROM bill_master
+	WHERE (YearMonth != #{yearMonth} OR SemiMonthType != #{semiMonthType})
+      AND CompanyID = #{companyID}
+    ORDER BY YearMonth desc, SemiMonthType desc
+    LIMIT 0,1
+	</select>
+	
+	<!--selectMaxYearMonth-->
+	<select id="selectMaxYearMonth" resultType="String">
+	SELECT MAX(YearMonth) FROM bill_master
+	</select>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="String">
+		DELETE FROM bill_master
+		WHERE BillingID = #{id}
+	</delete>
+	
+</mapper>

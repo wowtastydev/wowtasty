@@ -14,7 +14,7 @@ public class RestaurantMenuOptionVO {
 	private Integer optionID = 0;
 	private String optionType = "";
 	private Integer optionGroup = 0;
-	private String Name = "";
+	private String name = "";
 	private Float extraCharge = 0.00f;
 	private String naFlag = "";
 	private String updateID = "";
@@ -84,13 +84,13 @@ public class RestaurantMenuOptionVO {
 	 * @return the name
 	 */
 	public String getName() {
-		return Name;
+		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
 	/**
 	 * @return the extraCharge

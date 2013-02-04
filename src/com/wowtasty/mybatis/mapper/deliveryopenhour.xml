@@ -13,7 +13,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	SELECT 
 	<include refid="columns"/>
 	FROM delivery_open_hour 
-	WHERE DeliveryCompanyID = #{deliveryCompanyID} 
+	WHERE DeliveryCompanyID = #{id} 
+	</select>
+	
+	<!--selectHourListByID-->
+	<select id="selectHourListByID" parameterType="String" resultType="hourlistvo">
+	SELECT DeliveryCompanyID AS ID, WeekDay
+		,CAST( MAX(IF(Seq = 1, StartTime, '')) AS CHAR(5)) AS startTime1
+		,CAST( MAX(IF(Seq = 1, EndTime, '')) AS CHAR(5)) AS endTime1
+		,CAST( MAX(IF(Seq = 2, StartTime, '')) AS CHAR(5)) AS startTime2
+		,CAST( MAX(IF(Seq = 2, EndTime, '')) AS CHAR(5)) AS endTime2
+	FROM delivery_open_hour
+	WHERE DeliveryCompanyID = #{id} 
+	GROUP BY DeliveryCompanyID, WeekDay
+	ORDER BY WeekDay
 	</select>
 	
 	<!--Insert-->

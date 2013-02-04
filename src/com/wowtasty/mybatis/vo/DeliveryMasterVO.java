@@ -32,7 +32,7 @@ public class DeliveryMasterVO {
 	private Float commission = 0.00f;
 	private String status = "";
 	private Date registerDate = null;
-	private String naFlag = "";
+	private String naFlag = "0";
 	private String updateID = "";
 	private Timestamp updateTime = null;
 	/**

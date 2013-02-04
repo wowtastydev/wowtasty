@@ -8,11 +8,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		RestaurantID,Seq,FileName,FilePath,FileSize,UpdateID,UpdateTime
 	</sql>
 	
-	<!--selectAll-->
-	<select id="selectAll" resultType="restaurantpictvo">
+	<!--selectByID-->
+	<select id="selectByID" parameterType="java.lang.String" resultType="restaurantpictvo">
 	SELECT 
 	<include refid="columns"/>
 	FROM restaurant_pict 
+	WHERE RestaurantID = #{id} 
 	</select>
 	
 	<!--Insert-->
@@ -28,7 +29,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{filePath},
 		#{fileSize},
 		#{updateID},
-		#{updateTime})
+		now())
 	</insert>
 	
 	<!--Update-->
@@ -38,15 +39,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			FilePath = #{filePath},
 			FileSize = #{fileSize},
 			UpdateID = #{updateID},
-			UpdateTime = #{updateTime}
+			UpdateTime = now()
 		WHERE RestaurantID = #{restaurantID} 
 		  AND Seq = #{seq}
 	</update>
 	
 	<!--Delete-->
-	<delete id = "delete" parameterType="restaurantpictvo">
+	<delete id = "delete" parameterType="java.lang.String">
 		DELETE FROM restaurant_pict
-		WHERE RestaurantID = #{restaurantID} 
-		  AND Seq = #{seq}
+		WHERE RestaurantID = #{id} 
 	</delete>
 </mapper>

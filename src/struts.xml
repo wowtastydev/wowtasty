@@ -6,6 +6,7 @@
 	<package name="wow-default" namespace="/" extends="struts-default">
 		<result-types>
 	        <result-type name="json" class="org.apache.struts2.json.JSONResult"/>
+	        <result-type name="jasper" class="org.apache.struts2.views.jasperreports.JasperReportsResult"/>
 	    </result-types>
 	    
 		<interceptors>
@@ -67,10 +68,13 @@
 	<include file="struts-a3.xml"></include>
 	<include file="struts-u0.xml"></include>
     <include file="struts-u2.xml"></include>
+    <!-- external action : email for restaurant-->
+    <include file="struts-x0.xml"></include>
 
 	<constant name="struts.custom.i18n.resources" value="message" />
 	<constant name="struts.xwork.chaining.copyFieldErrors" value="true"/>
     <constant name="struts.xwork.chaining.copyErrors" value="true"/>
     <constant name="struts.xwork.chaining.copyMessages" value="true"/>
     <constant name="struts.ognl.allowStaticMethodAccess" value="true"/>
+    <constant name="struts.i18n.encoding" value="UTF-8"/>
 </struts>

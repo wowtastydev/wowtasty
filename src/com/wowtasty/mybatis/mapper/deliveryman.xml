@@ -5,16 +5,67 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="deliveryman">
 
 	<sql id="columns"> 
-		deliveryCompanyID, deliveryManID, firstName, lastName, telephone, 
+		deliveryCompanyID, deliverymanID, firstName, lastName, telephone, 
 		email, address, suite, city, province, postalCode, naFlag, updateID, updateTime
 	</sql>
 	
-	
-	<select id="selectAll" resultType="deliverymanvo">
+	<!--selectByCompany-->
+	<select id="selectByCompany" parameterType="String" resultType="deliverymanvo">
 		SELECT 
 		<include refid="columns"/>
 		FROM delivery_man 
 		WHERE naflag != '1'
-		ORDER BY DeliveryCompanyID, DeliveryManID
+		  AND DeliveryCompanyID =#{id}
+		ORDER BY DeliveryManID
 	</select>
+	
+	<!--selectMaxID-->
+	<select id="selectMaxID" resultType="Integer">
+		SELECT IFNULL(MAX(DeliveryManID)+1,1)
+		FROM delivery_man 
+		WHERE DeliveryCompanyID =#{id}
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="deliverymanvo">
+	INSERT INTO delivery_man
+	( 	
+		<include refid="columns"/>
+	)
+	VALUES
+	(	#{deliveryCompanyID},
+	    #{deliverymanID},
+		TRIM(#{firstName}),
+		TRIM(#{lastName}),
+		TRIM(#{telephone}),
+		TRIM(#{email}),
+		TRIM(#{address}),
+		TRIM(#{suite}),
+		#{city},
+		#{province},
+		UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+		#{naFlag},
+		#{updateID},
+		now())
+	</insert>
+	
+	<!--Update-->
+	<update id = "update" parameterType="deliverymanvo">
+		UPDATE delivery_man
+		SET FirstName = TRIM(#{firstName}),
+			LastName = TRIM(#{lastName}),
+			Telephone = TRIM(#{telephone}),
+			Email = TRIM(#{email}),
+			Address = TRIM(#{address}),
+			Suite = TRIM(#{suite}),
+			City = #{city},
+			Province = #{province},
+			PostalCode = UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE DeliveryCompanyID = #{deliveryCompanyID}
+		  AND DeliveryManID = #{deliverymanID}
+	</update>
+	
 </mapper>

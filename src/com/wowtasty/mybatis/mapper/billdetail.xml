@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="billdetail">
+
+	<sql id="columns"> 
+		billingID, seq, orderID, restaurantID, orderTime, deliveryTime, deliveryType, deliveryCompanyID,
+		deliveryCompanyType, deliverymanID, orderMemberID, paymentType,
+		totalMenuName, deliveryPrice, deliveryTaxPrice, foodTotalPrice, foodTaxPrice, totalPrice,
+		tipPrice, totalPriceWithTax, commissionPrice, orderStatus
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="billdetailvo">
+	SELECT billingID, seq, orderID, restaurantID, orderTime, deliveryTime, deliveryType
+		, Get_CdShortName('101', deliveryType) as deliveryTypeName
+		, deliveryCompanyID, deliveryCompanyType, Get_CdShortName('301', deliveryCompanyType) as deliveryCompanyTypeName
+		, deliverymanID, paymentType, Get_CdShortName('104', paymentType) as paymentTypeName, orderMemberID, totalMenuName
+		, deliveryPrice, deliveryTaxPrice, (deliveryPrice + deliveryTaxPrice) as deliveryPriceWithTax
+		, foodTotalPrice, foodTaxPrice, (foodTotalPrice + foodTaxPrice) as foodPriceWithTax
+		, totalPrice, tipPrice, totalPriceWithTax, commissionPrice, orderStatus
+	FROM bill_detail
+	WHERE BillingID = #{id}
+	ORDER BY deliveryTime desc
+	</select>
+	
+	<!--selectReportingSummary-->
+	<select id="selectReportingSummary" parameterType="Map" resultType="reportinglistvo">
+	SELECT "Total" AS type, SUM(d.totalPriceWithTax) AS revenue
+        , SUM(CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) AS commissionDelivery
+        , SUM(CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) AS commissionTakeout
+        , SUM(d.commissionPrice) AS commissionTotal
+        , SUM(d.deliveryPrice + d.deliveryTaxPrice) AS deliveryPrice
+        , SUM(d.tipPrice) AS tipPrice
+        , SUM(CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) AS deliveryCount
+        , SUM(CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) AS takeoutCount
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth = #{yearMonth} and m.companyType='1'
+	UNION ALL
+	SELECT "Daily" AS type, CAST(SUM(d.totalPriceWithTax)/#{days} AS DECIMAL(10,2)) AS revenue
+	        , CAST(SUM(CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END)/#{days} AS DECIMAL(10,2)) AS commissionDelivery
+	        , CAST(SUM(CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END)/#{days} AS DECIMAL(10,2)) AS commissionTakeout
+	        , CAST(SUM(d.commissionPrice)/#{days} AS DECIMAL(10,2)) AS commissionTotal
+	        , CAST(SUM(d.deliveryPrice + d.deliveryTaxPrice)/#{days} AS DECIMAL(10,2)) AS deliveryPrice
+	        , CAST(SUM(d.tipPrice)/#{days} AS DECIMAL(10,2)) AS tipPrice
+	        , CAST(SUM(CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END)/#{days} AS DECIMAL(10,0)) AS deliveryCount
+	        , CAST(SUM(CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END)/#{days} AS DECIMAL(10,0)) AS takeoutCount
+		FROM bill_detail d
+			INNER JOIN bill_master m on m.billingID = d.billingID
+		WHERE m.yearMonth = #{yearMonth} and m.companyType='1'
+	</select>
+	
+	<!--selectReportingSummaryRate-->
+	<select id="selectReportingSummaryRate" parameterType="Map" resultType="reportinglistvo">
+	SELECT "Rate Last Month" AS type, CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS revenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) ELSE 0 END) * 100  as decimal(10,2))
+          END AS commissionDelivery
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) ELSE 0 END) * 100  as decimal(10,2))
+          END AS commissionTakeout
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS commissionTotal
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (d.deliveryPrice + d.deliveryTaxPrice) ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (d.deliveryPrice + d.deliveryTaxPrice) ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (d.deliveryPrice + d.deliveryTaxPrice) ELSE 0 END) * 100  as decimal(10,2))
+          END AS deliveryPrice
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.tipPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.tipPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.tipPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS tipPrice
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) ELSE 0 END) * 100  as decimal(10,2))
+          END AS deliveryCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) ELSE 0 END) * 100  as decimal(10,2))
+          END AS takeoutCount
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth IN (#{yearMonth},#{lastYearMonth}) and m.companyType='1'
+	</select>
+	
+	<!--selectReportingRestaurant-->
+	<select id="selectReportingRestaurant" parameterType="Map" resultType="reportinglistvo">
+	SELECT m.companyID, m.companyName as Type
+		, SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE totalPriceWithTax END) AS revenue
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) AS commissionDelivery
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) AS commissionTakeout
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) AS commissionTotal
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) AS deliveryPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) AS tipPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) AS deliveryCount
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) AS takeoutCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateRevenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateIncome
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth in (#{yearMonth},#{lastYearMonth}) and m.companyType='1'
+	GROUP BY m.companyID, m.companyName
+	ORDER BY m.companyName
+	</select>
+	
+	<!--selectReportingDay-->
+	<select id="selectReportingDay" parameterType="Map" resultType="reportinglistvo">
+	SELECT DATE_FORMAT(d.deliveryTime,'%w') as TypeNo, DATE_FORMAT(d.deliveryTime,'%a') as Type
+		, SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE totalPriceWithTax END) AS revenue
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) AS commissionDelivery
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) AS commissionTakeout
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) AS commissionTotal
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) AS deliveryPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) AS tipPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) AS deliveryCount
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) AS takeoutCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateRevenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateIncome
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth in (#{yearMonth},#{lastYearMonth})  and m.companyType='1'
+	GROUP BY TypeNo, Type
+	ORDER BY TypeNo
+	</select>
+	
+	
+	<!--selectReportingDate-->
+	<select id="selectReportingDate" parameterType="Map" resultType="reportinglistvo">
+	SELECT DATE_FORMAT(d.deliveryTime,'%d') as Type
+		, SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE totalPriceWithTax END) AS revenue
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) AS commissionDelivery
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) AS commissionTakeout
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) AS commissionTotal
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) AS deliveryPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) AS tipPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) AS deliveryCount
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) AS takeoutCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateRevenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateIncome
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth in (#{yearMonth},#{lastYearMonth})  and m.companyType='1'
+	GROUP BY Type
+	ORDER BY Type
+	</select>
+	
+	<!--selectReportingHour-->
+	<select id="selectReportingHour" parameterType="Map" resultType="reportinglistvo">
+	SELECT DATE_FORMAT(d.deliveryTime,'%H') as Type
+		, SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE totalPriceWithTax END) AS revenue
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) AS commissionDelivery
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) AS commissionTakeout
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) AS commissionTotal
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) AS deliveryPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) AS tipPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) AS deliveryCount
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) AS takeoutCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateRevenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateIncome
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth in (#{yearMonth},#{lastYearMonth})  and m.companyType='1'
+	GROUP BY Type
+	ORDER BY Type
+	</select>
+	
+	<!--selectReportingDelivery-->
+	<select id="selectReportingDelivery" parameterType="Map" resultType="reportinglistvo">
+	SELECT m.companyID, m.companyName as Type
+		, SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE totalPriceWithTax END) AS revenue
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN d.commissionPrice ELSE 0 END) END) AS commissionDelivery
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE d.commissionPrice END) END) AS commissionTakeout
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) AS commissionTotal
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (d.deliveryPrice + d.deliveryTaxPrice) END) AS deliveryPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.tipPrice END) AS tipPrice
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 1 ELSE 0 END) END) AS deliveryCount
+        , SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE (CASE WHEN d.deliveryType='1' THEN 0 ELSE 1 END) END) AS takeoutCount
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.totalPriceWithTax END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.totalPriceWithTax ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateRevenue
+        , CASE WHEN SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END)=0 THEN NULL 
+        	ELSE         
+               CAST((SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN 0 ELSE d.commissionPrice END) - SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END))
+                  /SUM(CASE WHEN m.yearMonth=#{lastYearMonth} THEN d.commissionPrice ELSE 0 END) * 100  as decimal(10,2))
+          END AS rateIncome
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+	WHERE m.yearMonth in (#{yearMonth},#{lastYearMonth})  and m.companyType='2'
+	GROUP BY m.companyID, m.companyName
+	ORDER BY m.companyName
+	</select>
+	
+		
+	<!--selectReportingExcel-->
+	<select id="selectReportingExcel" parameterType="String" resultType="reportingexcelvo">
+	SELECT d.billingID, d.seq, d.orderID, d.restaurantID, r.name as restaurantName
+	    , d.orderTime, d.deliveryTime
+	    , DATE_FORMAT(d.deliveryTime,'%a') as deliveryDay
+	    , DATE_FORMAT(d.deliveryTime,'%d') as deliveryDate
+	    , DATE_FORMAT(d.deliveryTime,'%H') as deliveryHour
+	    , d.deliveryType
+		, Get_CdName('101', d.deliveryType) as deliveryTypeName
+		, d.deliveryCompanyID
+		, deliv.name as deliveryCompanyName
+		, d.deliveryCompanyType
+		, Get_CdName('301', d.deliveryCompanyType) as deliveryCompanyTypeName
+		, d.deliverymanID, CONCAT(delivm.firstName, ' ', delivm.lastName) as deliverymanName
+		, d.paymentType, Get_CdName('104', d.paymentType) as paymentTypeName
+		, d.orderMemberID, d.totalMenuName
+		, d.deliveryPrice, d.deliveryTaxPrice, (d.deliveryPrice + d.deliveryTaxPrice) as deliveryPriceWithTax
+		, d.foodTotalPrice, d.foodTaxPrice, (d.foodTotalPrice + d.foodTaxPrice) as foodPriceWithTax
+		, d.totalPrice, d.tipPrice, d.totalPriceWithTax, d.commissionPrice
+		, d.orderStatus, Get_CdName('103', d.orderStatus) as orderStatusName
+	FROM bill_detail d
+		INNER JOIN bill_master m on m.billingID = d.billingID
+		INNER JOIN restaurant_master r on r.restaurantID = d.restaurantID
+		LEFT JOIN delivery_master deliv on deliv.deliveryCompanyID = d.deliveryCompanyID
+		LEFT JOIN delivery_man delivm on delivm.deliverymanID = d.deliverymanID
+	WHERE m.yearMonth = #{yearMonth} and m.companyType='1'
+	ORDER BY d.restaurantID, d.deliveryTime
+	</select>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="String">
+		DELETE FROM bill_detail
+		WHERE BillingID = #{id}
+	</delete>
+	
+</mapper>

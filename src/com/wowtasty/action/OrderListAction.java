@@ -2,6 +2,7 @@ package com.wowtasty.action;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,18 +16,20 @@ import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.ContentsTextDao;
 import com.wowtasty.mybatis.dao.DeliveryManDao;
 import com.wowtasty.mybatis.dao.OrderDao;
+import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.ContentsTextVO;
 import com.wowtasty.mybatis.vo.DeliveryManVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
+import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.MailSender;
+import com.wowtasty.util.OrderUtil;
 import com.wowtasty.util.SessionUtil;
 import com.wowtasty.util.ValidationUtil;
 import com.wowtasty.vo.OrderListConditionVO;
 import com.wowtasty.vo.OrderListVO;
-import com.wowtasty.vo.RadioButtonVO;
 
 
 /**
@@ -48,8 +51,8 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	private List<CodeMasterVO> orderStatusList = new ArrayList<CodeMasterVO>();
 	private List<CodeMasterVO> deliveryTypeList = new ArrayList<CodeMasterVO>();
 	private List<DeliveryManVO> deliverymanList = new ArrayList<DeliveryManVO>();
-	private List<RadioButtonVO> timeList = new ArrayList<RadioButtonVO>();
-	private List<RadioButtonVO> orderStatusRList = new ArrayList<RadioButtonVO>();
+	private Map<String, String> timeMap = new LinkedHashMap<String, String>();
+	private Map<String, String> orderStatusMap = new LinkedHashMap<String, String>();
 	
 	/** codemaster map */
 	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
@@ -76,14 +79,14 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	private String selectedRestaurantID = "";
 	private int selectedDeliverymanID = 0;
 	private String selectedOrderMemberEmail = "";
-	private String selectedRestaurantEmail = "";
-	private String page = "";
+	// The page to move back from detail page. Current Order List page or Order List page
+	private String forwardPage = "";
 	
 	/**
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		
@@ -93,36 +96,36 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		// set up deliveryman dropdown menu 
 		DeliveryManDao dao = new DeliveryManDao();
-		deliverymanList = dao.selectAll();
+		deliverymanList = dao.selectByCompany(Constants.CONSTANT_5DELIVERY_ID);
 		
 		// set up conditions
-		timeList.add(new RadioButtonVO("", "All"));
-		timeList.add(new RadioButtonVO("-0:30", "30 Minutes"));
-		timeList.add(new RadioButtonVO("-1:00", "1 Hour"));
-		timeList.add(new RadioButtonVO("-3:00", "3 Hours"));
+		timeMap.put("", "All");
+		timeMap.put("-0:30", "30 Minutes");
+		timeMap.put("-1:00", "1 Hour");
+		timeMap.put("-3:00", "3 Hours");
 		
-		orderStatusRList.add(new RadioButtonVO("", "All Status"));
-		orderStatusRList.add(new RadioButtonVO(Constants.CODE_ORDER_STATUS_PENDING, "Pending Only"));
+		orderStatusMap.put("", "All Status");
+		orderStatusMap.put(Constants.CODE_ORDER_STATUS_PENDING, "Pending Only");
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		logger.info("<---prepare end --->");
 	}
 	
 	/**
-	 * Initiate Order List page
+	 * Initiate Order History List page
 	 * @return SUCCESS
 	 */
 	public String init() throws Exception {
-		logger.info("<---Init start --->");
+		logger.info("<---init start --->");
 
 		//Select All Order List
 		OrderDao dao = new OrderDao();
 		list = dao.select(condition);
 
-		logger.info("<---Init end --->");
+		logger.info("<---init end --->");
 		return SUCCESS;
 	}
 	
@@ -142,37 +145,28 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
-	 * Insert member data
+	 * Search Order History List
 	 * @return SUCCESS
 	 */
 	@Override
 	public String execute() throws Exception {
-		logger.info("<---Execute start --->");
+		logger.info("<---execute start --->");
 		
 		String returnString = SUCCESS;
 		
-		//Check date type
-		if (!"".equals(condition.getFromDate().trim())) {
-			if (!ValidationUtil.isDate(condition.getFromDate(), DAY_PATTERN)) {
-				// Date(from) is not datetype
-				addFieldError("condition.fromDate", getText("E0003_1", new String[]{"Date(from)"}));
-				returnString = INPUT;
-			}
-		}
-
-		if (!"".equals(condition.getToDate().trim())) {
-			if (!ValidationUtil.isDate(condition.getToDate(), DAY_PATTERN)) {
-				// Date(to) is not datetype
-				addFieldError("condition.toDate", getText("E0003_1", new String[]{"Date(to)"}));
-				returnString = INPUT;
-			}
+		// Check Validation
+		boolean hasError = checkValidation();
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			return INPUT;
 		}
 		
 		//Select Order List
 		OrderDao dao = new OrderDao();
 		list = dao.select(condition);
 		
-		logger.info("<---Execute end --->");
+		logger.info("<---execute end --->");
 		return returnString;
 	}
 	
@@ -211,29 +205,41 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		if (returnCnt > 0) {
 			addActionMessage("Order Status has been changed successfully"); 
-			// Send email -> Send Email to User and Restaurant
-			// Get contents, subject for member
-			ContentsTextDao cdao = new ContentsTextDao();
-			ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_MEM);
 			
-			// Set up the mail contents for member
-			MailSender sender = new MailSender();
-			sender.sendEmail(selectedOrderMemberEmail, cvo.getSubject() + selectedOrderID, cvo.getContents());
+			//Get restaurant master data
+			RestaurantMasterDao rdao = new RestaurantMasterDao();
+			RestaurantMasterVO restaurantMaster = rdao.selectByID(selectedRestaurantID);
 			
+			String strOrderDetail = OrderUtil.contextOrderDetail(selectedOrderID, selectedRestaurantID, codeMap);
+			// Send email -> Send Email to ONLY Restaurant
 			// Get contents, subject for restaurant
-			cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+			ContentsTextDao cdao = new ContentsTextDao();
+			ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+			
+			// Set restaurant's name and order detail into email contents
+			String contents = cvo.getContents();
+			contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+			contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
+			contents = contents.replace("<PARAM_ORDER_ID>", selectedOrderID);
+			contents = contents.replace("<PARAM_RESTAURANT_ID>", selectedRestaurantID);
 			
 			// Set up the mail contents for restaurant
-			sender.sendEmail(selectedRestaurantEmail, cvo.getSubject() + selectedOrderID, cvo.getContents());
-
+			MailSender sender = new MailSender();
+			sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
 			
-		} else {
-			addActionError("No data has been changed."); 
+			addActionMessage("Email has been sent to the restaurant successfully");
 		}
 		
-		//Re-select Current Order List
+		//Reload List
 		dao = new OrderDao();
-		list = dao.selectCurrent(condition);
+		if ("/WEB-INF/jsp/admin/currentorderlist.jsp".equals(forwardPage)) {
+			// Current Order 
+			list = dao.selectCurrent(condition);
+		} else {
+			// Order History
+			list = dao.select(condition);
+		}
+		
 
 		logger.info("<---changeOrderStatus end --->");
 		return SUCCESS;
@@ -268,16 +274,50 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		
 		if (returnCnt > 0) {
 			addActionMessage("Delivery Man has been updated successfully"); 
-		} else {
-			addActionError("No data has been changed."); 
 		}
 		
-		//Re-select Current Order List
+		//Reload List
 		dao = new OrderDao();
-		list = dao.selectCurrent(condition);
+		if ("/WEB-INF/jsp/admin/currentorderlist.jsp".equals(forwardPage)) {
+			// Current Order 
+			list = dao.selectCurrent(condition);
+		} else {
+			// Order History
+			list = dao.select(condition);
+		}
 
 		logger.info("<---setDeliveryMan end --->");
 		return SUCCESS;
+	}
+	
+	/**
+	 * Validation check
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidation() {
+		
+		boolean hasError = false;
+		
+		//Check date type
+		if (!ValidationUtil.isBlank(condition.getFromDate()) && !ValidationUtil.isDate(condition.getFromDate(), DAY_PATTERN)) {
+			// Date(from) is not datetype
+			addFieldError("condition.fromDate", getText("E0003_1", new String[]{"From(MM/DD/YYYY)"}));
+			hasError = true;
+		}
+
+		if (!ValidationUtil.isBlank(condition.getToDate()) && !ValidationUtil.isDate(condition.getToDate(), DAY_PATTERN)) {
+			// Date(to) is not datetype
+			addFieldError("condition.toDate", getText("E0003_1", new String[]{"To(MM/DD/YYYY)"}));
+			hasError = true;
+		}
+		
+		// Telephone
+		if (!ValidationUtil.isBlank(condition.getOrderMemberTelephone()) && !ValidationUtil.isTelephone(condition.getOrderMemberTelephone())) {
+			addFieldError("condition.orderMemberTelephone", getText("E0003_1", new String[]{"Customer Tel"}));
+			hasError = true;
+		}
+		
+		return hasError;
 	}
 	
 	/**
@@ -393,17 +433,17 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the timeList
+	 * @return the timeMap
 	 */
-	public List<RadioButtonVO> getTimeList() {
-		return timeList;
+	public Map<String, String> getTimeMap() {
+		return timeMap;
 	}
 
 	/**
-	 * @param timeList the timeList to set
+	 * @param timeMap the timeMap to set
 	 */
-	public void setTimeList(List<RadioButtonVO> timeList) {
-		this.timeList = timeList;
+	public void setTimeMap(Map<String, String> timeMap) {
+		this.timeMap = timeMap;
 	}
 
 	/**
@@ -463,45 +503,31 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the orderStatusRList
+	 * @return the orderStatusMap
 	 */
-	public List<RadioButtonVO> getOrderStatusRList() {
-		return orderStatusRList;
+	public Map<String, String> getOrderStatusMap() {
+		return orderStatusMap;
 	}
 
 	/**
-	 * @param orderStatusRList the orderStatusRList to set
+	 * @param orderStatusMap the orderStatusMap to set
 	 */
-	public void setOrderStatusRList(List<RadioButtonVO> orderStatusRList) {
-		this.orderStatusRList = orderStatusRList;
+	public void setOrderStatusMap(Map<String, String> orderStatusMap) {
+		this.orderStatusMap = orderStatusMap;
 	}
 
 	/**
-	 * @return the selectedRestaurantEmail
+	 * @return the forwardPage
 	 */
-	public String getSelectedRestaurantEmail() {
-		return selectedRestaurantEmail;
+	public String getForwardPage() {
+		return forwardPage;
 	}
 
 	/**
-	 * @param selectedRestaurantEmail the selectedRestaurantEmail to set
+	 * @param forwardPage the forwardPage to set
 	 */
-	public void setSelectedRestaurantEmail(String selectedRestaurantEmail) {
-		this.selectedRestaurantEmail = selectedRestaurantEmail;
-	}
-
-	/**
-	 * @return the page
-	 */
-	public String getPage() {
-		return page;
-	}
-
-	/**
-	 * @param page the page to set
-	 */
-	public void setPage(String page) {
-		this.page = page;
+	public void setForwardPage(String forwardPage) {
+		this.forwardPage = forwardPage;
 	}
 
 	/**

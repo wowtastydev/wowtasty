@@ -39,6 +39,7 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
         // In case of no authorization
 		MemberMasterVO mvo = (MemberMasterVO)session.get(Constants.KEY_SESSION_USER);
 		int auth = Integer.parseInt(mvo.getAuth());
+		
 		// Get namespace : "/namespace"
 		String namespace = invocation.getProxy().getNamespace();
 		

@@ -14,6 +14,7 @@ public class MemberMasterVO {
 	private String email = "";
 	private String password = "";
 	private String auth = "";
+	private String authName = "";
 	private String firstName = "";
 	private String lastName = "";
 	private String telephone = "";
@@ -32,9 +33,9 @@ public class MemberMasterVO {
 	private String delivProvince = "";
 	private String delivInstruction = "";
 	private String delivPostalCode = "";
-	private int ecash = 0;
+	private Integer ecash = 0;
 	private String status = "";
-	private int totalOrderCnt = 0;
+	private Integer totalOrderCnt = 0;
 	private Date registerDate = null;
 	private String naFlag = "0";
 	private String updateID = "";
@@ -87,6 +88,19 @@ public class MemberMasterVO {
 	 */
 	public void setAuth(String auth) {
 		this.auth = auth;
+	}
+	
+	/**
+	 * @return the authName
+	 */
+	public String getAuthName() {
+		return authName;
+	}
+	/**
+	 * @param authName the authName to set
+	 */
+	public void setAuthName(String authName) {
+		this.authName = authName;
 	}
 	/**
 	 * @return the firstName
@@ -308,14 +322,27 @@ public class MemberMasterVO {
 	/**
 	 * @return the ecash
 	 */
-	public int getEcash() {
+	public Integer getEcash() {
 		return ecash;
 	}
 	/**
 	 * @param ecash the ecash to set
 	 */
-	public void setEcash(int ecash) {
+	public void setEcash(Integer ecash) {
 		this.ecash = ecash;
+	}
+	/**
+	 * @param totalOrderCnt the totalOrderCnt to set
+	 */
+	public void setTotalOrderCnt(Integer totalOrderCnt) {
+		this.totalOrderCnt = totalOrderCnt;
+	}
+	
+	/**
+	 * @return the totalOrderCnt
+	 */
+	public Integer getTotalOrderCnt() {
+		return totalOrderCnt;
 	}
 	/**
 	 * @return the status
@@ -328,18 +355,6 @@ public class MemberMasterVO {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
-	}
-	/**
-	 * @return the totalOrderCnt
-	 */
-	public int getTotalOrderCnt() {
-		return totalOrderCnt;
-	}
-	/**
-	 * @param totalOrderCnt the totalOrderCnt to set
-	 */
-	public void setTotalOrderCnt(int totalOrderCnt) {
-		this.totalOrderCnt = totalOrderCnt;
 	}
 	/**
 	 * @return the naFlag

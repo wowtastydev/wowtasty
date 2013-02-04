@@ -57,7 +57,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		, r.deliverymanID, r.deliverymanName
 	FROM order_master m
 		INNER JOIN order_restaurant r on m.orderID = r.orderID
-
 	WHERE 
 		<![CDATA[
 		r.orderStatus < '50'
@@ -68,40 +67,102 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
 	</select>
 	
+	<!--Order List on balance management page-->
+	<select id="selectBalance" parameterType="balanceListconditionvo" resultType="balanceListvo">
+	SELECT m.orderID, m.deliveryTime as deliveryTime, r.restaurantID, r.restaurantName
+		, r.orderStatus, Get_CdShortName('103', r.orderStatus) as orderStatusName
+		, CONCAT(me.menuName,CASE WHEN COUNT(*)=1 THEN "" ELSE CONCAT(" ",COUNT(*)-1," more") END) as totalMenuName
+		, r.totalPriceWithTax as salesAmount
+		, r.foodTotalPrice + r.foodTaxPrice as foodAmount
+		<!--FoodTotal(exclude Tax)*commiossion*taxrate / paymentType=3 cashCommission and others are normal commission-->
+		, CASE WHEN m.paymentType=3 THEN cast(-r.foodTotalPrice*#{cashCommission}/100*(100+#{tax})/100 as decimal(10,2)) ELSE cast(-r.foodTotalPrice*#{commission}/100*(100+#{tax})/100 as decimal(10,2)) END
+			as commissionAmount
+		<!-- Only case of self-delivery count delivery-fee in -->
+		, CASE WHEN r.deliveryCompanyType='1' THEN (r.deliveryPrice + r.deliveryTaxPrice) ELSE 0 END as deliveryAmount
+		<!-- Only case of self-delivery or take-out count delivery-fee in -->
+		, CASE WHEN r.deliveryType=2 THEN r.tipPrice 
+    		   ELSE 
+                  CASE WHEN r.deliveryCompanyType=1 THEN r.tipPrice
+                      ELSE 0
+                  END
+          END as tipAmount 
+         , 0 as totalAmount
+         , r.deliveryType, r.deliveryCompanyType, m.paymentType
+		<!--Case1:When current day is before paymentValidPeriod: eg) paymentValidPeriod is 7 days, 1~7 in everymonth-->
+		<!--Last month orders are Available, Current month orders are only Balance and others are N/A and not balance-->
+		<!--Case2: When current day is after paymentValidPeriod: eg) paymentValidPeriod is 7 days, 8~31 in everymonth-->
+		<!--Current month orders are only Balance and others are N/A and not balance-->
+		<![CDATA[
+        , CASE WHEN ADDDATE(CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME), #{paymentValidPeriod}) > SUBDATE(NOW(),3) 
+                  THEN 
+                        CASE WHEN (DATE_SUB(CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME), INTERVAL 1 MONTH) < m.deliveryTime
+                                  AND 
+                                  CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) > m.deliveryTime )
+                               THEN 'A'
+                            ELSE
+                                CASE WHEN CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) < m.deliveryTime
+                                       THEN 'B'
+                                    ELSE 'N'
+                                END
+                        END
+                  ELSE 
+                        CASE WHEN CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) < m.deliveryTime
+                                 THEN 'B'
+                              ELSE 'N'
+                        END 
+          END as availableFlag
+          , 'N' as adjustmentFlag , 0 as seq
+         ]]>
+	FROM order_master m
+		INNER JOIN order_restaurant r on m.orderID = r.orderID
+		INNER JOIN order_menu me on m.orderID = me.orderID
+	WHERE r.restaurantID = #{restaurantID}
+		AND r.orderStatus IN ('81', '92')
+		AND m.deliveryTime > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
+		<![CDATA[
+		AND m.deliveryTime < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
+		]]>
+	GROUP BY m.orderID, r.restaurantID
+	UNION ALL
+    SELECT OrderID, RegisterTime, RestaurantID, '', '', '', AdjustItem
+    	, 0, 0, 0, 0, 0, Price, '', '', ''
+    	<![CDATA[
+		, CASE WHEN ADDDATE(CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME), #{paymentValidPeriod}) > SUBDATE(NOW(),3) 
+                  THEN 
+                        CASE WHEN (DATE_SUB(CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME), INTERVAL 1 MONTH) < RegisterTime
+                                  AND 
+                                  CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) > RegisterTime )
+                               THEN 'A'
+                            ELSE
+                                CASE WHEN CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) < RegisterTime
+                                       THEN 'B'
+                                    ELSE 'N'
+                                END
+                        END
+                  ELSE 
+                        CASE WHEN CAST(DATE_FORMAT(NOW(),'%Y-%m-01') as DATETIME) < RegisterTime
+                                 THEN 'B'
+                              ELSE 'N'
+                        END 
+          END
+          , 'Y', Seq
+          ]]>
+      FROM order_adjustment
+      WHERE restaurantID = #{restaurantID}
+		AND registerTime > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
+		<![CDATA[
+		AND registerTime < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
+		]]>
+ 	ORDER BY deliveryTime desc
+	</select>
+	
 	<!-- Insert -->
 	<insert id="insert" parameterType="ordermastervo">
 	INSERT INTO 
 		order_master
-	(   OrderID,
-		InvoiceNO,
-		OrderTime,
-		DeliveryTime,
-		OrderType,
-		PaymentType,
-		PaymentCreditType,
-		PaymentCreditNO,
-		PaymentDebitNO,
-		PaymentAmount,
-		PaymentRefNO,
-		PaymentStatus,
-		PaymentTime,
-		PaymentEcash,
-		PaymentGiftCard,
-		TotalPrice,
-		TotalPriceWithTax,
-		OrderMemberID,
-		OrderMemberEmail,
-		OrderMemberTelephone,
-		BillFirstName,
-		BillLastName,
-		BillTelephone,
-		BillAddress,
-		BillSuite,
-		BillCity,
-		BillProvince,
-		BillPostalCode,
-		UpdateID,
-		UpdateTime) 
+	(   
+	<include refid="columns"/>
+	) 
 	VALUE ( #{orderID},
 		#{invoiceNO},
 		#{orderTime},
@@ -109,8 +170,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{orderType},
 		#{paymentType},
 		#{paymentCreditType},
-		#{paymentCreditNO},
-		#{paymentDebitNO},
+		TRIM(#{paymentCreditNO}),
+		TRIM(#{paymentDebitNO}),
 		#{paymentAmount},
 		#{paymentRefNO},
 		#{paymentStatus},
@@ -145,8 +206,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		OrderType = #{orderType},
 		PaymentType = #{paymentType},
 		PaymentCreditType = #{paymentCreditType},
-		PaymentCreditNO = #{paymentCreditNO},
-		PaymentDebitNO = #{paymentDebitNO},
+		PaymentCreditNO = TRIM(#{paymentCreditNO}),
+		PaymentDebitNO = TRIM(#{paymentDebitNO}),
 		PaymentAmount = #{paymentAmount},
 		PaymentRefNO = #{paymentRefNO},
 		PaymentStatus = #{paymentStatus},

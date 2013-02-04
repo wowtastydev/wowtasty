@@ -5,23 +5,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 <mapper namespace="restaurantmenu">
 
 	<sql id="columns"> 
-		RestaurantID,MenuID,CategoryID,Name,Price,Description,ImagePath,Sort,TaxRate,Status,NAFlag,UpdateID,UpdateTime
+		RestaurantID,MenuID,CategoryID,Name,Price,Description,ImagePath,Sort,TaxRate,Status,MinUnit, NAFlag,UpdateID,UpdateTime
 	</sql>
 	
-	<!--selectAll-->
-	<select id="selectAll" resultType="restaurantmenuvo">
-	SELECT 
-	<include refid="columns"/>
-	FROM restaurant_menu 
-	</select>
-	
-	<!--selectByID-->
-	<select id="selectByID" resultType="restaurantmenuvo">
+	<!--selectByRestaurant-->
+	<select id="selectByRestaurant" parameterType="String" resultType="restaurantmenuvo">
 	SELECT 
 	<include refid="columns"/>
 	FROM restaurant_menu 
 	WHERE RestaurantID = #{restaurantID} 
-		  AND MenuID = #{MenuID}
+	  AND NAFlag != 1
+	ORDER BY Sort
+	</select>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="java.util.Map" resultType="restaurantmenuvo">
+	SELECT 
+	<include refid="columns"/>
+	FROM restaurant_menu 
+	WHERE RestaurantID = #{restaurantID} 
+		  AND MenuID = #{menuID}
+	</select>
+	
+	<!--selectMaxID-->
+	<select id="selectMaxID" parameterType="String" resultType="Integer">
+	SELECT 
+		 IFNULL(MAX(MenuID)+1, 1)
+	FROM restaurant_menu 
+	WHERE RestaurantID = #{restaurantID} 
 	</select>
 	
 	<!--Insert-->
@@ -34,34 +45,43 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	(	#{restaurantID},
 		#{menuID},
 		#{categoryID},
-		#{name},
+		TRIM(#{name}),
 		#{price},
-		#{description},
-		#{imagePath},
+		TRIM(#{description}),
+		TRIM(#{imagePath}),
 		#{sort},
 		#{taxRate},
 		#{status},
+		#{minUnit},
 		#{naFlag},
 		#{updateID},
-		#{updateTime})
+		now())
 	</insert>
 	
 	<!--Update-->
 	<update id = "update" parameterType="restaurantmenuvo">
 		UPDATE restaurant_menu
 		SET CategoryID = #{categoryID},
-			Name = #{name},
+			Name = TRIM(#{name}),
 			Price = #{price},
-			Description = #{description},
-			ImagePath = #{imagePath},
+			Description = TRIM(#{description}),
+			ImagePath = TRIM(#{imagePath}),
 			Sort = #{sort},
 			TaxRate = #{taxRate},
 			Status = #{status},
+			MinUnit = #{minUnit},
 			NAFlag = #{naFlag},
 			UpdateID = #{updateID},
 			UpdateTime = now() 
 		WHERE RestaurantID = #{restaurantID} 
-		  AND PostalPrefix = #{postalPrefix}
-		  AND Seq = #{seq}
+		  AND MenuID = #{menuID}
+	</update>
+	
+	<!--Delete-->
+	<update id = "delete" parameterType="restaurantmenuvo">
+		UPDATE restaurant_menu
+		SET NAFlag = #{naFlag}
+		WHERE RestaurantID = #{restaurantID} 
+		  AND MenuID = #{menuID}
 	</update>
 </mapper>

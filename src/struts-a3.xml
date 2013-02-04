@@ -18,55 +18,196 @@
 			<exception-mapping exception="java.lang.Exception" result="error" />
 		</global-exception-mappings>
 		
-		<!-- PasswordAction -->
-		<action name="initPassword" class="com.wowtasty.action.PasswordAction" method="init">
-			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
+		<!-- WowMasterAction -->
+		
+		<!-- initAdmin : Initialize Administration Setup -->
+		<action name="initAdmin" class="com.wowtasty.action.WowMasterAction" method="init">
+			<result>/WEB-INF/jsp/admin/wowmaster.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/wowmaster.jsp</result>
 		</action>
 		
-		<action name="changePassword" class="com.wowtasty.action.PasswordAction">
-			<interceptor-ref name="wowValidationStack"/>
-			<result>/WEB-INF/jsp/admin/passwordchange.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/passwordchange.jsp</result>
-		</action>
-	
-		<!-- MemberAction -->
-		
-		<!-- initMember : initialize Member insert Page -->	
-		<action name="initMember" class="com.wowtasty.action.MemberAction" method="init">
-			<result>/WEB-INF/jsp/admin/memberadd.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
+		<!-- saveWowMaster : Save Administration Setup -->
+		<action name="saveWowMaster" class="com.wowtasty.action.WowMasterAction">
+		<interceptor-ref name="wowValidationFileUploadStack"/>
+			<result>/WEB-INF/jsp/admin/wowmaster.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/wowmaster.jsp</result>
 		</action>
 		
-		<!-- insertMember : insert new member account Page -->	
-		<action name="insertMember" class="com.wowtasty.action.MemberAction">
-			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberadd.jsp</result>
+		<!-- saveTaxList : Save Tax List on Administration Setup page-->
+		<action name="saveTaxList" class="com.wowtasty.action.WowMasterAction" method="saveTaxList">
+			<result>/WEB-INF/jsp/admin/wowmaster.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/wowmaster.jsp</result>
 		</action>
 		
-		<!-- initMemberEdit : initialize Member Edit Page -->	
-		<action name="initMemberEdit" class="com.wowtasty.action.MemberAction" method="initEdit">
-			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		<!-- DeliveryCompanyAction -->
+		
+		<!-- initDeliveryCompany : Initialize Delivery Company page -->
+		<action name="initDeliveryCompany" class="com.wowtasty.action.DeliveryCompanyAction" method="init">
+			<result>/WEB-INF/jsp/admin/deliverycompany.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliverycompany.jsp</result>
 		</action>
 		
-		<!-- saveMember : Edit Member data -->
-		<action name="saveMember" class="com.wowtasty.action.MemberAction" method="save">
-			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		<!-- saveDeliveryCompany : Save Delivery Company general information -->
+		<action name="saveDeliveryCompany" class="com.wowtasty.action.DeliveryCompanyAction">
+		<interceptor-ref name="wowValidationFileUploadStack"/>
+			<result>/WEB-INF/jsp/admin/deliverycompany.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliverycompany.jsp</result>
 		</action>
 		
-		<!-- MemberListAction -->
-		<action name="initMemberList" class="com.wowtasty.action.MemberListAction" method="init">
-			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
+		<!-- saveDeliveryCompanyBizHour : Save Delivery Company Business hour-->
+		<action name="saveDeliveryCompanyBizHour" class="com.wowtasty.action.DeliveryCompanyAction" method="saveBizHour">
+			<result>/WEB-INF/jsp/admin/deliverycompany.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliverycompany.jsp</result>
 		</action>
 		
-		<action name="searchMember" class="com.wowtasty.action.MemberListAction">
-			<result>/WEB-INF/jsp/admin/memberlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/memberlist.jsp</result>
+		<!-- saveDeliveryCompanyDeliveryArea : Save Delivery Company Delivery Area-->
+		<action name="saveDeliveryCompanyDeliveryArea" class="com.wowtasty.action.DeliveryCompanyAction" method="saveDeliveryArea">
+			<result>/WEB-INF/jsp/admin/deliverycompany.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliverycompany.jsp</result>
 		</action>
 		
+		<!-- DeliveryManAction -->
+		
+		<!-- initDeliveryMan : Initialize Delivery Man page -->
+		<action name="initDeliveryMan" class="com.wowtasty.action.DeliveryManAction" method="init">
+			<result>/WEB-INF/jsp/admin/deliveryman.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliveryman.jsp</result>
+		</action>
+		
+		<!-- saveDeliveryMan : Save Delivery Man information -->
+		<action name="saveDeliveryMan" class="com.wowtasty.action.DeliveryManAction">
+			<result>/WEB-INF/jsp/admin/deliveryman.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliveryman.jsp</result>
+		</action>
+		
+		<!-- delDeliveryMan : Delete Delivery Man information-->
+		<action name="delDeliveryMan" class="com.wowtasty.action.DeliveryManAction" method="delete">
+			<result>/WEB-INF/jsp/admin/deliveryman.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/deliveryman.jsp</result>
+		</action>
+		
+		<!-- BillingListAction -->
+		
+		<!-- initBillingList : initialize Billing List Page -->	
+		<action name="initBillingList" class="com.wowtasty.action.BillingListAction" method="init">
+			<result>/WEB-INF/jsp/admin/billinglist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/billinglist.jsp</result>
+		</action>
+		
+		<!-- searchBilling : search Billing List-->
+		<action name="searchBilling" class="com.wowtasty.action.BillingListAction">
+			<result>/WEB-INF/jsp/admin/billinglist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/billinglist.jsp</result>
+		</action>
+		
+		<!-- BalanceListAction -->
+		
+		<!-- initBalanceList : initialize Balance List Page -->	
+		<action name="initBalanceList" class="com.wowtasty.action.BalanceListAction" method="init">
+			<result>/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+		</action>
+		
+		<!-- searchBalanceList : search Balance List -->	
+		<action name="searchBalanceList" class="com.wowtasty.action.BalanceListAction">
+			<result>/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+		</action>
+		
+		<!-- BillingAction -->
+		
+		<!-- initBillingDetail : initialize Billing Detail Page -->	
+		<action name="initBillingDetail" class="com.wowtasty.action.BillingAction" method="init">
+			<result>/WEB-INF/jsp/admin/billingdetail.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/billingdetail.jsp</result>
+		</action>
+
+		<!-- deleteBilling : delete Billing-->
+		<action name="deleteBilling" class="com.wowtasty.action.BillingAction" method="delete">
+			<result type="chain">initBillingList</result>
+			<result name="input">/WEB-INF/jsp/admin/billingdetail.jsp</result>
+		</action>
+				
+		<!-- "initBillingOrderDetail" : initialize Billing Order Detail Panel-->
+		<action name="initBillingOrderDetail" class="com.wowtasty.action.BillingAction" method="initOrderDetail">
+			<interceptor-ref name="wowJasonStack"/>
+			<result type="json"/>
+		</action>
+		
+		<!-- "printBilling" : print Billing as pdf file-->
+		<action name="printBilling" class="com.wowtasty.action.BillingAction" method="print">
+			<result type="jasper">
+	            <param name="location">report/bill.jasper</param>
+	            <param name="reportParameters">pdfParameters</param>
+	            <param name="dataSource">pdfDataSource</param>
+	            <param name="format">PDF</param>
+	            <param name="contentDisposition">attachment; filename="${pdfFileName}.pdf"</param>
+	        </result>
+			<result name="input">/WEB-INF/jsp/admin/billingdetail.jsp</result>
+		</action>
+		
+		<!-- "downloadBilling" : download Billing as exel file-->
+		<action name="downloadBilling" class="com.wowtasty.action.BillingAction" method="download">
+			<result type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">filename="${excelFileName}.xls"</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="input">/WEB-INF/jsp/admin/billingdetail.jsp</result>
+		</action>
+		
+		<!-- BalanceListAction -->
+		
+		<!-- initBalanceList : initialize Balance list Page -->	
+		<action name="initBalanceList" class="com.wowtasty.action.BalanceListAction" method="init">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- searchBalance : search balance -->	
+		<action name="searchBalance" class="com.wowtasty.action.BalanceListAction">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- addAdjustment : Add adjustment -->	
+		<action name="addAdjustment" class="com.wowtasty.action.BalanceListAction" method="add">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- delAdjustment : Delete adjustment -->	
+		<action name="delAdjustment" class="com.wowtasty.action.BalanceListAction" method="delete">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- ReportingAction -->
+		
+		<!-- initReporting : initialize Reporting Page -->	
+		<action name="initReporting" class="com.wowtasty.action.ReportingAction" method="init">
+			<result>/WEB-INF/jsp/admin/reporting.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/reporting.jsp</result>
+		</action>
+		
+		<!-- searchReporting : search Reporting data -->	
+		<action name="searchReporting" class="com.wowtasty.action.ReportingAction">
+			<result>/WEB-INF/jsp/admin/reporting.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/reporting.jsp</result>
+		</action>
+		
+		<!-- downloadReporting : excel download Reporting data -->	
+		<action name="downloadReporting" class="com.wowtasty.action.ReportingAction" method="download">
+			<result type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">filename="${excelFileName}.xls"</param>
+				<param name="bufferSize">1024</param>
+			</result>
+			<result name="input">/WEB-INF/jsp/admin/reporting.jsp</result>
+		</action>
+
 	</package>
 	
 </struts>

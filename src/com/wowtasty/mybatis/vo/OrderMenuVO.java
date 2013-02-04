@@ -9,7 +9,7 @@ public class OrderMenuVO {
 	/** order_menu columns*/
 	private String orderID = "";
 	private String restaurantID = "";
-	private Integer seq = 0;
+	private Integer seq = 1;
 	private String menuID = "";
 	private String menuName = "";
 	private Integer unit = 0;

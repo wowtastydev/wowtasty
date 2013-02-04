@@ -28,30 +28,9 @@ public class MemberMasterDao {
 	public MemberMasterDao() {
 		factory = FactoryService.getFactory();
 	}
-
-	/**
-	 * @return List<MemberMasterVO>: Member lists
-	 */
-	public List<MemberMasterVO> selectAll() {
-		SqlSession sqlSession = factory.openSession();
-		List<MemberMasterVO> returnObject = new ArrayList<MemberMasterVO>();
-		try {
-			returnObject = sqlSession.selectList("membermaster.selectAll");
-		} catch (Exception e) {
-			logger.error("!!!!!MemberMasterDao selectAll occurs error:" + e);
-        	throw new RuntimeException(e);
-		} finally {
-			try {
-				sqlSession.close();
-			} catch (Exception e) {
-				logger.error("!!!!!MemberMasterDao selectAll occurs error:" + e);
-	        	throw new RuntimeException(e);
-			}
-		}
-		return returnObject;
-	}
 	
 	/**
+	 * @param list: Member role list
 	 * @return List<MemberMasterVO>: Member lists
 	 */
 	public List<MemberMasterVO> select(List<String> list) {
@@ -74,6 +53,7 @@ public class MemberMasterDao {
 	}
 	
 	/**
+	 * @param id: Member ID
 	 * @return MemberMasterVO: Member master data
 	 */
 	public MemberMasterVO selectByID(String id) {
@@ -100,6 +80,7 @@ public class MemberMasterDao {
 	}
 	
 	/**
+	 * @param email: Member email
 	 * @return MemberMasterVO: Member master data
 	 */
 	public MemberMasterVO selectByEmail(String email) {
@@ -126,7 +107,7 @@ public class MemberMasterDao {
 	}
 	
 	/**
-	 * @return String: MemberID
+	 * @return String: Max MemberID
 	 */
 	public String selectMaxID() {
 		SqlSession sqlSession = factory.openSession();
@@ -148,7 +129,8 @@ public class MemberMasterDao {
 	}
 	
 	/**
-	 * @return MemberMasterVO: Member master data
+	 * @param MemberMasterVO: Member master data
+	 * @return int: inserted row cnt
 	 */
 	public int insert(MemberMasterVO vo) {
 		// autocommit session open
@@ -171,7 +153,8 @@ public class MemberMasterDao {
 	}
 	
 	/**
-	 * @return MemberMasterVO: Member master data
+	 * @param MemberMasterVO: Member master data
+	 * @return int: updated row cnt
 	 */
 	public int update(MemberMasterVO vo) {
 		// autocommit session open

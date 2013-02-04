@@ -13,98 +13,86 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--selectAll-->
 	<select id="selectAll" resultType="restaurantmastervo">
 	SELECT 
-	<include refid="columns"/>
+		<include refid="columns"/>
 	FROM restaurant_master 
+	</select>
+	
+	<!--selectAvailable-->
+	<select id="selectAvailable" resultType="restaurantmastervo">
+	SELECT 
+		<include refid="columns"/>
+	FROM restaurant_master 
+	Where NAFlag != 1
 	</select>
 	
 	<!--select-->
 	<select id="select" parameterType="restaurantlistconditionvo" resultType="restaurantmastervo">
 	SELECT 
-	<include refid="columns"/>
+		<include refid="columns"/>
 	FROM restaurant_master 
 	WHERE IFNULL(CuisineType,'') LIKE CONCAT('%',#{cuisineType},'%')
 		AND IFNULL(City,'') LIKE CONCAT('%',#{city},'%')
 		AND IFNULL(RestaurantType,'') LIKE CONCAT('%',#{restaurantType},'%')
 	</select>
 	
+	<!--selectSignupList-->
+	<select id="selectSignupList" parameterType="restaurantsignuplistconditionvo" resultType="restaurantsignuplistvo">
+	SELECT 
+		RestaurantID, Name, FirstName, LastName, City, Address, Telephone, Email1 as Email, RegisterDate
+	FROM restaurant_master 
+	WHERE STATUS = '5'
+		<if test="fromDate != ''">
+		AND RegisterDate > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
+		</if>
+		<if test="toDate != ''">
+		<![CDATA[
+		AND RegisterDate < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
+		]]>
+		</if>
+	</select>
+	
 	<!--selectByID-->
 	<select id="selectByID" parameterType="String" resultType="restaurantmastervo">
 	SELECT 
-	<include refid="columns"/>
+		<include refid="columns"/>
 	FROM restaurant_master 
 	WHERE RestaurantID = #{restaurantID}
 	</select>
 	
 	<!--selectMaxID-->
-	<select id="selectMaxID" resultType="java.lang.String">
+	<select id="selectMaxID" resultType="String">
 	SELECT Create_MaxID(3)
 	</select>
 	
 	<!--Insert-->
 	<insert id = "insert" parameterType="restaurantmastervo">
 	INSERT INTO restaurant_master
-	( 	RestaurantID,
-		RestaurantType,
-		Name,
-		CuisineType,
-		MemberID,
-		FirstName,
-		LastName,
-		Telephone,
-		Fax,
-		Address,
-		Suite,
-		City,
-		Province,
-		PostalCode,
-		Website,
-		Facebook,
-		Email1,
-		Email2,
-		LogoImagePath,
-		MainImagePath,
-		GoogleMapURL,
-		Profile,
-		Keyword,
-		CommissionType,
-		Commission,
-		CashCommission,
-		AveragePrice,
-		MinPrice,
-		DeliveryCompanyID,
-		DeliveryTime,
-		BillAccountNO,
-		AverageRate,
-		TotalReviewCnt,
-		TotalOrderCnt,
-		Status,
-		RegisterDate,
-		NAFlag,
-		UpdateID,
-		UpdateTime)
+	( 	
+		<include refid="columns"/>
+	)
 	VALUES
 	(	#{restaurantID},
 		#{restaurantType},
-		#{name},
+		TRIM(#{name}),
 		#{cuisineType},
 		#{memberID},
-		#{firstName},
-		#{lastName},
-		#{telephone},
-		#{fax},
-		#{address},
-		#{suite},
+		TRIM(#{firstName}),
+		TRIM(#{lastName}),
+		TRIM(#{telephone}),
+		TRIM(#{fax}),
+		TRIM(#{address}),
+		TRIM(#{suite}),
 		#{city},
 		#{province},
-		#{postalCode},
-		#{website},
-		#{facebook},
-		#{email1},
-		#{email2},
+		UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+		TRIM(#{website}),
+		TRIM(#{facebook}),
+		TRIM(#{email1}),
+		TRIM(#{email2}),
 		#{logoImagePath},
 		#{mainImagePath},
-		#{googleMapURL},
-		#{profile},
+		TRIM(#{googleMapURL}),
+		TRIM(#{profile}),
 		#{keyword},
 		#{commissionType},
 		#{commission},
@@ -118,7 +106,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		#{totalReviewCnt},
 		#{totalOrderCnt},
 		#{status},
-		#{registerDate},
+		now(),
 		#{naFlag},
 		#{updateID},
 		now())
@@ -128,26 +116,26 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id = "update" parameterType="restaurantmastervo">
 		UPDATE restaurant_master
 		SET RestaurantType = #{restaurantType},
-			Name = #{name},
+			Name = TRIM(#{name}),
 			CuisineType = #{cuisineType},
 			MemberID = #{memberID},
-			FirstName = #{firstName},
-			LastName = #{lastName},
-			Telephone = #{telephone},
-			Fax = #{fax},
-			Address = #{address},
-			Suite = #{suite},
+			FirstName = TRIM(#{firstName}),
+			LastName = TRIM(#{lastName}),
+			Telephone = TRIM(#{telephone}),
+			Fax = TRIM(#{fax}),
+			Address = TRIM(#{address}),
+			Suite = TRIM(#{suite}),
 			City = #{city},
 			Province = #{province},
-			PostalCode = #{postalCode},
-			Website = #{website},
-			Facebook = #{facebook},
-			Email1 = #{email1},
-			Email2 = #{email2},
+			PostalCode = UPPER(TRIM(REPLACE(#{postalCode},' ',''))),
+			Website = TRIM(#{website}),
+			Facebook = TRIM(#{facebook}),
+			Email1 = TRIM(#{email1}),
+			Email2 = TRIM(#{email2}),
 			LogoImagePath = #{logoImagePath},
 			MainImagePath = #{mainImagePath},
-			GoogleMapURL = #{googleMapURL},
-			Profile = #{profile},
+			GoogleMapURL = TRIM(#{googleMapURL}),
+			Profile = TRIM(#{profile}),
 			Keyword = #{keyword},
 			CommissionType = #{commissionType},
 			Commission = #{commission},
@@ -162,6 +150,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			TotalOrderCnt = #{totalOrderCnt},
 			Status = #{status},
 			RegisterDate = #{registerDate},
+			NAFlag = #{naFlag},
+			UpdateID = #{updateID},
+			UpdateTime = now() 
+		WHERE 
+		  	RestaurantID = #{restaurantID}
+
+	</update>
+	
+	<!--updateStatus-->
+	<update id = "updateStatus" parameterType="restaurantmastervo">
+		UPDATE restaurant_master
+		SET Status = #{status},
 			NAFlag = #{naFlag},
 			UpdateID = #{updateID},
 			UpdateTime = now() 

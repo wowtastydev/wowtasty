@@ -21,6 +21,7 @@ import com.wowtasty.util.EncryptUtil;
  *
  */
 public class LoginAction extends ActionSupport {
+	
 	/** serialVersionUID */
 	private static final long serialVersionUID = 1L;
 	
@@ -39,11 +40,14 @@ public class LoginAction extends ActionSupport {
 	private String metaDescription = "Description FoodDelivery,WowStaty,Vancouver";
 	
 	/** Member_Master Table Columns */
-	private String memberID = "";
 	private String memberEmail = "";
 	private String memberPassword = "";
 	private String memberPasswordStr = "";
 	
+	/**
+	 * Initiate Login page
+	 * @return SUCCESS
+	 */
 	public String init() throws Exception {
 		logger.debug("init start --->");
 		
@@ -51,17 +55,16 @@ public class LoginAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	/**
+	 * Login
+	 * @return SUCCESS
+	 */
 	@Override
 	public String execute() throws Exception {
 		logger.debug("execute start --->");
 		
 		String returnString = SUCCESS;
 		
-		//Password Encryption
-		EncryptUtil en = new EncryptUtil();
-		en.encrypt(memberPasswordStr);
-		
-		memberPassword = en.getPassword();
 		//Select db data by inputted email
 		MemberMasterDao mdao = new MemberMasterDao();
 		MemberMasterVO mvo = new MemberMasterVO();
@@ -72,6 +75,11 @@ public class LoginAction extends ActionSupport {
 			addFieldError("memberEmail", getText("E0002", new String[]{"The Email"}));
 			returnString = INPUT;
 		}
+		
+		//Password Encryption
+		EncryptUtil en = new EncryptUtil();
+		en.encrypt(memberPasswordStr);
+		memberPassword = en.getPassword();
 		
 		//Match password with db data
 		if (memberPassword.equals(mvo.getPassword())) {
@@ -89,19 +97,19 @@ public class LoginAction extends ActionSupport {
 	}
 	
 	/**
-	 * @return the memberID
+	 * Logout
+	 * @return SUCCESS
 	 */
-	public String getMemberID() {
-		return memberID;
+	public String logout() throws Exception {
+		logger.debug("logout start --->");
+		
+		// Remove user information on the HttpSession
+		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
+		httpSession.removeAttribute(Constants.KEY_SESSION_USER);
+		
+		logger.debug("logout end --->");
+		return SUCCESS;
 	}
-
-	/**
-	 * @param memberID the memberID to set
-	 */
-	public void setMemberID(String memberID) {
-		this.memberID = memberID;
-	}
-
 	/**
 	 * @return the memberEmail
 	 */
@@ -185,5 +193,4 @@ public class LoginAction extends ActionSupport {
 	public void setMetaDescription(String metaDescription) {
 		this.metaDescription = metaDescription;
 	}
-	
 }

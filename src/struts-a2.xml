@@ -4,7 +4,7 @@
 
 <struts>
 	<package name="admin2" namespace="/admin" extends="wow-default">
-
+		
 	    <default-interceptor-ref name="wowDefaultStack"/>
 	
 		<global-results>
@@ -17,17 +17,25 @@
 			<exception-mapping exception="java.lang.RuntimeException" result="error" />
 			<exception-mapping exception="java.lang.Exception" result="error" />
 		</global-exception-mappings>
-
+		
+		<!-- RestaurantListAction -->
+		
+		<!-- initRestaurantList : initialize Restaurant list Page -->
+		<action name="initRestaurantList" class="com.wowtasty.action.RestaurantListAction" method="init">
+			<result>/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+		</action>
+		
+		<!-- searchRestaurant : search Restaurant list -->
+		<action name="searchRestaurant" class="com.wowtasty.action.RestaurantListAction">
+			<result>/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+		</action>
+		
 		<!-- RestaurantInfoAction -->
 		
 		<!-- initRestaurant : initialize Restaurant Info Insert Page -->	
 		<action name="initRestaurant" class="com.wowtasty.action.RestaurantInfoAction" method="init">
-			<result>/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
-		</action>
-	
-		<!-- initRestaurantEdit : initialize Restaurant Info Edit Page -->	
-		<action name="initRestaurantEdit" class="com.wowtasty.action.RestaurantInfoAction" method="initEdit">
 			<result>/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
 		</action>
@@ -51,34 +59,112 @@
 			<result name="input">/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
 		</action>
 		
+		<!-- "saveRestaurantDelivArea" : Save Restaurant Delivery Area -->
+		<action name="saveDeliveryArea" class="com.wowtasty.action.RestaurantInfoAction" method="saveDeliveryArea">
+			<result>/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantinfo.jsp</result>
+		</action>
+		
+		<!-- RestaurantPhotoAction -->
+		
 		<!-- initRestaurantPhoto : initialize Restaurant Photo Page -->	
 		<action name="initRestaurantPhoto" class="com.wowtasty.action.RestaurantPhotoAction" method="init">
 			<result>/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
 		</action>
 		
-		<!-- saveRestaurantPhoto : Save Restaurant Photo data -->
-		<action name="saveRestaurantPhoto" class="com.wowtasty.action.RestaurantPhotoAction">
+		<!-- insertRestaurantPhoto : Save Restaurant Photo data -->
+		<action name="insertRestaurantPhoto" class="com.wowtasty.action.RestaurantPhotoAction">
 			<interceptor-ref name="wowValidationFileUploadStack"/>
 			<result>/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
 			<result name="input">/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
 		</action>
 		
-		<!-- initRestaurantMenuList : initialize Restaurant Menu Page -->	
-		<action name="initRestaurantMenuList" class="com.wowtasty.action.RestaurantMenuListAction" method="init">
-			<result>/WEB-INF/jsp/admin/restaurantmenulist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/restaurantmenulist.jsp</result>
-		</action>
-			
-		<!-- RestaurantListAction -->
-		<action name="initRestaurantList" class="com.wowtasty.action.RestaurantListAction" method="init">
-			<result>/WEB-INF/jsp/admin/restaurantlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+		<!-- editRestaurantPhoto : Edit Restaurant Photo data -->
+		<action name="editRestaurantPhoto" class="com.wowtasty.action.RestaurantPhotoAction" method="edit">
+			<result>/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantphoto.jsp</result>
 		</action>
 		
-		<action name="searchRestaurant" class="com.wowtasty.action.RestaurantListAction">
-			<result>/WEB-INF/jsp/admin/restaurantlist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/restaurantlist.jsp</result>
+		<!-- RestaurantMenuAction -->
+		
+		<!-- initRestaurantMenu : go to Restaurant Menu Add Page -->	
+		<action name="initRestaurantMenu" class="com.wowtasty.action.RestaurantMenuAction" method="init">
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- saveMenuTree : save Restaurant Menu Tree -->	
+		<action name="saveMenuTree" class="com.wowtasty.action.RestaurantMenuAction" method="saveMenuTree">
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- saveMenu : save Restaurant Menu -->	
+		<action name="saveMenu" class="com.wowtasty.action.RestaurantMenuAction" >
+			<interceptor-ref name="wowValidationFileUploadStack"/>
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- copyMenu : copy Restaurant Menu -->	
+		<action name="copyMenu" class="com.wowtasty.action.RestaurantMenuAction"  method="copyMenu">
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- delMenu : delte Restaurant Menu -->	
+		<action name="delMenu" class="com.wowtasty.action.RestaurantMenuAction"  method="delMenu">
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- saveMenuOption : save Menu Options -->	
+		<action name="saveMenuOption" class="com.wowtasty.action.RestaurantMenuAction" method="saveMenuOption">
+			<result>/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- initRestaurantMenuEdit : initialize Restaurant Menu Edit -->	
+		<action name="initRestaurantMenuEdit" class="com.wowtasty.action.RestaurantMenuAction" method="initEdit">
+			<interceptor-ref name="wowJasonStack"/>
+			<result type="json"/>
+			<result name="input">/WEB-INF/jsp/admin/restaurantmenu.jsp</result>
+		</action>
+		
+		<!-- RestaurantSignupListAction -->
+		
+		<!-- initRestaurantSignupList : initialize Restaurant Signup List Page -->	
+		<action name="initRestaurantSignupList" class="com.wowtasty.action.RestaurantSignupListAction" method="init">
+			<result>/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+		</action>
+		
+		<!-- searchRestaurantSignup : search Restaurant Signup List -->
+		<action name="searchRestaurantSignup" class="com.wowtasty.action.RestaurantSignupListAction">
+			<result>/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+		</action>
+		
+		<!-- changeRestaurantStatusAll : change Restaurant Status on the list page-->
+		<action name="changeRestaurantStatusAll" class="com.wowtasty.action.RestaurantSignupListAction" method="changeStatus">
+			<result>/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantsignuplist.jsp</result>
+		</action>
+		
+		
+		<!-- RestaurantSignupAction -->
+		
+		<!-- initRestaurantSignupEdit : initialize Restaurant Signup Detail Page -->	
+		<action name="initRestaurantSignupEdit" class="com.wowtasty.action.RestaurantSignupAction" method="init">
+			<result>/WEB-INF/jsp/admin/restaurantsignup.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantsignup.jsp</result>
+		</action>
+		
+		<!-- changeRestaurantStatus : change Restaurant Status on the detail page-->
+		<action name="changeRestaurantStatus" class="com.wowtasty.action.RestaurantSignupAction">
+			<result>/WEB-INF/jsp/admin/restaurantsignup.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/restaurantsignup.jsp</result>
 		</action>
 		
 	</package>

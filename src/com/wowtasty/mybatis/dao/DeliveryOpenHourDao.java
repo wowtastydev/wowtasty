@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.wowtasty.mybatis.FactoryService;
 import com.wowtasty.mybatis.vo.DeliveryOpenHourVO;
+import com.wowtasty.vo.HourListVO;
 
 
 
@@ -30,14 +31,14 @@ public class DeliveryOpenHourDao {
 	}
 	
 	/**
-	 * @param deliveryID: deliveryID
+	 * @param id: deliveryID
 	 * @return List<DeliveryOpenHourVO>: Delivery Open Hour list
 	 */
 	public List<DeliveryOpenHourVO> selectByID(String id) {
 		SqlSession sqlSession = factory.openSession();
 		List<DeliveryOpenHourVO> returnObject = new ArrayList<DeliveryOpenHourVO>();
 		try {
-			//Get restaurant master data
+			//Get Delivery Open Hour list
 			returnObject = sqlSession.selectList("deliveryopenhour.selectByID", id);
 		} catch (Exception e) {
 			logger.error("!!!!!DeliveryOpenHourDao selectByID occurs error:" + e);
@@ -53,8 +54,33 @@ public class DeliveryOpenHourDao {
 		return returnObject;
 	}
 	
+	
 	/**
-	 * @return DeliveryOpenHourVO: Restaurant master data
+	 * @param id: deliveryID
+	 * @return List<HourListVO>: Delivery 1st and 2nd Open Hour list
+	 */
+	public List<HourListVO> selectHourListByID(String id) {
+		SqlSession sqlSession = factory.openSession();
+		List<HourListVO> returnObject = new ArrayList<HourListVO>();
+		try {
+			//Get 1st and 2nd Open Hour
+			returnObject = sqlSession.selectList("deliveryopenhour.selectHourListByID", id);
+		} catch (Exception e) {
+			logger.error("!!!!!DeliveryOpenHourDao selectHourListByID occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!DeliveryOpenHourDao selectHourListByID occurs error:" + e);
+	        	throw new RuntimeException(e);
+	        }
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @return DeliveryOpenHourVO: Delivery open hour data
 	 */
 	public int insert(DeliveryOpenHourVO vo) {
 		// autocommit session open
@@ -77,7 +103,7 @@ public class DeliveryOpenHourDao {
 	}
 	
 	/**
-	 * @return DeliveryOpenHourVO: Order master data
+	 * @return DeliveryOpenHourVO: Delivery open hour data
 	 */
 	public int update(DeliveryOpenHourVO vo) {
 		// autocommit session open

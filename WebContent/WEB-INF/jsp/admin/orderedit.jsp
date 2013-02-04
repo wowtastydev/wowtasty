@@ -8,7 +8,18 @@
 	// Change Pending Order Status into Ordered Status
 	function changeOrderStatus(status){
 		document.getElementById("selectedStatus").value = status;
+		// In case of cancel
+		if (status == "71") {
+			var radioList = document.getElementsByName("reasonSel");
+			for(var i=0; i<radioList.length; i++){
+				if (radioList[i].checked) {
+					document.getElementById("declinedReason").value = radioList[i].value;
+					break;
+				}
+			}
+		}
 		document.getElementById("frm").action = "changeOrderStatusEdit";
+		$( "#declineReasonPanel" ).dialog( "close" );
 		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
@@ -63,14 +74,14 @@ $(function() {
     </s:iterator>
     
     // Decline Reason Panel
-    $( "#declineReason" ).dialog({
+    $( "#declineReasonPanel" ).dialog({
         autoOpen: false,
         width: 480,
         height: 150
     });
 
     $( "#decline" ).click(function() {
-        $( "#declineReason" ).dialog( "open" );
+        $( "#declineReasonPanel" ).dialog( "open" );
         return false;
     });
     
@@ -78,65 +89,6 @@ $(function() {
 });
 // -->
 </script>
-
-<!-- Google Map Panel -->
-<div id="googleMap" title="Restaurant Location">
-	<span id="mapHtml"></span>
-</div>
-
-<!-- Google Map Panel -->
-<s:iterator value="menuList" id="menuList" status="menuStat">
-<div id="menuDetail<s:property value='%{#menuStat.index}' />" title="Menu Detail">
-	<h4><s:property value="%{menuName}"/></h4>
-	<table width="400">
-	<tr>
-		<td width="250">Unit : <s:property value="%{unit}"/></td>
-		<td align="right">Unit Price : <s:property value="getText('{0,number,#,##0.00}',{unitPrice})"/></td>
-	</tr>
-	<tr><td colspan="2"></td></tr>
-	<tr><td colspan="2"><b>[Options]</b></td></tr>
-	<tr><td colspan="2">
-		<table class="tableborder" width="380">
-			<tr>
-				<th><SPAN style="FONT-SIZE: 10pt">Option Name</SPAN></th>
-				<th><SPAN style="FONT-SIZE: 10pt">Extra Charge</SPAN></th>
-			</tr>
-
-		<s:set var="restID" value="restaurantID" />
-		<s:set var="menuSeq" value="seq" />
-		<s:iterator value="menuoptionList" id="menuoptionList" status="optionStat">
-			<s:if test='%{#restID.equals(restaurantID) && #menuMenuID.equals(seq)}'>
-			<tr>
-				<td><s:property value="%{optionName}"/></td>
-				<td><s:property value="getText('{0,number,#,##0.00}',{extraCharge})"/></td>
-			</tr>
-			</s:if>
-		</s:iterator>
-		</table>
-		</td>
-	</tr>
-	<tr><td colspan="2"></td></tr>
-	<tr><td colspan="2"><b>[Special Instruction]</b></td></tr>
-	<tr><td colspan="2">
-	<table><tr><td align="left">
-	<s:textarea rows="3" cols="30" name="%{instruction}"></s:textarea>
-	</td></tr></table>
-	</td></tr>
-	<tr><td colspan="2"></td></tr>
-	<tr><td></td><td align="right">Sub Total:<s:property value="getText('{0,number,###,##0.00}',{totalPrice})"/></td></tr>
-	<tr><td></td><td align="right">Tax:<s:property value="getText('{0,number,###,##0.00}',{taxPrice})"/></td></tr>
-	<tr><td></td><td align="right"><b>Total Price:<s:property value="getText('{0,number,###,##0.00}',{totalPriceWithTax})"/></b></td></tr>
-	</table>
-</div>
-</s:iterator> 
-
-
-<!-- Decline Reason Panel -->
-<div id="declineReason" title="Decline Reason">
-	<p align="center"><s:radio name="declinedReason" id="declinedReason" list="declineReasonList" listKey="code" listValue="name" value="declineReason" /></p>
-	<p align="center"><input type="button" value="Decline" onClick="javascript:changeOrderStatus('71');" /></p>	
-</div>
-
 
 <div id="page">
 	<div id="mainarea">
@@ -148,13 +100,14 @@ $(function() {
 		</div>
 	
 		<div id="contentarea">
-		<s:form theme="css_xhtml" name="frm" id="frm" action="changeOrderStatus">
+		<s:form theme="simple" name="frm" id="frm" action="changeOrderStatus">
 			<s:hidden name="selectedOrderID" id="selectedOrderID" value="%{selectedOrderID}"/>
 			<s:hidden name="selectedRestaurantID" id="selectedRestaurantID" value="%{selectedRestaurantID}"/>
 			<s:hidden name="selectedDeliverymanID" id="selectedDeliverymanID"/>
 			<s:hidden name="selectedStatus" id="selectedStatus"/>
 			<s:hidden name="selectedSeq" id="selectedSeq"/>
-			<s:hidden name="page" id="page"/>
+			<s:hidden name="forwardPage" id="forwardPage"/>
+			<s:hidden name="declinedReason" id="declinedReason"/>
 			
 			<h2>Restaurant Order Edit</h2>
 			<s:if test="hasFieldErrors()">
@@ -310,7 +263,7 @@ $(function() {
 				<table class="tableborder" width="100%">
 					<tr>
 						<td class ="bg" width="350"><b>TOTAL</b></td>
-						<td class ="bg" width="100" align="right"><b><s:property value="getText('{0,number,###,##0.00}',{master.totalPriceWithTax})"/></b>
+						<td class ="bg" width="100" align="right"><b><s:property value="getText('{0,number,$###,##0.00}',{master.totalPriceWithTax})"/></b>
 						</td>
 					</tr>
 				</table>
@@ -356,8 +309,8 @@ $(function() {
 					<b>[Delivery Information]</b>
 					<table class="tableborder" width="100%">
 						<tr>
-							<th width="200">Restaurant</th>
-							<th width="120" colspan="2">Delivery Man</th>
+							<th>Restaurant</th>
+							<th width="100">Delivery Man</th>
 							<th width="100">City</th>
 							<th width="200">Address</th>
 							<th width="60">Suite #</th>
@@ -368,13 +321,14 @@ $(function() {
 							<td>
 								<s:property value="%{restaurant.restaurantName}"/>
 							</td>
-							<td>
-								<s:select name="restaurant.deliverymanID" id="restaurant.deliverymanID" list ="deliverymanList" listKey="deliverymanID" listValue="firstName" headerKey="" headerValue="" />
-							</td>
-							<td>
-								<a href="javascript:setDeliveryMan();"><img src="../images/admin/edit.png"></a>
-							</td>
-							<td>
+							<td align="center">
+							<s:if test='%{restaurant.orderStatus < 50 }'>
+								<s:select name="restaurant.deliverymanID" id="restaurant.deliverymanID" list ="deliverymanList" listKey="deliverymanID" listValue="firstName" headerKey="" headerValue=""  onchange="javascript:setDeliveryMan('%{#outerStat.index}');"/>
+							</s:if>
+							<s:else>
+								<s:property value="restaurant.deliverymanName"/>
+							</s:else>
+							<td align="center">
 								<s:iterator value="cityList" id="cityList" status="outerStat">
 								<s:if test='%{code.equals(restaurant.deliveryCity)}'>
 									<s:property value="%{name}"/>
@@ -384,13 +338,13 @@ $(function() {
 							<td>
 								<s:property value="%{restaurant.deliveryAddress}"/>
 							</td>
-							<td>
+							<td align="center">
 								<s:property value="%{restaurant.deliverySuite}"/>
 							</td>
-							<td>
+							<td align="center">
 								<s:property value="%{restaurant.deliveryBuzzer}"/>
 							</td>
-							<td>
+							<td align="center">
 								<s:property value="%{restaurant.deliveryTelephone}"/>
 							</td>
 						</tr>
@@ -401,7 +355,7 @@ $(function() {
 					<b>[Take-out Information]</b>
 					<table class="tableborder" width="100%">
 						<tr>
-							<th width="250">Restaurant</th>
+							<th>Restaurant</th>
 							<th width="50">Map</th>
 							<th width="100">City</th>
 							<th width="250">Address</th>
@@ -414,7 +368,7 @@ $(function() {
 							<td align="center">
 								<a id="showMap" href="#"><img src="../images/admin/map.png" alt="Show Google Map"></a>
 							</td>
-							<td>
+							<td align="center">
 								<s:iterator value="cityList" id="cityList" status="outerStat">
 								<s:if test='%{code.equals(restaurant.deliveryCity)}'>
 									<s:property value="%{name}"/>
@@ -424,7 +378,7 @@ $(function() {
 							<td>
 								<s:property value="%{restaurant.deliveryAddress}"/>
 							</td>
-							<td>
+							<td align="center">
 								<s:property value="%{restaurant.deliveryTelephone}"/>
 							</td>
 						</tr>
@@ -454,12 +408,106 @@ $(function() {
 				<s:if test='%{"11".equals(restaurant.orderStatus)}'>
 					<input type="button" value="Complete Order" onClick="javascript:changeOrderStatus('81');" />
 				</s:if>
+				<!-- In case of Complete -->
+				<s:if test='%{"81".equals(restaurant.orderStatus)}'>
+					<input type="button" value="Refund" onClick="javascript:changeOrderStatus('92');" />
+				</s:if>
 				</td></tr>
 			</table>
 			</div>
 		</s:form>
 		</div>
 	</div>
+</div>
+
+<!-- Google Map Panel -->
+<div id="googleMap" title="Restaurant Location">
+	<span id="mapHtml"></span>
+</div>
+
+<!-- Menu Detail Panel -->
+<s:iterator value="menuList" id="menuList" status="menuStat">
+<div id="menuDetail<s:property value='%{#menuStat.index}' />" title="Menu Detail">
+	<h4><s:property value="%{menuName}"/></h4>
+	<div class="div-table-noborder" style="width:100%;">
+		<div class="div-table-row">
+			<div class="div-table-col-noborder">
+				Unit : <s:property value="%{unit}"/>
+			</div>
+			<div class="div-table-col-noborderr">
+				Unit Price : <s:property value="getText('{0,number,$#,##0.00}',{unitPrice})"/>
+			</div>
+		</div>
+	</div>
+	<div class="div-table" style="width:100%;">
+		<div class="div-table-row">
+			<div class="div-table-colbg">
+				[Options]
+			</div>
+			<div class="div-table-colbg">
+				&nbsp;
+			</div>
+		</div>
+		<div class="div-table-row">
+			<div class="div-table-colh">
+				Option Name
+			</div>
+			<div class="div-table-colh">
+				Extra Charge
+			</div>
+		</div>
+		<s:set var="restID" value="restaurantID" />
+		<s:set var="menuSeq" value="seq" />
+		<s:iterator value="menuoptionList" id="menuoptionList" status="optionStat">
+			<s:if test='%{#restID.equals(restaurantID) && #menuSeq.equals(seq)}'>
+			<div class="div-table-row">
+				<div class="div-table-col">
+					<s:property value="%{optionName}"/>
+				</div>
+				<div class="div-table-colr">
+					<s:property value="getText('{0,number,$#,##0.00}',{extraCharge})"/>
+				</div>
+			</div>
+			</s:if>
+		</s:iterator>
+	</div>
+	
+	<div class="div-table" style="width:100%;">
+		<div class="div-table-row">
+			<div class="div-table-colbg">
+				[Special Instruction]
+			</div>
+		</div>
+		<div class="div-table-row">
+			<div class="div-table-col">
+				<s:textarea cssClass="textarea100" name="instruction" readonly="true"></s:textarea>
+			</div>
+		</div>
+	</div>
+	<div class="div-table-noborder" style="width:100%;">
+		<div class="div-table-row">
+			<div class="div-table-col-noborderr">
+				Sub Total:<s:property value="getText('{0,number,$###,##0.00}',{totalPrice})"/>
+			</div>
+		</div>
+		<div class="div-table-row">
+			<div class="div-table-col-noborderr">
+				Tax:<s:property value="getText('{0,number,$###,##0.00}',{taxPrice})"/>
+			</div>
+		</div>
+		<div class="div-table-rowbg">
+			<div class="div-table-colbg-noborderr">
+				Total Price:<s:property value="getText('{0,number,$###,##0.00}',{totalPriceWithTax})"/>
+			</div>
+		</div>
+	</div>
+</div>
+</s:iterator> 
+
+<!-- Decline Reason Panel -->
+<div id="declineReasonPanel" title="Decline Reason">
+	<p align="center"><s:radio name="reasonSel" list="declineReasonList" listKey="code" listValue="name" /></p>
+	<p align="center"><input type="button" value="Decline" onClick="javascript:changeOrderStatus('71');" /></p>	
 </div>
 </t:putAttribute>
 </t:insertDefinition>

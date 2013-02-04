@@ -9,9 +9,9 @@ public class DeliveryAreaVO {
 	/** delivery_area columns*/
 	private String deliveryCompanyID = "";
 	private String postalPrefix = "";
-	private int seq = 1;
-	private float minPrice = 0.00f;
-	private float deliveryFee = 0.00f;
+	private Integer seq = 1;
+	private Float minPrice = 0.00f;
+	private Float deliveryFee = 0.00f;
 	/**
 	 * @return the deliveryCompanyID
 	 */
@@ -37,39 +37,39 @@ public class DeliveryAreaVO {
 		this.postalPrefix = postalPrefix;
 	}
 	/**
-	 * @return the seq
-	 */
-	public int getSeq() {
-		return seq;
-	}
-	/**
-	 * @param seq the seq to set
-	 */
-	public void setSeq(int seq) {
-		this.seq = seq;
-	}
-	/**
 	 * @return the minPrice
 	 */
-	public float getMinPrice() {
+	public Float getMinPrice() {
 		return minPrice;
 	}
 	/**
 	 * @param minPrice the minPrice to set
 	 */
-	public void setMinPrice(float minPrice) {
+	public void setMinPrice(Float minPrice) {
 		this.minPrice = minPrice;
 	}
 	/**
 	 * @return the deliveryFee
 	 */
-	public float getDeliveryFee() {
+	public Float getDeliveryFee() {
 		return deliveryFee;
 	}
 	/**
 	 * @param deliveryFee the deliveryFee to set
 	 */
-	public void setDeliveryFee(float deliveryFee) {
+	public void setDeliveryFee(Float deliveryFee) {
 		this.deliveryFee = deliveryFee;
+	}
+	/**
+	 * @param seq the seq to set
+	 */
+	public void setSeq(Integer seq) {
+		this.seq = seq;
+	}
+	/**
+	 * @return the seq
+	 */
+	public Integer getSeq() {
+		return seq;
 	}
 }

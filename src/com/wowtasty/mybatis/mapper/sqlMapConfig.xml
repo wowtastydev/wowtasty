@@ -7,10 +7,12 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<setting name="defaultExecutorType" value="REUSE"/>
 		<setting name="defaultStatementTimeout" value="25000"/>
 	</settings>
-
+	
 	<typeAliases>
 		<!-- Mapping VO -->
 		<typeAlias type="com.wowtasty.mybatis.vo.ActionAuthVO" alias="actionauthvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.BillDetailVO" alias="billdetailvo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.BillMasterVO" alias="billmastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.CodeMasterVO" alias="codemastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.ContentsTextVO" alias="contentstextvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryAreaVO" alias="deliveryareavo"/>
@@ -18,6 +20,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryMasterVO" alias="deliverymastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryOpenHourVO" alias="deliveryopenhourvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.MemberMasterVO" alias="membermastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.OrderAdjustmentVO" alias="orderadjustmentvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderMasterVO" alias="ordermastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderMenuOptionVO" alias="ordermenuoptionvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderMenuVO" alias="ordermenuvo"/>
@@ -29,24 +32,36 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantMenuOptionVO" alias="restaurantmenuoptionvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantOpenHourVO" alias="restaurantopenhourvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.RestaurantPictVO" alias="restaurantpictvo"/>
-
+		<typeAlias type="com.wowtasty.mybatis.vo.WowMasterVO" alias="wowmastervo"/>
+		
 		<!-- List VO -->
+		<typeAlias type="com.wowtasty.vo.BalanceListVO" alias="balanceListvo"/>
+		<typeAlias type="com.wowtasty.vo.BillingListVO" alias="billinglistvo"/>
+		<typeAlias type="com.wowtasty.vo.BillingOrderListVO" alias="billingorderlistvo"/>
 		<typeAlias type="com.wowtasty.vo.OrderListVO" alias="orderlistvo"/>
+		<typeAlias type="com.wowtasty.vo.ReportingListVO" alias="reportinglistvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListVO" alias="restaurantlistvo"/>
-                <typeAlias type="com.wowtasty.vo.CuisineListVO" alias="cuisinelistvo"/>
-
+		<typeAlias type="com.wowtasty.vo.RestaurantSignupListVO" alias="restaurantsignuplistvo"/>
+        <typeAlias type="com.wowtasty.vo.CuisineListVO" alias="cuisinelistvo"/>
+		<typeAlias type="com.wowtasty.vo.HourListVO" alias="hourlistvo"/>
+		<typeAlias type="com.wowtasty.vo.ReportingExcelVO" alias="reportingexcelvo"/>
+		
 		<!-- Condition VO  -->
+		<typeAlias type="com.wowtasty.vo.BalanceListConditionVO" alias="balanceListconditionvo"/>
+		<typeAlias type="com.wowtasty.vo.BillingListConditionVO" alias="billinglistconditionvo"/>
+		<typeAlias type="com.wowtasty.vo.BillingOrderListConditionVO" alias="billingorderlistconditionvo"/>
 		<typeAlias type="com.wowtasty.vo.OrderListConditionVO" alias="orderlistconditionvo"/>
 		<typeAlias type="com.wowtasty.vo.RestaurantListConditionVO" alias="restaurantlistconditionvo"/>
-                <typeAlias type="com.wowtasty.vo.RestaurantSearchConditionVO" alias="restaurantsearchconditionvo"/>
+		<typeAlias type="com.wowtasty.vo.RestaurantSearchConditionVO" alias="restaurantsearchconditionvo"/>
+		<typeAlias type="com.wowtasty.vo.RestaurantSignupListConditionVO" alias="restaurantsignuplistconditionvo"/>
 
-                <!-- Extended Mapping VO -->
-                <typeAlias type="com.wowtasty.vo.RestaurantEVO" alias="restaurantevo"/>
-                <typeAlias type="com.wowtasty.vo.RestaurantMenuEVO" alias="restaurantmenuevo"/>
-                <typeAlias type="com.wowtasty.vo.RestaurantMenuOptionEVO" alias="restaurantmenuoptionevo"/>
-
+        <!-- Extended Mapping VO -->
+        <typeAlias type="com.wowtasty.vo.RestaurantEVO" alias="restaurantevo"/>
+        <typeAlias type="com.wowtasty.vo.RestaurantMenuEVO" alias="restaurantmenuevo"/>
+        <typeAlias type="com.wowtasty.vo.RestaurantMenuOptionEVO" alias="restaurantmenuoptionevo"/>
+                
 	</typeAliases>
-
+   
 	<environments default="">
 	<environment id="">
 		<transactionManager type="JDBC" />
@@ -60,6 +75,8 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 	</environments>
 	<mappers>
 		<mapper resource="com/wowtasty/mybatis/mapper/actionauth.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/billdetail.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/billmaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/codemaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/contentstext.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/deliveryarea.xml"/>
@@ -67,6 +84,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<mapper resource="com/wowtasty/mybatis/mapper/deliverymaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/deliveryopenhour.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/membermaster.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/orderadjustment.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/ordermaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/orderrestaurant.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/ordermenu.xml"/>
@@ -79,5 +97,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurantopenhour.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurantpict.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/restaurant.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/wowmaster.xml"/>
 	</mappers>
 </configuration>

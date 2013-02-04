@@ -26,8 +26,10 @@ import com.wowtasty.mybatis.vo.OrderMenuOptionVO;
 import com.wowtasty.mybatis.vo.OrderMenuVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.MailSender;
+import com.wowtasty.util.OrderUtil;
 import com.wowtasty.util.SessionUtil;
 
 
@@ -76,13 +78,21 @@ public class OrderAction extends ActionSupport implements Preparable {
 	private List<OrderRestaurantVO> restaurantList = new ArrayList<OrderRestaurantVO>();
 	private List<OrderMenuVO> menuList = new ArrayList<OrderMenuVO>();
 	private List<OrderMenuOptionVO> menuoptionList = new ArrayList<OrderMenuOptionVO>();
-	private String page = "";
+	//Page or action for current order list/order list page
+	private String forwardPage = "";
+	
+	//Parameter from email
+	private String param1 = "";
+	private String param2 = "";
+	private String param3 = "";
+	private String param4 = "";
+	private String msgResult = "";
 
 	/**
 	 * Prepared method
 	 */	
 	public void prepare() throws Exception {
-		logger.info("<---Prepare start --->");
+		logger.info("<---prepare start --->");
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		
@@ -94,41 +104,30 @@ public class OrderAction extends ActionSupport implements Preparable {
 				
 		// set up deliveryman dropdown menu 
 		DeliveryManDao dao = new DeliveryManDao();
-		deliverymanList = dao.selectAll();
+		deliverymanList = dao.selectByCompany(Constants.CONSTANT_5DELIVERY_ID);
 		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
 		
-		logger.info("<---Prepare end --->");
+		logger.info("<---prepare end --->");
 	}
 	
 	/**
-	 * Initiate Order List page
-	 * @return SUCCESS
-	 */
-	public String init() throws Exception {
-		logger.info("<---Init start --->");
-
-		// Get Order Detail 
-		getOrderDetail();
-
-		logger.info("<---Init end --->");
-		return SUCCESS;
-	}
-	
-	/**
-	 * Insert member data
+	 * Initiate Order Detail page
 	 * @return SUCCESS
 	 */
 	@Override
 	public String execute() throws Exception {
-		logger.info("<---Execute start --->");
-	
-		logger.info("<---Execute end --->");
+		logger.info("<---execute start --->");
+
+		// Get Order Detail 
+		getOrderDetail();
+
+		logger.info("<---execute end --->");
 		return SUCCESS;
 	}
-	
+
 	/**
 	 * Change Order status
 	 * @return SUCCESS
@@ -142,6 +141,7 @@ public class OrderAction extends ActionSupport implements Preparable {
 		vo.setOrderID(selectedOrderID);
 		vo.setRestaurantID(selectedRestaurantID);
 		if (Constants.CODE_ORDER_STATUS_DECLINED.equals(selectedStatus)) {
+			// In case of decline, set the declined Reason
 			vo.setDeclinedReason(declinedReason);
 		}
 		vo.setUpdateID(uservo.getMemberID());
@@ -161,34 +161,31 @@ public class OrderAction extends ActionSupport implements Preparable {
 			MemberMasterVO mvo = new MemberMasterVO();
 			mvo = mdao.selectByEmail(master.getOrderMemberEmail());
 			
+			//Get restaurant master data
+			RestaurantMasterDao rdao = new RestaurantMasterDao();
+			RestaurantMasterVO restaurantMaster = rdao.selectByID(selectedRestaurantID);
+			
+			String strOrderDetail = OrderUtil.contextOrderDetail(selectedOrderID, selectedRestaurantID, codeMap);
+			
 			//STATUS ORDERED
 			if (Constants.CODE_ORDER_STATUS_ORDERED.equals(selectedStatus)) {
-				// Send email -> Send Email to User and Restaurant
-				// Get contents, subject for member
-				ContentsTextDao cdao = new ContentsTextDao();
-				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_MEM);
-				
-				// Set restaurant's name and order member's name into email contents
-				String contents = cvo.getContents();
-				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
-
-				// Set up the mail contents for member
-				MailSender sender = new MailSender();
-				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject() + selectedOrderID, contents);
-				
+				// Send email -> Send Email to ONLY Restaurant
 				// Get contents, subject for restaurant
-				cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+				ContentsTextDao cdao = new ContentsTextDao();
+				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
 				
-				// Set restaurant's name and member's name into email contents
-				contents = cvo.getContents();
-				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				// Set restaurant's name and order detail into email contents
+				String contents = cvo.getContents();
+				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
+				contents = contents.replace("<PARAM_ORDER_ID>", selectedOrderID);
+				contents = contents.replace("<PARAM_RESTAURANT_ID>", selectedRestaurantID);
 				
 				// Set up the mail contents for restaurant
-				sender.sendEmail(restaurant.getRestaurantEmail(), cvo.getSubject() + selectedOrderID, contents);
+				MailSender sender = new MailSender();
+				sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
 				
-				addActionMessage("Email has been sent to the customer and the restaurant successfully");
+				addActionMessage("Email has been sent to the restaurant successfully");
 			}
 			
 			//STATUS CONFIRMED
@@ -198,25 +195,24 @@ public class OrderAction extends ActionSupport implements Preparable {
 				ContentsTextDao cdao = new ContentsTextDao();
 				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_CONFIRMED_MEM);
 				
-				// Set restaurant's name and order member's name into email contents
+				// Set member's name and order detail into email contents
 				String contents = cvo.getContents();
 				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
-
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 				// Set up the mail contents for member
 				MailSender sender = new MailSender();
-				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject() + selectedOrderID, contents);
+				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject(), contents);
 				
 				// Get contents, subject for restaurant
-				cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+				cvo = cdao.selectByID(Constants.KEY_CONTENTS_CONFIRMED_REST);
 				
-				// Set restaurant's name and member's name into email contents
+				// Set restaurant's name and order detail into email contents
 				contents = cvo.getContents();
-				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 				
 				// Set up the mail contents for restaurant
-				sender.sendEmail(restaurant.getRestaurantEmail(), cvo.getSubject() + selectedOrderID, contents);
+				sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
 				
 				addActionMessage("Email has been sent to the customer and the restaurant successfully");
 			}
@@ -228,67 +224,146 @@ public class OrderAction extends ActionSupport implements Preparable {
 				ContentsTextDao cdao = new ContentsTextDao();
 				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_DECLINED_MEM);
 				
-				// Set restaurant's name and order member's name into email contents
+				// Set member's name, order detail and declined reason into email contents
 				String contents = cvo.getContents();
 				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				contents = contents.replace("<PARAM_DECLINED_REASON>", CodeUtil.getCdName(codeMap, Constants.KEY_CD_DECLINEREASON_TYPE, declinedReason));
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 
 				// Set up the mail contents for member
 				MailSender sender = new MailSender();
-				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject() + selectedOrderID, contents);
+				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject(), contents);
 				
 				// Get contents, subject for restaurant
-				cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+				cvo = cdao.selectByID(Constants.KEY_CONTENTS_DECLINED_REST);
 				
-				// Set restaurant's name and member's name into email contents
+				// Set restaurant's name, order detail and declined reason into email contents
 				contents = cvo.getContents();
-				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+				contents = contents.replace("<PARAM_DECLINED_REASON>", CodeUtil.getCdName(codeMap, Constants.KEY_CD_DECLINEREASON_TYPE, declinedReason));
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 				
 				// Set up the mail contents for restaurant
-				sender.sendEmail(restaurant.getRestaurantEmail(), cvo.getSubject() + selectedOrderID, contents);
+				sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
 
 				addActionMessage("Email has been sent to the customer and the restaurant successfully");
 			}
+		}
+		// Get Order Detail to reload detail
+		getOrderDetail();
+		
+		logger.info("<---changeOrderStatus end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Change Order Status from email
+	 * @return SUCCESS
+	 */
+	public String changeOrderStatusEmail() throws Exception {
+		logger.info("<---changeOrderStatusEmail start --->");
+try{
+		// Set params from email
+		selectedOrderID = param1;
+		selectedRestaurantID = param2;
+		selectedStatus = param3;
+		declinedReason = param4;
+				
+		// set up order status and update Information
+		OrderRestaurantVO vo = new OrderRestaurantVO();
+		vo.setOrderStatus(selectedStatus);
+		vo.setOrderID(selectedOrderID);
+		vo.setRestaurantID(selectedRestaurantID);
+		if (Constants.CODE_ORDER_STATUS_DECLINED.equals(selectedStatus)) {
+			// In case of decline, set the declined Reason
+			vo.setDeclinedReason(declinedReason);
+		}
+		vo.setUpdateID("email");
+		
+		//Change order status
+		OrderDao dao = new OrderDao();
+		int returnCnt = dao.changeOrderStatus(vo);
+		
+		if (returnCnt > 0) {
+		
+			// Get Order Detail to reload detail
+			getOrderDetail();
 			
-			//STATUS CANCELED
-			if (Constants.CODE_ORDER_STATUS_CANCELED.equals(selectedStatus)) {
+			//Get order member's name 
+			MemberMasterDao mdao = new MemberMasterDao();
+			MemberMasterVO mvo = new MemberMasterVO();
+			mvo = mdao.selectByEmail(master.getOrderMemberEmail());
+			
+			//Get restaurant master data
+			RestaurantMasterDao rdao = new RestaurantMasterDao();
+			RestaurantMasterVO restaurantMaster = rdao.selectByID(selectedRestaurantID);
+			
+			String strOrderDetail = OrderUtil.contextOrderDetail(selectedOrderID, selectedRestaurantID, codeMap);
+			
+			//STATUS CONFIRMED
+			if (Constants.CODE_ORDER_STATUS_CONFIRMED.equals(selectedStatus)) {
 				// Send email -> Send Email to User and Restaurant
 				// Get contents, subject for member
 				ContentsTextDao cdao = new ContentsTextDao();
-				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_CANCELED_MEM);
+				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_CONFIRMED_MEM);
 				
-				// Set restaurant's name and order member's name into email contents
+				// Set member's name and order detail into email contents
 				String contents = cvo.getContents();
 				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
+				// Set up the mail contents for member
+				MailSender sender = new MailSender();
+				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject(), contents);
+				
+				// Get contents, subject for restaurant
+				cvo = cdao.selectByID(Constants.KEY_CONTENTS_CONFIRMED_REST);
+				
+				// Set restaurant's name and order detail into email contents
+				contents = cvo.getContents();
+				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
+				
+				// Set up the mail contents for restaurant
+				sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
+				msgResult = "Confirm Order Successfully";
+			}
+			
+			//STATUS DECLINED
+			if (Constants.CODE_ORDER_STATUS_DECLINED.equals(selectedStatus)) {
+				// Send email -> Send Email to User and Restaurant
+				// Get contents, subject for member
+				ContentsTextDao cdao = new ContentsTextDao();
+				ContentsTextVO cvo = cdao.selectByID(Constants.KEY_CONTENTS_DECLINED_MEM);
+				
+				// Set member's name, order detail and declined reason into email contents
+				String contents = cvo.getContents();
+				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
+				contents = contents.replace("<PARAM_DECLINED_REASON>", CodeUtil.getCdName(codeMap, Constants.KEY_CD_DECLINEREASON_TYPE, declinedReason));
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 
 				// Set up the mail contents for member
 				MailSender sender = new MailSender();
-				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject() + selectedOrderID, contents);
+				sender.sendEmail(master.getOrderMemberEmail(), cvo.getSubject(), contents);
 				
 				// Get contents, subject for restaurant
-				cvo = cdao.selectByID(Constants.KEY_CONTENTS_ORDERED_REST);
+				cvo = cdao.selectByID(Constants.KEY_CONTENTS_DECLINED_REST);
 				
-				// Set restaurant's name and member's name into email contents
+				// Set restaurant's name, order detail and declined reason into email contents
 				contents = cvo.getContents();
-				contents = contents.replace("<PARAM_MEMBER_NAME>", mvo.getFirstName() + " " + mvo.getLastName());
-				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurant.getRestaurantName());
+				contents = contents.replace("<PARAM_RESTAURANT_NAME>", restaurantMaster.getName());
+				contents = contents.replace("<PARAM_DECLINED_REASON>", CodeUtil.getCdName(codeMap, Constants.KEY_CD_DECLINEREASON_TYPE, declinedReason));
+				contents = contents.replace("<PARAM_ORDER_DETAIL>", strOrderDetail);
 				
 				// Set up the mail contents for restaurant
-				sender.sendEmail(restaurant.getRestaurantEmail(), cvo.getSubject() + selectedOrderID, contents);
-				
-				addActionMessage("Email has been sent to the customer and the restaurant successfully");
+				sender.sendEmail(restaurantMaster.getEmail1(), cvo.getSubject(), contents);
+				msgResult = "Decline Order Successfully";
 			}
-			
-		} else {
-			addActionError("No data has been changed."); 
-			
-			// Get Order Detail to reload detail
-			getOrderDetail();
 		}
-		
-		logger.info("<---changeOrderStatus end --->");
+} catch (Exception e) {
+	e.printStackTrace();
+}
+				
+		logger.info("<---changeOrderStatusEmail end --->");
 		return SUCCESS;
 	}
 	
@@ -359,7 +434,8 @@ public class OrderAction extends ActionSupport implements Preparable {
 		menuoptionList = (List<OrderMenuOptionVO>)orderMap.get(Constants.KEY_ORDER_MENUOPTION);
 		
 		//Set Selected Order Restaurant
-		for (int i = 0; i < restaurantList.size(); i++) {
+		int size = restaurantList.size();
+		for (int i = 0; i < size; i++) {
 			if (selectedRestaurantID.equals(restaurantList.get(i).getRestaurantID())) {
 				restaurant = restaurantList.get(i);
 				
@@ -655,16 +731,79 @@ public class OrderAction extends ActionSupport implements Preparable {
 	}
 
 	/**
-	 * @return the page
+	 * @return the forwardPage
 	 */
-	public String getPage() {
-		return page;
+	public String getForwardPage() {
+		return forwardPage;
 	}
 
 	/**
-	 * @param page the page to set
+	 * @param forwardPage the forwardPage to set
 	 */
-	public void setPage(String page) {
-		this.page = page;
+	public void setForwardPage(String forwardPage) {
+		this.forwardPage = forwardPage;
+	}
+
+	/**
+	 * @return the param1
+	 */
+	public String getParam1() {
+		return param1;
+	}
+
+	/**
+	 * @param param1 the param1 to set
+	 */
+	public void setParam1(String param1) {
+		this.param1 = param1;
+	}
+
+	/**
+	 * @return the param2
+	 */
+	public String getParam2() {
+		return param2;
+	}
+
+	/**
+	 * @param param2 the param2 to set
+	 */
+	public void setParam2(String param2) {
+		this.param2 = param2;
+	}
+
+	/**
+	 * @return the param3
+	 */
+	public String getParam3() {
+		return param3;
+	}
+
+	/**
+	 * @param param3 the param3 to set
+	 */
+	public void setParam3(String param3) {
+		this.param3 = param3;
+	}
+
+	/**
+	 * @return the param4
+	 */
+	public String getParam4() {
+		return param4;
+	}
+
+	/**
+	 * @param param4 the param4 to set
+	 */
+	public void setParam4(String param4) {
+		this.param4 = param4;
+	}
+
+	/**
+	 * @return the msgResult
+	 */
+	public String getMsgResult() {
+		return msgResult;
 	}
 }

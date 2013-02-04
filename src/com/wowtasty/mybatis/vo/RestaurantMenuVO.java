@@ -12,14 +12,15 @@ public class RestaurantMenuVO {
 	private String restaurantID = "";
 	private Integer menuID = 0;
 	private Integer categoryID = 0;
-	private String Name = "";
+	private String name = "";
 	private Float price = 0.00f;
 	private String description = "";
-	private String ImagePath = "";
-	private Integer sort = 0;
+	private String imagePath = "";
+	private Integer sort = 1;
 	private Float taxRate = 0.00f;
 	private String status = "";
-	private String naFlag = "";
+	private Integer minUnit = 1;
+	private String naFlag = "0";
 	private String updateID = "";
 	private Timestamp updateTime = null;
 	/**
@@ -62,13 +63,13 @@ public class RestaurantMenuVO {
 	 * @return the name
 	 */
 	public String getName() {
-		return Name;
+		return name;
 	}
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
-		Name = name;
+		this.name = name;
 	}
 	/**
 	 * @return the price
@@ -98,13 +99,13 @@ public class RestaurantMenuVO {
 	 * @return the imagePath
 	 */
 	public String getImagePath() {
-		return ImagePath;
+		return imagePath;
 	}
 	/**
 	 * @param imagePath the imagePath to set
 	 */
 	public void setImagePath(String imagePath) {
-		ImagePath = imagePath;
+		this.imagePath = imagePath;
 	}
 	/**
 	 * @return the sort
@@ -141,6 +142,18 @@ public class RestaurantMenuVO {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+	/**
+	 * @return the minUnit
+	 */
+	public Integer getMinUnit() {
+		return minUnit;
+	}
+	/**
+	 * @param minUnit the minUnit to set
+	 */
+	public void setMinUnit(Integer minUnit) {
+		this.minUnit = minUnit;
 	}
 	/**
 	 * @return the naFlag

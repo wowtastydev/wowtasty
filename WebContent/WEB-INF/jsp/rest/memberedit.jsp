@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
-<t:insertDefinition name="admin.layout">
-<t:putAttribute name="main_admin">
+<t:insertDefinition name="rest.layout">
+<t:putAttribute name="main_rest">
 <link rel="stylesheet" type="text/css" href="../css/jquery.combobox.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
 <script src="../js/jquery.combobox.js"></script>
@@ -12,13 +12,6 @@
 	// Save Member master
 	function save(){
 		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
-	}
-	
-	// Save Member restaurant
-	function saveRest(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveMemberRestaurant";
 		document.getElementById("frm").submit();
 	}
 	
@@ -82,97 +75,6 @@
 			document.getElementById("email").readOnly = true;
 		}
 	}
-	
-	// Add restaurant row
-	function addRow() {
-		var id = document.getElementById("memberID").value;
-		var restID = document.getElementById("listRstaurantID").value;
-		var restName = document.getElementById("listRstaurantName").value;
-
-		if (id == "") {
-			// Show Error Message
-			errorMessage.innerHTML = "Please save Member Information first.";
-			$( "#errorMessagePanel" ).dialog( "open" );
-			return;
-		}
-		
-		if (restID == "") {
-			// Show Error Message
-			errorMessage.innerHTML = "Please choose a restaurant.";
-			$( "#errorMessagePanel" ).dialog( "open" );
-			return;
-		}
-		
-		var tbody = document.getElementById('restTbl').getElementsByTagName("tbody")[0];
-		var rowCount = tbody.rows.length;
-		
-		var obj_row;
-		if(/*@cc_on!@*/true){
-			obj_row = document.createElement("TR");
-			tbody.appendChild(obj_row);
-		}else{
-			obj_row = tbody.insertRow();
-		}
-		
-		var td_del = document.createElement("TD");
-		td_del.setAttribute("align", "center");
-		obj_row.appendChild(td_del);
-		
-		var input_del = document.createElement("input"); 
-		input_del.setAttribute("type", "checkbox");
-		input_del.setAttribute("name", "chk");
-		td_del.appendChild(input_del);
-		
-		var td_name = document.createElement("TD");
-		obj_row.appendChild(td_name);
-		
-		var txt_restName = document.createTextNode(restName);
-		td_name.appendChild(txt_restName);
-		
-		var input_memberID = document.createElement("input");
-		input_memberID.setAttribute("type", "hidden");
-		input_memberID.setAttribute("name", "memberRestaurantList[" + rowCount + "].memberID");
-		input_memberID.setAttribute("value", id);
-		td_name.appendChild(input_memberID);
-		
-		var input_restID = document.createElement("input");
-		input_restID.setAttribute("type", "hidden");
-		input_restID.setAttribute("name", "memberRestaurantList[" + rowCount + "].restaurantID");
-		input_restID.setAttribute("value", restID);
-		td_name.appendChild(input_restID);
-		
-		var input_role = document.createElement("input");
-		input_role.setAttribute("type", "hidden");
-		input_role.setAttribute("name", "memberRestaurantList[" + rowCount + "].role");
-		input_role.setAttribute("value", "");
-		td_name.appendChild(input_role);
-	}
-	
-	// delete restaurant row
-	function delRow(){
-		var tbody = document.getElementById("restTbl").getElementsByTagName("tbody")[0];
-		var rowCount = tbody.rows.length;
-		
-        for(var i=0; i<rowCount; i++) {
-            var row = tbody.rows[i];
-            var chkbox = row.cells[0].childNodes[0];
-            if(null != chkbox && undefined == chkbox.checked) {
-                // In case menuOptionList, checkbox is node[1]
-                chkbox = row.cells[0].childNodes[1];
-                if(null != chkbox && true == chkbox.checked) {
-                	tbody.deleteRow(i);
-                    rowCount--;
-                    i--;
-                }
-            } else {
-                if(null != chkbox && true == chkbox.checked) {
-                	tbody.deleteRow(i);
-                    rowCount--;
-                    i--;
-                }
-            }
-        }
-	}
 // -->
 </script>
 
@@ -204,9 +106,7 @@
 	<div id="mainarea">
 		<div id="sidebar">
 			<div id="sidebarnav">
-				<a href="javascript:goPage('A101');">User Account List</a>
-				<a href="javascript:goPage('A102');">Add User Account</a>
-				<a href="javascript:goPage('A104');">Change Password</a>
+				<a href="#" class="active">User Account</a>
 			</div>
 		</div>
 	
@@ -239,7 +139,13 @@
 								<s:hidden name="mvo.memberID" id="memberID" />
 								</td>
 								<td>Member Type:</td>
-								<td colspan=3><s:select name="mvo.auth" id="auth" list="roleList" listKey="code" listValue="name"  headerKey="" headerValue="" />
+								<td colspan=3>
+									<s:iterator value="roleList" id="roleList" status="outerStat">
+										<s:if test='%{code.equals(mvo.auth)}'>
+											<s:property value="%{name}"/>
+										</s:if>
+									</s:iterator>
+									<s:hidden name="mvo.auth" id="auth" />
 								</td>
 							</tr>
 							<tr>
@@ -352,77 +258,30 @@
 							</tr>
 						</table>
 					</div>
-
-					<!-- Only Restaurant users can add restaurant List -->					
-					<s:if test='%{mvo.auth >= 20 && mvo.auth < 30}'>
 					<h3>Restaurant List</h3>
 					<div>
-					    <div>
-							<div>
-								<table>
-									<tr>
-										<td>
-											<s:select name="listRstaurantID" id="listRstaurantID" list="restaurantList" listKey="restaurantID" listValue="name" headerKey="" headerValue="" />
-											<s:hidden id="listRstaurantName"/>
-											&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" value="Add Restaurant" onClick ="javascript:addRow();"/>
-											<input type="button" value="Del Row" onClick ="javascript:delRow();"/>
-										</td>
-									</tr>
-								</table>
-						    
-								<div>
-								<table class="tableborder" id="restTbl" width="400">
-									<thead>
-									<tr>
-										<th width="20"></th>
-										<th width="380">Restaurant Name</th>
-									</tr>
-									</thead>
-									<tbody>
-									<s:iterator value="memberRestaurantList" id="memberRestaurantList" status="outerStat">
-									<tr>
-										<td align="center">
-											<s:checkbox name="chk" id="chk"/>
-										</td>
-										<td>
-											<s:property value="restaurantName"/>
-											<s:hidden name="memberRestaurantList[%{#outerStat.index}].restaurantName"/>
-											<s:hidden name="memberRestaurantList[%{#outerStat.index}].memberID"/>
-											<s:hidden name="memberRestaurantList[%{#outerStat.index}].restaurantID"/>
-											<s:hidden name="memberRestaurantList[%{#outerStat.index}].role"/>
-										</td>
-									</tr>
-									</s:iterator>
-									</tbody>
-								</table>
-								</div>
-							</div>
-							<table width="100%">
-								<tr>
-									<td><hr></td>
-								</tr>
-								<tr>
-									<td>
-										<input type="button" value="Save" onClick="javascript:saveRest();" />
-									</td>
-								</tr>
-							</table>
-
-					    </div>
+						<table class="tableborder" id="restTbl" width="400">
+							<thead>
+							<tr>
+								<th>Restaurant Name</th>
+							</tr>
+							</thead>
+							<tbody>
+							<s:iterator value="memberRestaurantList" id="memberRestaurantList" status="outerStat">
+							<tr>
+								<td>
+									<s:property value="restaurantName"/>
+									<s:hidden name="memberRestaurantList[%{#outerStat.index}].restaurantName"/>
+									<s:hidden name="memberRestaurantList[%{#outerStat.index}].memberID"/>
+									<s:hidden name="memberRestaurantList[%{#outerStat.index}].restaurantID"/>
+									<s:hidden name="memberRestaurantList[%{#outerStat.index}].role"/>
+								</td>
+							</tr>
+							</s:iterator>
+							</tbody>
+						</table>
 					</div>
-					</s:if>
-					
 				</div>
-				<table width="100%">
-					<tr>
-						<td><hr></td>
-					</tr>
-					<tr>
-						<td>
-							<input type="button" value="List" onClick="javascript:goPage('A101');" />
-						</td>
-					</tr>
-				</table>
 			</div>
 		</s:form>
 		</div>

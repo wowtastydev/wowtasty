@@ -63,6 +63,29 @@ public class OrderDao {
 	}
 	
 	/**
+	 * @param condition: Order List Search Condition for restaurant users
+	 * @return List<OrderListVO>: Order list
+	 */
+	public List<OrderListVO> selectRest(OrderListConditionVO condition) {
+		SqlSession sqlSession = factory.openSession();
+		List<OrderListVO> returnObject = new ArrayList<OrderListVO>();
+		try {
+			returnObject = sqlSession.selectList("ordermaster.selectRest", condition);
+		} catch (Exception e) {
+			logger.error("!!!!!OrderDao selectRest occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!OrderDao selectRest occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
 	 * @param condition: Order List Search Condition on the balance management page
 	 * @return List<BalanceListVO>: Order list on the balance management page
 	 */
@@ -130,6 +153,30 @@ public class OrderDao {
 		}
 		return returnObject;
 	}
+	
+	/**
+	 * Current Order List for restaurant users
+	 * @param condition: Current Order List Search Condition
+	 * @return List<OrderListVO>: Current Order list
+	 */
+	public List<OrderListVO> selectCurrentRest(OrderListConditionVO condition) {
+		SqlSession sqlSession = factory.openSession();
+		List<OrderListVO> returnObject = new ArrayList<OrderListVO>();
+		try {
+			returnObject = sqlSession.selectList("ordermaster.selectCurrentRest", condition);
+		} catch (Exception e) {
+			logger.error("!!!!!OrderDao selectCurrentRest occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!OrderDao selectCurrentRest occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
 
 	/**
 	 * @param orderID: orderID
@@ -185,6 +232,7 @@ public class OrderDao {
 		OrderMasterVO master = new OrderMasterVO();
 		OrderRestaurantVO restaurant = new OrderRestaurantVO();
 		List<OrderMenuVO> menuList = new ArrayList<OrderMenuVO>();
+		List<OrderMenuOptionVO> menuoptionList = new ArrayList<OrderMenuOptionVO>();
 		try {
 			//Get order master data
 			master = sqlSession.selectOne("ordermaster.selectByID", orderID);
@@ -199,6 +247,10 @@ public class OrderDao {
 			//Get order menu list
 			menuList = sqlSession.selectList("ordermenu.selectByOrderID", orderID);
 			returnObject.put(Constants.KEY_ORDER_MENU, menuList);
+			
+			//Get order menuoption data
+			menuoptionList = sqlSession.selectList("ordermenuoption.selectByOrderID", orderID);
+			returnObject.put(Constants.KEY_ORDER_MENUOPTION, menuoptionList);
 			
 		} catch (Exception e) {
 			logger.error("!!!!!OrderDao selectByRestaurantID occurs error:" + e);

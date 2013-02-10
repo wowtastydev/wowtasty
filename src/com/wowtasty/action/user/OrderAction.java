@@ -46,13 +46,13 @@ public class OrderAction extends ActionSupport {
         logger = aLogger;
     }
     // codemaster map
-    private Map<String, List<CodeMasterVO>> codeMap = new HashMap<>();
+    private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
     // main page infomations
-    private List<RestaurantListVO> newListVO = new ArrayList<>();
-    private List<RestaurantListVO> mostListVO = new ArrayList<>();
-    private List<CuisineListVO> cuisineListVO = new ArrayList<>();
-    private List<RestaurantEVO> restListVO = new ArrayList<>();
-    private List<RestaurantPictVO> restPictListVO = new ArrayList<>();
+    private List<RestaurantListVO> newListVO = new ArrayList<RestaurantListVO>();
+    private List<RestaurantListVO> mostListVO = new ArrayList<RestaurantListVO>();
+    private List<CuisineListVO> cuisineListVO = new ArrayList<CuisineListVO>();
+    private List<RestaurantEVO> restListVO = new ArrayList<RestaurantEVO>();
+    private List<RestaurantPictVO> restPictListVO = new ArrayList<RestaurantPictVO>();
     private List<RestaurantDeliveryAreaVO> restdaListVO = new ArrayList();
     private List<RestaurantMenuEVO> restMenuListVO = new ArrayList();
     private List<RestaurantMenuOptionEVO> restMenuOptionListVO = new ArrayList();
@@ -60,8 +60,8 @@ public class OrderAction extends ActionSupport {
     private RestaurantMenuOptionEVO rmoeVO = new RestaurantMenuOptionEVO();
     // search condition VO
     private RestaurantSearchConditionVO rscVO = new RestaurantSearchConditionVO();
-    private List<CodeMasterVO> cityList = new ArrayList<>();
-    private List<CodeMasterVO> cuisineTypeList = new ArrayList<>();
+    private List<CodeMasterVO> cityList = new ArrayList<CodeMasterVO>();
+    private List<CodeMasterVO> cuisineTypeList = new ArrayList<CodeMasterVO>();
     private Iterator keywordList = null;
     //request prameter for orderMenu
     private String restaurantID = "";
@@ -102,7 +102,7 @@ public class OrderAction extends ActionSupport {
 
         if (getQ() != null && getQ().length() > 0) {
             RestaurantDao resDao = new RestaurantDao();
-            TreeSet<String> keywordSet = new TreeSet<>();
+            TreeSet<String> keywordSet = new TreeSet<String>();
             String[] keyArr = resDao.getKeywordList(getQ()).split(",");
 
             for (String str : keyArr) {
@@ -186,7 +186,7 @@ public class OrderAction extends ActionSupport {
         getLogger().info("Call viewRestaurant");
 
         //Map object for Menu List and Menu Option List
-        Map<String, Object> resultObj = new HashMap<>();
+        Map<String, Object> resultObj = new HashMap<String, Object>();
         RestaurantDao resDao = new RestaurantDao();
         setReVO(resDao.getRestaurantInfo(getRscVO().getRestaurantID()));
         setRestPictListVO(resDao.getRestaurantImage(getRscVO().getRestaurantID()));

@@ -1,5 +1,8 @@
 package com.wowtasty.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Hak C.
  *
@@ -14,7 +17,7 @@ public class OrderListConditionVO {
 	private String orderMemberTelephone = "";
 	private String orderStatus = "";
 	private String deliveryType = "";
-	private String restaurantID = "";
+	private List<String> restaurantList = new ArrayList<String>();
 
 	/**
 	 * @return the time
@@ -101,15 +104,15 @@ public class OrderListConditionVO {
 		this.deliveryType = deliveryType;
 	}
 	/**
-	 * @return the restaurantID
+	 * @return the restaurantList
 	 */
-	public String getRestaurantID() {
-		return restaurantID;
+	public List<String> getRestaurantList() {
+		return restaurantList;
 	}
 	/**
-	 * @param restaurantID the restaurantID to set
+	 * @param restaurantList the restaurantList to set
 	 */
-	public void setRestaurantID(String restaurantID) {
-		this.restaurantID = restaurantID;
+	public void setRestaurantList(List<String> restaurantList) {
+		this.restaurantList = restaurantList;
 	}
 }

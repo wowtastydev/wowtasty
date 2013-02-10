@@ -15,6 +15,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.BillMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
 import com.wowtasty.vo.BillingListConditionVO;
@@ -41,6 +42,7 @@ public class BillingListAction extends ActionSupport implements Preparable {
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
+	private List<MemberRestaurantVO> userRestList = new ArrayList<MemberRestaurantVO>();
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
@@ -73,6 +75,7 @@ public class BillingListAction extends ActionSupport implements Preparable {
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		userRestList = (List<MemberRestaurantVO>)httpSession.getAttribute(Constants.KEY_SESSION_USER_REST_LIST);
 		
 		logger.info("<---Prepare end --->");
 	}
@@ -92,6 +95,28 @@ public class BillingListAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
+	 * Initiate Billing List page for restaurant users
+	 * @return SUCCESS
+	 */
+	public String initRest() throws Exception {
+		logger.info("<---initRest start --->");
+		
+		BillMasterDao dao = new BillMasterDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.select(condition);
+		}
+
+		logger.info("<---initRest end --->");
+		return SUCCESS;
+	}
+	
+	/**
 	 * Search Billing List
 	 * @return SUCCESS
 	 */
@@ -103,6 +128,28 @@ public class BillingListAction extends ActionSupport implements Preparable {
 		list = dao.select(condition);
 		
 		logger.info("<---Execute end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Search Billing List for restaurant users
+	 * @return SUCCESS
+	 */
+	public String searchRest() throws Exception {
+		logger.info("<---searchRest start --->");
+		
+		BillMasterDao dao = new BillMasterDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.select(condition);
+		}
+
+		logger.info("<---searchRest end --->");
 		return SUCCESS;
 	}
 	
@@ -209,5 +256,19 @@ public class BillingListAction extends ActionSupport implements Preparable {
 	 */
 	public List<CodeMasterVO> getSemiMonthTypeList() {
 		return semiMonthTypeList;
+	}
+
+	/**
+	 * @return the userRestList
+	 */
+	public List<MemberRestaurantVO> getUserRestList() {
+		return userRestList;
+	}
+
+	/**
+	 * @param userRestList the userRestList to set
+	 */
+	public void setUserRestList(List<MemberRestaurantVO> userRestList) {
+		this.userRestList = userRestList;
 	}
 }

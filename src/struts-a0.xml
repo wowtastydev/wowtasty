@@ -70,13 +70,13 @@
 		<!-- changeOrderStatus : change panding status to ordered -->
 		<action name="changeOrderStatus" class="com.wowtasty.action.OrderListAction" method="changeOrderStatus">
 			<result>${forwardPage}</result>
-			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">${forwardPage}</result>
 		</action>
 		
 		<!-- setDeliveryMan : set delivery man -->
 		<action name="setDeliveryMan" class="com.wowtasty.action.OrderListAction" method="setDeliveryMan">
 			<result>${forwardPage}</result>
-			<result name="input">/WEB-INF/jsp/admin/currentorderlist.jsp</result>
+			<result name="input">${forwardPage}</result>
 		</action>
 		
 		<!-- OrderAction -->

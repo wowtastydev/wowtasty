@@ -175,6 +175,12 @@ public class DeliveryManAction extends ActionSupport implements Preparable {
 			addActionMessage("DeliveryMan infomation has been deleted successfully");
 		}
 		
+		// Reload Delivery Man list
+		list = dao.selectByCompany(Constants.CONSTANT_5DELIVERY_ID);
+		
+		// Clear data
+		vo = new DeliveryManVO();
+		
 		logger.info("<---delete end --->");
 		return SUCCESS;
 	}

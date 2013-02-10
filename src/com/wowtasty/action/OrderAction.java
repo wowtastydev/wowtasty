@@ -127,6 +127,20 @@ public class OrderAction extends ActionSupport implements Preparable {
 		logger.info("<---execute end --->");
 		return SUCCESS;
 	}
+	
+	/**
+	 * Initiate Order Detail page for restaurant users
+	 * @return SUCCESS
+	 */
+	public String initRest() throws Exception {
+		logger.info("<---initRest start --->");
+
+		// Get Order Detail for restaurant users
+		getOrderDetailRest();
+
+		logger.info("<---initRest end --->");
+		return SUCCESS;
+	}
 
 	/**
 	 * Change Order status
@@ -262,7 +276,7 @@ public class OrderAction extends ActionSupport implements Preparable {
 	 */
 	public String changeOrderStatusEmail() throws Exception {
 		logger.info("<---changeOrderStatusEmail start --->");
-try{
+
 		// Set params from email
 		selectedOrderID = param1;
 		selectedRestaurantID = param2;
@@ -286,7 +300,7 @@ try{
 		
 		if (returnCnt > 0) {
 		
-			// Get Order Detail to reload detail
+			// Get Order Detail
 			getOrderDetail();
 			
 			//Get order member's name 
@@ -359,9 +373,6 @@ try{
 				msgResult = "Decline Order Successfully";
 			}
 		}
-} catch (Exception e) {
-	e.printStackTrace();
-}
 				
 		logger.info("<---changeOrderStatusEmail end --->");
 		return SUCCESS;
@@ -450,6 +461,22 @@ try{
 				break;
 			}
 		}
+	}
+	
+	/**
+	 * Get order detail data from DB for restaurant users
+	 * @return SUCCESS
+	 */	
+	private void getOrderDetailRest() {
+		//Select Order Information
+		OrderDao dao = new OrderDao();
+		Map<String, Object> orderMap = new HashMap<String, Object>();
+		orderMap = dao.selectByRestaurantID(selectedOrderID, selectedRestaurantID);
+		
+		master = (OrderMasterVO)orderMap.get(Constants.KEY_ORDER_MASTER);
+		restaurant = (OrderRestaurantVO)orderMap.get(Constants.KEY_ORDER_RESTAURANT);
+		menuList = (List<OrderMenuVO>)orderMap.get(Constants.KEY_ORDER_MENU);
+		menuoptionList = (List<OrderMenuOptionVO>)orderMap.get(Constants.KEY_ORDER_MENUOPTION);
 	}
 	
 	/**

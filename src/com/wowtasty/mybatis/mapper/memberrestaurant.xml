@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="memberrestaurant">
+
+	<sql id="columns"> 
+		MemberID, RestaurantID, Role
+	</sql>
+	
+	<!--selectByID-->
+	<select id="selectByID" parameterType="String" resultType="memberrestaurantvo">
+	SELECT 
+		m.MemberID, m.RestaurantID, r.Name as restaurantName, m.Role
+	FROM member_restaurant m 
+		INNER JOIN restaurant_master r on m.RestaurantID = r.RestaurantID
+	WHERE m.MemberID = #{id}
+	</select>
+	
+	<!--Insert-->
+	<insert id = "insert" parameterType="memberrestaurantvo">
+	INSERT INTO member_restaurant
+	( 	
+	<include refid="columns"/>
+	)
+	VALUES
+	(	#{memberID},
+		#{restaurantID},
+		#{role})
+	</insert>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="String">
+	DELETE FROM member_restaurant 
+	WHERE MemberID = #{id}
+	</delete>
+</mapper>

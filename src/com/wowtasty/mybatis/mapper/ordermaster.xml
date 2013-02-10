@@ -46,6 +46,40 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	</select>
 	
+	<!--Order List for restaurant users-->
+	<select id="selectRest" parameterType="orderlistconditionvo" resultType="orderlistvo">
+	
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName, r.restaurantEmail
+		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
+		, r.orderStatus, Get_CdShortName('103', r.orderStatus) as orderStatusName
+		, r.deliverymanID, r.deliverymanName
+	FROM order_master m
+		INNER JOIN order_restaurant r on m.orderID = r.orderID
+
+	WHERE r.orderStatus NOT IN ('05') <!--For restaurant users , Don't show pending status order-->
+		AND IFNULL(m.orderMemberEmail,'') LIKE CONCAT('%',#{orderMemberEmail},'%')
+		AND IFNULL(m.orderMemberTelephone,'') LIKE CONCAT('%',#{orderMemberTelephone},'%')
+		<if test="fromDate != ''">
+		AND m.deliveryTime > STR_TO_DATE(#{fromDate},'%m/%d/%Y')
+		</if>
+		<if test="toDate != ''">
+		<![CDATA[
+		AND m.deliveryTime < ADDDATE(STR_TO_DATE(#{toDate},'%m/%d/%Y'), 1)
+		]]>
+		</if>
+		AND r.deliveryType LIKE CONCAT('%',#{deliveryType},'%')
+		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
+		<if test="restaurantList.size > 0">
+		AND r.restaurantID in 
+		<foreach item="item" index="index" collection="restaurantList" open="(" separator="," close=")">
+	          #{item}
+	    </foreach>
+	    </if>
+	
+	</select>
+	
 	<!--Current Order List(Status: Ordered, Pending, Confirmed)-->
 	<select id="selectCurrent" parameterType="orderlistconditionvo" resultType="orderlistvo">
 	
@@ -65,6 +99,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		AND m.deliveryTime > ADDTIME(NOW(), #{time})
 		</if>
 		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
+	</select>
+	
+	<!--Current Order List for restaurant user(Status: Ordered, Confirmed)-->
+	<select id="selectCurrentRest" parameterType="orderlistconditionvo" resultType="orderlistvo">
+	SELECT m.orderID, m.deliveryTime, r.restaurantID, r.restaurantName, r.restaurantEmail
+		, r.deliveryType, Get_CdShortName('101', r.deliveryType) as deliveryTypeName
+		, m.orderType, IF(m.orderType = '1', '', Get_CdShortName('102', m.orderType)) as orderTypeName
+		, r.deliveryAddress, m.orderMemberID, m.orderMemberEmail, m.orderMemberTelephone
+		, r.orderStatus, Get_CdShortName('103', r.orderStatus) as orderStatusName
+		, r.deliverymanID, r.deliverymanName
+	FROM order_master m
+		INNER JOIN order_restaurant r on m.orderID = r.orderID
+	WHERE 
+		r.orderStatus IN ('01','11')
+		<if test="time != ''">
+		AND m.deliveryTime > ADDTIME(NOW(), #{time})
+		</if>
+		AND r.orderStatus LIKE CONCAT('%',#{orderStatus},'%')
+		<if test="restaurantList.size > 0">
+		AND r.restaurantID in 
+		<foreach item="item" index="index" collection="restaurantList" open="(" separator="," close=")">
+	          #{item}
+	    </foreach>
+	    </if>
 	</select>
 	
 	<!--Order List on balance management page-->

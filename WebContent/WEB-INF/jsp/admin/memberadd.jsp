@@ -51,10 +51,7 @@
     // JQuery
 	$(document).ready( function() {
 		// Set up dropdown menu
-        $("#city").combobox();
-        $("#province").combobox();
-        $("#delivCity").combobox();
-        $("#delivProvince").combobox();
+        $("#city, #province, #delivCity, #delivProvince, #auth").combobox();
        
         // Set up accordion
         $( "#accordion" ).accordion({
@@ -80,7 +77,7 @@
 	
 		<div id="contentarea">
 		<s:form theme="simple" name="frm" id="frm" action="insertMember">
-		<s:hidden name="mvo.memberID" />
+		<s:hidden name="mvo.memberID"/>
 		<s:hidden name="mvo.status" />
 		<s:hidden name="mvo.totalOrderCnt" />
 		<s:hidden name="mvo.naFlag" />
@@ -95,7 +92,7 @@
 			
 			<div id="detailarea">
 				<div id="accordion">
-					<h3>General Information / Contact Address</h3>
+					<h3>General Information</h3>
 					<div>
 						<table width="100%">
 							<tr>
@@ -123,6 +120,9 @@
 								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols(e.g: !@#$%^&*?_~)</FONT></td>
 							</tr>
 							<tr>
+								<td colspan=8><br><b>[Contact Address]</b></td>
+							</tr>
+							<tr>
 								<td>First Name<FONT color=red>*</FONT>:</td>
 								<td colspan=3><s:textfield name="mvo.firstName" id="firstName" size="40" maxlength="50"/></td>
 								<td>Last Name<FONT color=red>*</FONT>:</td>
@@ -146,14 +146,8 @@
 								<td>Postal Code:</td>
 								<td><s:textfield name="mvo.postalCode" id="postalCode" size="8" maxlength="7"/></td>
 							</tr>
-						</table>
-					</div>
-					<h3>Delivery Address</h3>
-				    <div>
-						<table width="100%">
 							<tr>
-								<td colspan=4 width="50%"></td>
-								<td colspan=4 width="50%"></td>
+								<td colspan=8><br><b>[Delivery Address]</b></td>
 							</tr>
 							<tr>
 								<td>First Name:</td>
@@ -186,18 +180,27 @@
 								<td colspan=7><s:textarea rows="2" cols="100" name="mvo.delivInstruction" id="delivInstruction" onkeyup="javascript:countText(this);"></s:textarea></td>
 							</tr>
 						</table>
+						
+						<table width="100%">
+							<tr>
+								<td><hr></td>
+							</tr>
+							<tr>
+								<td>
+									<input type="button" value="Add" onClick="javascript:add();" />
+								</td>
+							</tr>
+						</table>
 					</div>
+
 				</div>
 				<table width="100%">
 					<tr>
-						<td colspan=8><hr></td>
+						<td><hr></td>
 					</tr>
 					<tr>
 						<td>
 							<input type="button" value="List" onClick="javascript:goPage('A101');" />
-						</td>
-						<td align="right" colspan=7>
-							<input type="button" value="Add" onClick="javascript:add();" />
 						</td>
 					</tr>
 				</table>

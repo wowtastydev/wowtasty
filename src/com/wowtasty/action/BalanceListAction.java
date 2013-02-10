@@ -20,6 +20,7 @@ import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.dao.WowMasterDao;
 import com.wowtasty.mybatis.vo.BillDetailVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.mybatis.vo.OrderAdjustmentVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.mybatis.vo.WowMasterVO;
@@ -55,6 +56,7 @@ public class BalanceListAction extends ActionSupport implements Preparable {
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
+	private List<MemberRestaurantVO> userRestList = new ArrayList<MemberRestaurantVO>();
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
@@ -94,13 +96,30 @@ public class BalanceListAction extends ActionSupport implements Preparable {
 	public void prepare() throws Exception {
 		logger.info("<---Prepare start --->");
 
-		// set up restaurant list
-		RestaurantMasterDao dao = new RestaurantMasterDao();
-		restaurantList = dao.selectAvailable();
-		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		userRestList = (List<MemberRestaurantVO>)httpSession.getAttribute(Constants.KEY_SESSION_USER_REST_LIST);
+		
+		// set up restaurant list
+		RestaurantMasterDao dao = new RestaurantMasterDao();
+		int intAuth = Integer.parseInt(uservo.getAuth());
+		if (intAuth < Constants.CODE_ROLE_REST_MAX) {
+			// Wow users. All available restaurant list
+			restaurantList = dao.selectAvailable();
+		} else {
+			// Restaurant users. Set own restaurant list
+			List<String> restIDList = new ArrayList<String>();
+			int size = userRestList.size();
+			for (int i = 0; i < size; i++) {
+				restIDList.add(userRestList.get(i).getRestaurantID());
+			}
+			if (size > 0) {
+				// Only search when member has a restaurant list
+				restaurantList = dao.selectRest(restIDList);
+			}
+		}
+		
 		
 		logger.info("<---Prepare end --->");
 	}
@@ -127,6 +146,31 @@ public class BalanceListAction extends ActionSupport implements Preparable {
 		}
 		list.clear();
 		logger.info("<---init end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Initiate Balance List page for restaurant users
+	 * @return SUCCESS
+	 */
+	public String initRest() throws Exception {
+		logger.info("<---initRest start --->");
+		// Default FromDate ~ ToDate Setting
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DAY_PATTERN_MM);
+		
+		// ToDate -> current date
+		if (ValidationUtil.isBlank(condition.getToDate())) {
+			condition.setToDate(sdf.format(cal.getTime()));
+		}
+		
+		// FromDate -> 15 day back from the current date
+		if (ValidationUtil.isBlank(condition.getFromDate())) {
+			cal.add(Calendar.DATE, -15);
+			condition.setFromDate(sdf.format(cal.getTime()));
+		}
+		list.clear();
+		logger.info("<---initRest end --->");
 		return SUCCESS;
 	}
 	

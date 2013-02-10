@@ -66,7 +66,7 @@ public class RestaurantDao {
      */
     public List<RestaurantListVO> getNRestaurantList() {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantListVO> resultObj = new ArrayList<>();
+        List<RestaurantListVO> resultObj = new ArrayList<RestaurantListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectNRestaurant");
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class RestaurantDao {
      */
     public List<RestaurantListVO> getMORestaurantList() {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantListVO> resultObj = new ArrayList<>();
+        List<RestaurantListVO> resultObj = new ArrayList<RestaurantListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectMORestaurant");
         } catch (Exception e) {
@@ -114,7 +114,7 @@ public class RestaurantDao {
      */
     public List<CuisineListVO> getCuisineList() {
         SqlSession sqlSession = factory.openSession();
-        List<CuisineListVO> resultObj = new ArrayList<>();
+        List<CuisineListVO> resultObj = new ArrayList<CuisineListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectCuisineType", Constants.KEY_CD_CUISINE_TYPE);
         } catch (Exception e) {
@@ -138,7 +138,7 @@ public class RestaurantDao {
      */
     public List<RestaurantEVO> getRestaurantByAddr(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantEVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<RestaurantEVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByAddr", vo);
         } catch (Exception e) {
@@ -162,7 +162,7 @@ public class RestaurantDao {
      */
     public List<RestaurantEVO> getRestaurantByCity(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantEVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<RestaurantEVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByCity", vo);
         } catch (Exception e) {
@@ -186,7 +186,7 @@ public class RestaurantDao {
      */
     public List<RestaurantEVO> getRestaurantByCuisine(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantEVO> resultObj = new ArrayList<>();
+        List<RestaurantEVO> resultObj = new ArrayList<RestaurantEVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectRestaurantByCuisine", vo);
         } catch (Exception e) {
@@ -210,7 +210,7 @@ public class RestaurantDao {
      */
     public List<CuisineListVO> getCuisineListByAddr(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<CuisineListVO> resultObj = new ArrayList<>();
+        List<CuisineListVO> resultObj = new ArrayList<CuisineListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByAddr", vo);
         } catch (Exception e) {
@@ -234,7 +234,7 @@ public class RestaurantDao {
      */
     public List<CuisineListVO> getCuisineListByCity(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<CuisineListVO> resultObj = new ArrayList<>();
+        List<CuisineListVO> resultObj = new ArrayList<CuisineListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByCity", vo);
         } catch (Exception e) {
@@ -258,7 +258,7 @@ public class RestaurantDao {
      */
     public List<CuisineListVO> getCuisineListByCuisine(RestaurantSearchConditionVO vo) {
         SqlSession sqlSession = factory.openSession();
-        List<CuisineListVO> resultObj = new ArrayList<>();
+        List<CuisineListVO> resultObj = new ArrayList<CuisineListVO>();
         try {
             resultObj = sqlSession.selectList("restaurant.selectCuisineTypeByCuisine", vo);
         } catch (Exception e) {
@@ -306,7 +306,7 @@ public class RestaurantDao {
      */
     public List<RestaurantDeliveryAreaVO> getRestaurantDeliveryArea(String restaurantID){
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantDeliveryAreaVO> resultObj = new ArrayList<>();
+        List<RestaurantDeliveryAreaVO> resultObj = new ArrayList<RestaurantDeliveryAreaVO>();
         try{
             resultObj = sqlSession.selectList("restaurant.selectRestaurantDeliveryArea", restaurantID);
         } catch (Exception e){
@@ -330,7 +330,7 @@ public class RestaurantDao {
      */
     public List<RestaurantPictVO> getRestaurantImage(String restaurantID){
         SqlSession sqlSession = factory.openSession();
-        List<RestaurantPictVO> resultObj = new ArrayList<>();
+        List<RestaurantPictVO> resultObj = new ArrayList<RestaurantPictVO>();
         try{
             resultObj = sqlSession.selectList("restaurant.selectRestaurantImage", restaurantID);
         } catch (Exception e){
@@ -354,9 +354,9 @@ public class RestaurantDao {
      */
     public Map<String, Object> getRestaurantMenu(String restaurantID){
         SqlSession sqlSession = factory.openSession();
-        Map<String, Object> resultObj = new HashMap<>();
-        List<RestaurantMenuEVO> restMenuList = new ArrayList<>();
-        List<RestaurantMenuOptionEVO> restMenuOptionList = new ArrayList<>();
+        Map<String, Object> resultObj = new HashMap<String, Object>();
+        List<RestaurantMenuEVO> restMenuList = new ArrayList<RestaurantMenuEVO>();
+        List<RestaurantMenuOptionEVO> restMenuOptionList = new ArrayList<RestaurantMenuOptionEVO>();
         try{
             //get restaurant menu and category
             restMenuList = sqlSession.selectList("restaurant.selectRestaurantMenu", restaurantID);
@@ -386,10 +386,10 @@ public class RestaurantDao {
      */
     public List<RestaurantMenuOptionEVO> getRestaurantMenuByID(String restaurantID, Integer menuID){
         SqlSession sqlSession = factory.openSession();
-        Map<String, Object> inputObj = new HashMap<>();
+        Map<String, Object> inputObj = new HashMap<String, Object>();
         inputObj.put("restaurantID", restaurantID);
         inputObj.put("menuID", menuID);
-        List<RestaurantMenuOptionEVO> resultObj = new ArrayList<>();
+        List<RestaurantMenuOptionEVO> resultObj = new ArrayList<RestaurantMenuOptionEVO>();
         try{
             resultObj = sqlSession.selectList("restaurant.selectRestaurantMenuByID", inputObj);
 

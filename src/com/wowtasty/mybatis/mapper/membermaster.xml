@@ -12,7 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</sql>
 	
 	<!--select-->
-	<select id="select" parameterType="java.util.List" resultType="membermastervo">
+	<select id="select" parameterType="List" resultType="membermastervo">
 	SELECT 
 		MemberID, Email, Password, Auth, Get_CdShortName('006', Auth) as AuthName
 		, FirstName, LastName, Telephone, Address

@@ -21,6 +21,7 @@ import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.ContentsTextVO;
 import com.wowtasty.mybatis.vo.DeliveryManVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.util.Constants;
@@ -53,12 +54,14 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	private List<DeliveryManVO> deliverymanList = new ArrayList<DeliveryManVO>();
 	private Map<String, String> timeMap = new LinkedHashMap<String, String>();
 	private Map<String, String> orderStatusMap = new LinkedHashMap<String, String>();
+	private Map<String, String> orderStatusRestMap = new LinkedHashMap<String, String>();
 	
 	/** codemaster map */
 	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
+	private List<MemberRestaurantVO> userRestList = new ArrayList<MemberRestaurantVO>();
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
@@ -87,11 +90,28 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	 */	
 	public void prepare() throws Exception {
 		logger.info("<---prepare start --->");
+
+		// userinfo from httpsession
+		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
+		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		userRestList = (List<MemberRestaurantVO>)httpSession.getAttribute(Constants.KEY_SESSION_USER_REST_LIST);
+		
 		// codes from session
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		
 		// set up dropdown menu from codes
 		orderStatusList = codeMap.get(Constants.KEY_CD_ORDER_STATUS);
+		int intAuth = Integer.parseInt(uservo.getAuth());
+		if (intAuth >= Constants.CODE_ROLE_REST_MAX) {
+			// If user is not Wow users. Don't need to show "Pending status"
+			int size = orderStatusList.size();
+			for (int i = 0; i < size; i++) {
+				if (Constants.CODE_ORDER_STATUS_PENDING.equals(orderStatusList.get(i).getCode())) {
+					orderStatusList.remove(i);
+				}
+			}
+		}
+			
 		deliveryTypeList = codeMap.get(Constants.KEY_CD_DELIVERY_TYPE);
 		
 		// set up deliveryman dropdown menu 
@@ -104,12 +124,13 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		timeMap.put("-1:00", "1 Hour");
 		timeMap.put("-3:00", "3 Hours");
 		
+		// order status condition for admin user page
 		orderStatusMap.put("", "All Status");
 		orderStatusMap.put(Constants.CODE_ORDER_STATUS_PENDING, "Pending Only");
 		
-		// userinfo from httpsession
-		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
-		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		// order status condition for Restaurant user page
+		orderStatusRestMap.put("", "All Status");
+		orderStatusRestMap.put(Constants.CODE_ORDER_STATUS_ORDERED, "Ordered Only");
 		
 		logger.info("<---prepare end --->");
 	}
@@ -130,6 +151,29 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
+	 * Initiate Order History List page for Restaurant user
+	 * @return SUCCESS
+	 */
+	public String initRest() throws Exception {
+		logger.info("<---initRest start --->");
+
+		//Select own restaurant Current Order List
+		OrderDao dao = new OrderDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.selectRest(condition);
+		}
+
+		logger.info("<---initRest end --->");
+		return SUCCESS;
+	}
+	
+	/**
 	 * Initiate Current Order List page
 	 * @return SUCCESS
 	 */
@@ -141,6 +185,29 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		list = dao.selectCurrent(condition);
 
 		logger.info("<---initCurrent end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Initiate Current Order List page for Restaurant user
+	 * @return SUCCESS
+	 */
+	public String initCurrentRest() throws Exception {
+		logger.info("<---initCurrentRest start --->");
+		
+		//Select own restaurant Current Order List
+		OrderDao dao = new OrderDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.selectCurrentRest(condition);
+		}
+
+		logger.info("<---initCurrentRest end --->");
 		return SUCCESS;
 	}
 	
@@ -171,6 +238,39 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
+	 * Search Order History List for restaurant users
+	 * @return SUCCESS
+	 */
+	public String searchRest() throws Exception {
+		logger.info("<---searchRest start --->");
+		
+		String returnString = SUCCESS;
+		
+		// Check Validation
+		boolean hasError = checkValidation();
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			return INPUT;
+		}
+		
+		//Select Order List
+		OrderDao dao = new OrderDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.selectRest(condition);
+		}
+		
+		logger.info("<---searchRest end --->");
+		return returnString;
+	}
+	
+	/**
 	 * Search Current Order List
 	 * @return SUCCESS
 	 */
@@ -182,6 +282,29 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		list = dao.selectCurrent(condition);
 
 		logger.info("<---searchCurrent end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Search Current Order List for restaurant users
+	 * @return SUCCESS
+	 */
+	public String searchCurrentRest() throws Exception {
+		logger.info("<---searchCurrentRest start --->");
+
+		//Select own restaurant Current Order List
+		OrderDao dao = new OrderDao();
+		//Set own restaurant list
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			condition.getRestaurantList().add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.selectCurrentRest(condition);
+		}
+
+		logger.info("<---searchCurrentRest end --->");
 		return SUCCESS;
 	}
 	
@@ -542,5 +665,19 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	 */
 	public void setDeliveryTypeList(List<CodeMasterVO> deliveryTypeList) {
 		this.deliveryTypeList = deliveryTypeList;
+	}
+
+	/**
+	 * @return the orderStatusRestMap
+	 */
+	public Map<String, String> getOrderStatusRestMap() {
+		return orderStatusRestMap;
+	}
+
+	/**
+	 * @param orderStatusRestMap the orderStatusRestMap to set
+	 */
+	public void setOrderStatusRestMap(Map<String, String> orderStatusRestMap) {
+		this.orderStatusRestMap = orderStatusRestMap;
 	}
 }

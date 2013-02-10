@@ -5,8 +5,8 @@
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
 <link rel="shortcut icon" href="./images/wowicon.ico">
-<meta name="keywords" content="FoodDelivery, WowStaty, Admin">
-<meta name="description" content="Admin login at FoodDelivery WowStaty">
+<meta name="keywords" content="FoodDelivery, WowStaty, Restaurant">
+<meta name="description" content="Restaurant success at FoodDelivery WowStaty">
 <link rel="shortcut icon" href="../images/wowicon.ico">
 
 <head>

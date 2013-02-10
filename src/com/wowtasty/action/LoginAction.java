@@ -11,8 +11,10 @@ import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.wowtasty.mybatis.dao.MemberMasterDao;
+import com.wowtasty.mybatis.dao.MemberRestaurantDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.EncryptUtil;
 
@@ -83,9 +85,14 @@ public class LoginAction extends ActionSupport {
 		
 		//Match password with db data
 		if (memberPassword.equals(mvo.getPassword())) {
+			// Get user's restaurant role
+			MemberRestaurantDao mrdao = new MemberRestaurantDao();
+			List<MemberRestaurantVO> mrlist = mrdao.selectByID(mvo.getMemberID());
+			
 			// Set user info to http session
 			HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 			httpSession.setAttribute(Constants.KEY_SESSION_USER, mvo);
+			httpSession.setAttribute(Constants.KEY_SESSION_USER_REST_LIST, mrlist);
 		} else {
 			// Password is not matched
 			addFieldError("memberPasswordStr", getText("E0005", new String[]{"Passwords"}));
@@ -106,6 +113,7 @@ public class LoginAction extends ActionSupport {
 		// Remove user information on the HttpSession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		httpSession.removeAttribute(Constants.KEY_SESSION_USER);
+		httpSession.removeAttribute(Constants.KEY_SESSION_USER_REST_LIST);
 		
 		logger.debug("logout end --->");
 		return SUCCESS;

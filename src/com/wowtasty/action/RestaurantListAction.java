@@ -12,9 +12,11 @@ import org.apache.struts2.ServletActionContext;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
+import com.wowtasty.mybatis.dao.OrderDao;
 import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.SessionUtil;
@@ -43,6 +45,7 @@ public class RestaurantListAction extends ActionSupport implements Preparable {
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
+	private List<MemberRestaurantVO> userRestList = new ArrayList<MemberRestaurantVO>();
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
@@ -73,6 +76,7 @@ public class RestaurantListAction extends ActionSupport implements Preparable {
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		userRestList = (List<MemberRestaurantVO>)httpSession.getAttribute(Constants.KEY_SESSION_USER_REST_LIST);
 		
 		logger.info("<---prepare end --->");
 	}
@@ -88,6 +92,30 @@ public class RestaurantListAction extends ActionSupport implements Preparable {
 		list = dao.selectAll();
 
 		logger.info("<---init end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Initiate Restaurant List page for restaurant users
+	 * @return SUCCESS
+	 */
+	public String initRest() throws Exception {
+		logger.info("<---initRest start --->");
+		
+		//Select own restaurant List
+		RestaurantMasterDao dao = new RestaurantMasterDao();
+		//Set own restaurantID list
+		List<String> restIDList = new ArrayList<String>();
+		int size = userRestList.size();
+		for (int i = 0; i < size; i++) {
+			restIDList.add(userRestList.get(i).getRestaurantID());
+		}
+		if (size > 0) {
+			// Only search when member has a restaurant list
+			list = dao.selectRest(restIDList);
+		}
+
+		logger.info("<---initRest end --->");
 		return SUCCESS;
 	}
 	

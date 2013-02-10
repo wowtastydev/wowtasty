@@ -105,52 +105,6 @@ public class RestaurantMenuOptionDao {
 	}
 	
 	/**
-	 * @return RestaurantMenuOptionVO: Restaurant Category data
-	 */
-	public int insert(RestaurantMenuOptionVO vo) {
-		// autocommit session open
-		SqlSession sqlSession = factory.openSession(true);
-		int returnObject = 0;
-		try {
-			returnObject = sqlSession.insert("restaurantmenuoption.insert", vo);
-		} catch (Exception e) {
-			logger.error("!!!!!RestaurantMenuOptionDao insert occurs error:" + e);
-        	throw new RuntimeException(e);
-		} finally {
-			try {
-				sqlSession.close();
-			} catch (Exception e) {
-				logger.error("!!!!!RestaurantMenuOptionDao insert occurs error:" + e);
-	        	throw new RuntimeException(e);
-			}
-		}
-		return returnObject;
-	}
-	
-	/**
-	 * @return RestaurantMenuOptionVO: Restaurant Category data
-	 */
-	public int update(RestaurantMenuOptionVO vo) {
-		// autocommit session open
-		SqlSession sqlSession = factory.openSession(true);
-		int returnObject = 0;
-		try {
-			returnObject = sqlSession.insert("restaurantmenuoption.update", vo);
-		} catch (Exception e) {
-			logger.error("!!!!!RestaurantMenuOptionDao update occurs error:" + e);
-        	throw new RuntimeException(e);
-		} finally {
-			try {
-				sqlSession.close();
-			} catch (Exception e) {
-				logger.error("!!!!!RestaurantMenuOptionDao update occurs error:" + e);
-	        	throw new RuntimeException(e);
-			}
-		}
-		return returnObject;
-	}
-	
-	/**
 	 * Delete and insert 
 	 * @param List<RestaurantMenuOptionVO>: Menu Option list
 	 */

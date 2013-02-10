@@ -1,5 +1,8 @@
 package com.wowtasty.vo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Hak C.
  *
@@ -9,6 +12,7 @@ public class BillingListConditionVO {
 	/** billing list page's condition items*/
 	private String fromDate = "";
 	private String toDate = "";
+	private List<String> restaurantList = new ArrayList<String>();
 	
 	/**
 	 * @return the fromDate
@@ -33,5 +37,17 @@ public class BillingListConditionVO {
 	 */
 	public void setToDate(String toDate) {
 		this.toDate = toDate;
+	}
+	/**
+	 * @return the restaurantList
+	 */
+	public List<String> getRestaurantList() {
+		return restaurantList;
+	}
+	/**
+	 * @param restaurantList the restaurantList to set
+	 */
+	public void setRestaurantList(List<String> restaurantList) {
+		this.restaurantList = restaurantList;
 	}
 }

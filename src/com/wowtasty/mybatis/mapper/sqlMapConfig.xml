@@ -20,6 +20,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryMasterVO" alias="deliverymastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.DeliveryOpenHourVO" alias="deliveryopenhourvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.MemberMasterVO" alias="membermastervo"/>
+		<typeAlias type="com.wowtasty.mybatis.vo.MemberRestaurantVO" alias="memberrestaurantvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderAdjustmentVO" alias="orderadjustmentvo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderMasterVO" alias="ordermastervo"/>
 		<typeAlias type="com.wowtasty.mybatis.vo.OrderMenuOptionVO" alias="ordermenuoptionvo"/>
@@ -84,6 +85,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 		<mapper resource="com/wowtasty/mybatis/mapper/deliverymaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/deliveryopenhour.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/membermaster.xml"/>
+		<mapper resource="com/wowtasty/mybatis/mapper/memberrestaurant.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/orderadjustment.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/ordermaster.xml"/>
 		<mapper resource="com/wowtasty/mybatis/mapper/orderrestaurant.xml"/>

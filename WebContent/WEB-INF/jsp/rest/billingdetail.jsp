@@ -1,33 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
-<t:insertDefinition name="admin.layout">
-<t:putAttribute name="main_admin">
+<t:insertDefinition name="rest.layout">
+<t:putAttribute name="main_rest">
 <link rel="stylesheet" href="../css/admin_message.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="../css/table_jui.css" type="text/css" media="screen" />
 <script src="../js/jquery.dataTables.min.js"></script>
 
 <script>
 <!--
-    // Delete
-	function deleteBill(){
-		if(confirm("Do you want to delete the bill data?")) {
-			document.getElementById("frm").action = "deleteBilling";
-			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-			document.getElementById("frm").submit();
-		}
-	}
-	
 	// Print report
 	function report(){
-		//$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
-	}
-	
-	// Download Excel
-	function download(){
-		document.getElementById("frm").action = "downloadBilling";
-		//$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
 	
@@ -335,14 +318,8 @@
 	<div id="mainarea">
 		<div id="sidebar">
 			<div id="sidebarnav">
-				<s:if test='%{uservo.auth < 15}'>
-					<a href="javascript:goPage('A301');"><span>Admin Set-up</span></a>
-					<a href="javascript:goPage('A312');"><span>Balance List</span></a>
-			        <a href="javascript:goPage('A304');"><span>Billing List</span></a>
-			        <a href="javascript:goPage('A307');"><span>Reporting</span></a>
-		        </s:if>
-		        <a href="javascript:goPage('A302');"><span>Delivery Company</span></a>
-		        <a href="javascript:goPage('A303');"><span>Delivery Man</span></a>
+				<a href="javascript:goPage('R303');"><span>Balance List</span></a>
+		        <a href="javascript:goPage('R301');"><span>Billing List</span></a>
 			</div>
 		</div>
 	
@@ -520,12 +497,10 @@
 				<table width="100%">
 					<tr>
 						<td> 
-							<input type="button" value="List" onClick ="javascript:goPage('A304');"/>
+							<input type="button" value="List" onClick ="javascript:goPage('R301');"/>
 						</td>
 						<td align="right">
-							<input type="button" value="Excel" onClick="javascript:download();" />
 							<input type="button" value="Report" onClick="javascript:report();" />
-							<input type="button" value="Delete" onClick="javascript:deleteBill();" />
 						</td>
 					</tr>
 				</table>

@@ -104,14 +104,26 @@
 		
 		<!-- initBalanceList : initialize Balance List Page -->	
 		<action name="initBalanceList" class="com.wowtasty.action.BalanceListAction" method="init">
-			<result>/WEB-INF/jsp/admin/balancemanagement.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
 		</action>
 		
 		<!-- searchBalanceList : search Balance List -->	
 		<action name="searchBalanceList" class="com.wowtasty.action.BalanceListAction">
-			<result>/WEB-INF/jsp/admin/balancemanagement.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancemanagement.jsp</result>
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- addAdjustment : Add adjustment -->	
+		<action name="addAdjustment" class="com.wowtasty.action.BalanceListAction" method="add">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
+		</action>
+		
+		<!-- delAdjustment : Delete adjustment -->	
+		<action name="delAdjustment" class="com.wowtasty.action.BalanceListAction" method="delete">
+			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
 		</action>
 		
 		<!-- BillingAction -->
@@ -155,32 +167,6 @@
 				<param name="bufferSize">1024</param>
 			</result>
 			<result name="input">/WEB-INF/jsp/admin/billingdetail.jsp</result>
-		</action>
-		
-		<!-- BalanceListAction -->
-		
-		<!-- initBalanceList : initialize Balance list Page -->	
-		<action name="initBalanceList" class="com.wowtasty.action.BalanceListAction" method="init">
-			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
-		</action>
-		
-		<!-- searchBalance : search balance -->	
-		<action name="searchBalance" class="com.wowtasty.action.BalanceListAction">
-			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
-		</action>
-		
-		<!-- addAdjustment : Add adjustment -->	
-		<action name="addAdjustment" class="com.wowtasty.action.BalanceListAction" method="add">
-			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
-		</action>
-		
-		<!-- delAdjustment : Delete adjustment -->	
-		<action name="delAdjustment" class="com.wowtasty.action.BalanceListAction" method="delete">
-			<result>/WEB-INF/jsp/admin/balancelist.jsp</result>
-			<result name="input">/WEB-INF/jsp/admin/balancelist.jsp</result>
 		</action>
 		
 		<!-- ReportingAction -->

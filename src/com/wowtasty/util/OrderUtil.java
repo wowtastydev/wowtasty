@@ -39,30 +39,30 @@ public class OrderUtil {
 		RestaurantMasterVO restaurantMaster = rdao.selectByID(restaurantID);
 		
 		StringBuilder sb = new StringBuilder();
-		sb.append("<table border=1>");
-		sb.append("<tr><td colspan=2 bgcolor='gray'>[Order Basic Information]</td></tr>");
-		sb.append("<tr><td>Order ID : </td><td>").append(master.getOrderID()).append("</td></tr>");
-		sb.append("<tr><td>Order Member Telephone : </td><td>").append(master.getOrderMemberTelephone()).append("</td></tr>");
-		sb.append("<tr><td>Order Time : </td><td>").append(StringConvertUtil.convertDate2String(master.getOrderTime())).append("</td></tr>");
-		sb.append("<tr><td>Delivery Time : </td><td>").append(StringConvertUtil.convertDate2String(master.getDeliveryTime())).append("</td></tr>");
-		sb.append("<tr><td colspan=2 bgcolor='gray'>[Order Detail Information]</td></tr>");
-		sb.append("<tr><td>Restaurant Name: </td><td>").append(restaurant.getRestaurantName()).append("</td></tr>");
-		sb.append("<tr><td>Restaurant Address: </td><td>").append(restaurantMaster.getSuite()).append(" ").append(restaurantMaster.getAddress())
+		sb.append("<table width='500' border='0' cellpadding='3' cellspacing='1' bgcolor='#ffae00'>");
+		sb.append("<tr><td colspan='2' valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>[Order Basic Information]</font></strong></td></tr>");
+		sb.append("<tr><td width='180' bgcolor='#FFFFFF'>Order ID : </td><td bgcolor='#FFFFFF'>").append(master.getOrderID()).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Order Member Telephone : </td><td bgcolor='#FFFFFF'>").append(master.getOrderMemberTelephone()).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Order Time : </td><td bgcolor='#FFFFFF'>").append(StringConvertUtil.convertDate2String(master.getOrderTime())).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery Time : </td><td bgcolor='#FFFFFF'>").append(StringConvertUtil.convertDate2String(master.getDeliveryTime())).append("</td></tr>");
+		sb.append("<tr><td colspan='2' valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>[Order Detail Information]</font></strong></td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Restaurant Name: </td><td bgcolor='#FFFFFF'>").append(restaurant.getRestaurantName()).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Restaurant Address: </td><td bgcolor='#FFFFFF'>").append(restaurantMaster.getSuite()).append(" ").append(restaurantMaster.getAddress())
 			.append(", ").append(CodeUtil.getCdShortName(codeMap, Constants.KEY_CD_CITY, restaurantMaster.getCity()))
 			.append(", ").append(CodeUtil.getCdShortName(codeMap, Constants.KEY_CD_PROVINCE, restaurantMaster.getProvince()))
 			.append("</td></tr>");
-		sb.append("<tr><td>Restaurant Telephone: </td><td>").append(restaurantMaster.getTelephone()).append("</td></tr>");
-		sb.append("<tr><td>Delivery Type: </td><td>").append(CodeUtil.getCdName(codeMap, Constants.KEY_CD_DELIVERY_TYPE, restaurant.getDeliveryType())).append("</td></tr>");
-		sb.append("<tr><td>Delivery/Take-out Address : </td><td>").append(restaurant.getDeliverySuite()).append(" ").append(restaurant.getDeliveryAddress())
+		sb.append("<tr><td bgcolor='#FFFFFF'>Restaurant Telephone: </td><td bgcolor='#FFFFFF'>").append(restaurantMaster.getTelephone()).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery Type: </td><td bgcolor='#FFFFFF'>").append(CodeUtil.getCdName(codeMap, Constants.KEY_CD_DELIVERY_TYPE, restaurant.getDeliveryType())).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery/Take-out Address : </td><td bgcolor='#FFFFFF'>").append(restaurant.getDeliverySuite()).append(" ").append(restaurant.getDeliveryAddress())
 			.append(", ").append(CodeUtil.getCdShortName(codeMap, Constants.KEY_CD_CITY, restaurant.getDeliveryCity()))
 			.append(", ").append(CodeUtil.getCdShortName(codeMap, Constants.KEY_CD_PROVINCE, restaurant.getDeliveryProvince()))
 			.append("</td></tr>");
-		sb.append("<tr><td>Delivery/Take-out Telephone: </td><td>").append(restaurant.getDeliveryTelephone()).append("</td></tr>");
-		sb.append("<tr bgcolor='gray'><td>Menu Name </td><td>Price</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery/Take-out Telephone: </td><td bgcolor='#FFFFFF'>").append(restaurant.getDeliveryTelephone()).append("</td></tr>");
+		sb.append("<tr><td valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>Menu Name </font></strong></td><td valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>Price </font></strong></td></tr>");
 		for (OrderMenuVO vo : menuList) {
-			sb.append("<tr><td>").append(vo.getMenuName()).append("</td><td align='right'>").append("  $").append(vo.getTotalPriceWithTax()).append("</td></tr>");
+			sb.append("<tr><td bgcolor='#FFFFFF'>").append(vo.getMenuName()).append("</td><td align='right' bgcolor='#FFFFFF'>").append("  $").append(vo.getTotalPriceWithTax()).append("</td></tr>");
 		}
-		sb.append("<tr bgcolor='gray'><td>Total Price : </td><td align='right'>").append("  $").append(restaurant.getTotalPriceWithTax()).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'><strong>Total Price : </strong></td><td align='right' bgcolor='#FFFFFF'><strong>").append("  $").append(restaurant.getTotalPriceWithTax()).append("</strong></td></tr>");
 		sb.append("</table>");
 		
 		return sb.toString();

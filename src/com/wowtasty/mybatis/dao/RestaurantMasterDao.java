@@ -122,6 +122,29 @@ public class RestaurantMasterDao {
 	}
 	
 	/**
+	 * @param idList : Restaurant ID list
+	 * @return List<RestaurantMasterVO>: Restaurant list
+	 */
+	public List<RestaurantMasterVO> selectRest(List<String> list) {
+		SqlSession sqlSession = factory.openSession();
+		List<RestaurantMasterVO> returnObject = new ArrayList<RestaurantMasterVO>();
+		try {
+			returnObject = sqlSession.selectList("restaurantmaster.selectRest", list);
+		} catch (Exception e) {
+			logger.error("!!!!!RestaurantDao selectRest occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!RestaurantDao selectRest occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
 	 * @param restaurantID: restaurantID
 	 * @return RestaurantMasterVO: Restaurant Master Data
 	 */

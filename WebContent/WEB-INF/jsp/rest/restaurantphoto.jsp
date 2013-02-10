@@ -1,8 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="s" uri="/struts-tags" %>
 <%@ taglib prefix="t" uri="http://tiles.apache.org/tags-tiles"%> 
-<t:insertDefinition name="admin.layout">
-<t:putAttribute name="main_admin">
+<t:insertDefinition name="rest.layout">
+<t:putAttribute name="main_rest">
 <link rel="stylesheet" type="text/css" href="../css/jquery.combobox.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
 <link rel="stylesheet" type="text/css" href="../fancybox/source/jquery.fancybox.css?v=2.1.3" media="screen" />
@@ -72,20 +72,11 @@
 	} );
 //-->
 </script>
-<s:url id="contextUrl" action="" namespace="" /> 
-
 <div id="page">
 	<div id="mainarea">
 		<div id="sidebar">
 			<div id="sidebarnav">
-				<a href="javascript:goPage('A203');">Restaurant List</a>
-				<s:if test='%{"".equals(selectedID)}'>
-					<a href="#" class="active">Add Restaurant</a>
-				</s:if>
-				<s:else>
-					<a href="javascript:goPage('A204');">Add Restaurant</a>
-				</s:else>
-				<a href="javascript:goPage('A201');">Sign-up List</a>
+				<a href="javascript:goPage('R201');">Restaurant List</a>
 			</div>
 		</div>
 	
@@ -106,9 +97,9 @@
 			<div id="detailarea">
 				<div id="tabs">
 					<ul>
-				        <li><a href="#Info" onClick ="javascript:goPageParam('A205','<s:property value="selectedID"/>');">Information</a></li>
-				        <li><a href="#Menu" onClick ="javascript:goPageParam('A209','<s:property value="selectedID"/>');">Menu</a></li>
-				        <li><a href="#Photo" onClick ="javascript:goPageParam('A206','<s:property value="selectedID"/>');">Photo</a></li>
+				        <li><a href="#Info" onClick ="javascript:goPageParam('R202','<s:property value="selectedID"/>');">Information</a></li>
+				        <li><a href="#Menu" onClick ="javascript:goPageParam('R204','<s:property value="selectedID"/>');">Menu</a></li>
+				        <li><a href="#Photo" onClick ="javascript:goPageParam('R203','<s:property value="selectedID"/>');">Photo</a></li>
 				    </ul>
 				    <div id="Info">
 					</div>
@@ -140,7 +131,7 @@
 										    <li class="ui-state-default" id ="<s:property value='%{seq}'/>">
 										    <div class="image-thumb">
 											    <a class="fancybox" rel="group" href="../pictures/restaurant/<s:property value='%{fileName}'/>" title="<s:property value='%{fileName}'/>">
-												<img src="<s:property value='#contextUrl'/>/pictures/restaurant/thumb_<s:property value='%{fileName}'/>">
+												<img src="../pictures/restaurant/thumb_<s:property value='%{fileName}'/>">
 												</a>
 												<a href="#" onClick="javascript:delImage('<s:property value="%{seq}"/>');" class="image-fav" title="Delete Image"></a>
 											</div>

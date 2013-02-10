@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 2.0//EN' 
+	'http://struts.apache.org/dtds/struts-2.0.dtd'>
+
+<struts>
+	<package name="rest3" namespace="/rest" extends="wow-default">
+
+	    <default-interceptor-ref name="wowDefaultStack"/>
+	
+		<global-results>
+			<result name="login">/WEB-INF/jsp/rest/login.jsp</result>
+			<result name="autherror">/WEB-INF/jsp/rest/autherror.jsp</result>
+			<result name="error">/WEB-INF/jsp/rest/error.jsp</result>
+		</global-results>
+		
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.RuntimeException" result="error" />
+			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+		
+		<!-- BalanceListAction -->
+		
+		<!-- initBalanceList : initialize Balance List Page -->	
+		<action name="initBalanceList" class="com.wowtasty.action.BalanceListAction" method="init">
+			<result>/WEB-INF/jsp/rest/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/balancelist.jsp</result>
+		</action>
+		
+		<!-- searchBalanceList : search Balance List -->	
+		<action name="searchBalanceList" class="com.wowtasty.action.BalanceListAction">
+			<result>/WEB-INF/jsp/rest/balancelist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/balancelist.jsp</result>
+		</action>
+		
+				
+		<!-- BillingListAction -->
+		
+		<!-- initBillingList : initialize Billing List Page -->	
+		<action name="initBillingList" class="com.wowtasty.action.BillingListAction" method="initRest">
+			<result>/WEB-INF/jsp/rest/billinglist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/billinglist.jsp</result>
+		</action>
+		
+		<!-- searchBilling : search Billing List-->
+		<action name="searchBilling" class="com.wowtasty.action.BillingListAction" method="searchRest">
+			<result>/WEB-INF/jsp/rest/billinglist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/billinglist.jsp</result>
+		</action>
+		
+		<!-- BillingAction -->
+		
+		<!-- initBillingDetail : initialize Billing Detail Page -->	
+		<action name="initBillingDetail" class="com.wowtasty.action.BillingAction" method="init">
+			<result>/WEB-INF/jsp/rest/billingdetail.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/billingdetail.jsp</result>
+		</action>
+				
+		<!-- "initBillingOrderDetail" : initialize Billing Order Detail Panel-->
+		<action name="initBillingOrderDetail" class="com.wowtasty.action.BillingAction" method="initOrderDetail">
+			<interceptor-ref name="wowJasonStack"/>
+			<result type="json"/>
+		</action>
+		
+		<!-- "printBilling" : print Billing as pdf file-->
+		<action name="printBilling" class="com.wowtasty.action.BillingAction" method="print">
+			<result type="jasper">
+	            <param name="location">report/bill.jasper</param>
+	            <param name="reportParameters">pdfParameters</param>
+	            <param name="dataSource">pdfDataSource</param>
+	            <param name="format">PDF</param>
+	            <param name="contentDisposition">attachment; filename="${pdfFileName}.pdf"</param>
+	        </result>
+			<result name="input">/WEB-INF/jsp/rest/billingdetail.jsp</result>
+		</action>
+	</package>
+	
+</struts>

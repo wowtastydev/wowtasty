@@ -51,6 +51,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		</if>
 	</select>
 	
+	<!--selectRest -->
+	<select id="selectRest" parameterType="List" resultType="restaurantmastervo">
+	SELECT 
+		<include refid="columns"/>
+	FROM restaurant_master 
+	WHERE 1=1
+		<if test="list.size > 0">
+		AND restaurantID in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+	          #{item}
+	    </foreach>
+	    </if>
+	</select>
+	
 	<!--selectByID-->
 	<select id="selectByID" parameterType="String" resultType="restaurantmastervo">
 	SELECT 

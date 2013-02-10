@@ -9,8 +9,8 @@
 <link rel="shortcut icon" href="../images/wowicon.ico">
 <link rel="stylesheet" href="../themes/redmond/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
-<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
-<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/jquery-ui.js"></script>
 <head>
 <title>FoodDelivery WowStaty Admin Error</title>
 </head>

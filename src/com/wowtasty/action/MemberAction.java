@@ -13,8 +13,12 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.Preparable;
 import com.wowtasty.mybatis.dao.MemberMasterDao;
+import com.wowtasty.mybatis.dao.MemberRestaurantDao;
+import com.wowtasty.mybatis.dao.RestaurantMasterDao;
 import com.wowtasty.mybatis.vo.CodeMasterVO;
 import com.wowtasty.mybatis.vo.MemberMasterVO;
+import com.wowtasty.mybatis.vo.MemberRestaurantVO;
+import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.EncryptUtil;
@@ -40,12 +44,14 @@ public class MemberAction extends ActionSupport implements Preparable {
 	private List<CodeMasterVO> provinceList = new ArrayList<CodeMasterVO>();
 	private List<CodeMasterVO> cityList = new ArrayList<CodeMasterVO>();
 	private List<CodeMasterVO> roleList = new ArrayList<CodeMasterVO>();
+	private List<RestaurantMasterVO> restaurantList = new ArrayList<RestaurantMasterVO>();
 	
 	/** codemaster map */
 	private Map<String, List<CodeMasterVO>> codeMap = new HashMap<String, List<CodeMasterVO>>();
 	
 	/** user information */
 	private MemberMasterVO uservo = new MemberMasterVO();
+	private List<MemberRestaurantVO> userRestList = new ArrayList<MemberRestaurantVO>();
 	
 	/** Title&Metatag */
 	// Title : Restaurant Name;City Name;at FoodDelivery WowTasty
@@ -65,6 +71,10 @@ public class MemberAction extends ActionSupport implements Preparable {
 	private boolean emailChangeFlag = false;
 	// In case of resseting password, true
 	private boolean pwdResetFlag = false;
+	private List<MemberRestaurantVO> memberRestaurantList = new ArrayList<MemberRestaurantVO>();
+	
+	// jsp accordion active index
+	private Integer active = 0;
 	
 	/**
 	 * Prepared method
@@ -79,9 +89,14 @@ public class MemberAction extends ActionSupport implements Preparable {
 		cityList = codeMap.get(Constants.KEY_CD_CITY);
 		List<CodeMasterVO> orgList = codeMap.get(Constants.KEY_CD_ROLE);
 		
+		// set up restaurant list
+		RestaurantMasterDao dao = new RestaurantMasterDao();
+		restaurantList = dao.selectAvailable();
+		
 		// userinfo from httpsession
 		HttpSession httpSession = ServletActionContext.getRequest().getSession(true);
 		uservo = (MemberMasterVO)httpSession.getAttribute(Constants.KEY_SESSION_USER);
+		userRestList = (List<MemberRestaurantVO>)httpSession.getAttribute(Constants.KEY_SESSION_USER_REST_LIST);
 		
 		// set up roleList with only same or lower level of user's role
 		roleList = CodeUtil.copyCode(orgList);
@@ -114,10 +129,32 @@ public class MemberAction extends ActionSupport implements Preparable {
 	public String initEdit() throws Exception {
 		logger.info("<---initEdit start --->");
 		
+		// Get member master data
 		MemberMasterDao dao = new MemberMasterDao();
 		mvo = dao.selectByID(selectedMemberID);
+		
+		// Get member restaurant data
+		MemberRestaurantDao mrdao = new MemberRestaurantDao();
+		memberRestaurantList = mrdao.selectByID(selectedMemberID);
 
 		logger.info("<---initEdit end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * Initiate MemberEdit page for restaurant users
+	 * @return SUCCESS
+	 */
+	public String initEditRest() throws Exception {
+		logger.info("<---initEditRest start --->");
+		
+		// Get member master data from current user info
+		mvo = uservo;
+		
+		// Get member restaurant data from current user info
+		memberRestaurantList = userRestList;
+
+		logger.info("<---initEditRest end --->");
 		return SUCCESS;
 	}
 	
@@ -185,12 +222,51 @@ public class MemberAction extends ActionSupport implements Preparable {
 			addActionMessage("Member infomation has been updated successfully");
 			// Reload MemberMasterdata because postal code will be formatted.
 			mvo = dao.selectByID(mvo.getMemberID());
+			MemberRestaurantDao mrdao = new MemberRestaurantDao();
+			memberRestaurantList = mrdao.selectByID(mvo.getMemberID());
 		}
 		//Clear Checkbox
 		emailChangeFlag = false;
 		pwdResetFlag = false;
 		
 		logger.info("<---save end --->");
+		return SUCCESS;
+	}
+	
+	/**
+	 * save MemberRestaurant
+	 * @return SUCCESS
+	 */
+	public String saveMemberRestaurant() throws Exception {
+		logger.info("<---saveMemberRestaurant start --->");
+		
+		// Save Member Restaurant
+		Map<String, String> hasRestMap = new HashMap<String, String>();
+		int size = memberRestaurantList.size();
+		MemberRestaurantDao mrdao = new MemberRestaurantDao();
+		for (int i = 0; i < size; i++) {
+			if (memberRestaurantList.get(i) == null || hasRestMap.containsKey(memberRestaurantList.get(i).getRestaurantID())) {
+				// Delete the removed or duplicated restaurant
+				memberRestaurantList.remove(i--);
+				size--;
+			} else {
+				hasRestMap.put(memberRestaurantList.get(i).getRestaurantID(), memberRestaurantList.get(i).getRestaurantID());
+			}
+		}
+		
+		// Delete all and insert all
+		mrdao.updateAll(memberRestaurantList);
+		
+		addActionMessage("Member restaurant list has been updated successfully");
+		// Reload 
+		MemberMasterDao dao = new MemberMasterDao();
+		mvo = dao.selectByID(mvo.getMemberID());
+		memberRestaurantList = mrdao.selectByID(mvo.getMemberID());
+		
+		// set Option accordion open
+		active = 1;
+		
+		logger.info("<---saveMemberRestaurant end --->");
 		return SUCCESS;
 	}
 	
@@ -316,55 +392,55 @@ public class MemberAction extends ActionSupport implements Preparable {
 			
 		//First Name
 		if (ValidationUtil.isBlank(mvo.getFirstName())) {
-			addFieldError("mvo.firstName", getText("E0001_1", new String[]{"First Name"}));
+			addFieldError("mvo.firstName", getText("E0001_1", new String[]{"First Name of Contact Address"}));
 			hasError = true;
 		}
 		
 		//Last Name
 		if (ValidationUtil.isBlank(mvo.getLastName())) {
-			addFieldError("mvo.lastName", getText("E0001_1", new String[]{"Last Name"}));
+			addFieldError("mvo.lastName", getText("E0001_1", new String[]{"Last Name of Contact Address"}));
 			hasError = true;
 		}
 		
 		//Telephone
 		if (!ValidationUtil.isBlank(mvo.getTelephone()) && !ValidationUtil.isTelephone(mvo.getTelephone())) {
-			addFieldError("mvo.telephone", getText("E0003_1", new String[]{"Telephone Number"}));
+			addFieldError("mvo.telephone", getText("E0003_1", new String[]{"Telephone Number of Contact Address"}));
 			hasError = true;
 		}
 		
 		//Suite Number
 		if (!ValidationUtil.isBlank(mvo.getSuite()) && !ValidationUtil.isNumEng(mvo.getSuite())) {
-			addFieldError("mvo.suite", getText("E0003_1", new String[]{"Suite Number"}));
+			addFieldError("mvo.suite", getText("E0003_1", new String[]{"Suite Number of Contact Address"}));
 			hasError = true;
 		}
 		
 		//Postal Code
 		if (!ValidationUtil.isBlank(mvo.getPostalCode()) && !ValidationUtil.isPostalCode(mvo.getPostalCode())) {
-			addFieldError("mvo.postalCode", getText("E0003_1", new String[]{"Postal Code"}));
+			addFieldError("mvo.postalCode", getText("E0003_1", new String[]{"Postal Code of Contact Address"}));
 			hasError = true;
 		}
 		
 		//Delivery Telephone
 		if (!ValidationUtil.isBlank(mvo.getDelivTelephone()) && !ValidationUtil.isTelephone(mvo.getDelivTelephone())) {
-			addFieldError("mvo.delivTelephone", getText("E0003_1", new String[]{"Delivery Telephone Number"}));
+			addFieldError("mvo.delivTelephone", getText("E0003_1", new String[]{"Telephone Number of Delivery Address"}));
 			hasError = true;
 		}
 		
 		//Delivery Suite Number
 		if (!ValidationUtil.isBlank(mvo.getDelivSuite()) && !ValidationUtil.isNumEng(mvo.getDelivSuite())) {
-			addFieldError("mvo.delivSuite", getText("E0003_1", new String[]{"Delivery Suite Number"}));
+			addFieldError("mvo.delivSuite", getText("E0003_1", new String[]{"Suite Number of Delivery Address"}));
 			hasError = true;
 		}
 		
 		//Delivery Buzzer Number
 		if (!ValidationUtil.isBlank(mvo.getDelivBuzzer()) && !ValidationUtil.isNumEng(mvo.getDelivBuzzer())) {
-			addFieldError("mvo.delivBuzzer", getText("E0003_1", new String[]{"Delivery Buzzer Number"}));
+			addFieldError("mvo.delivBuzzer", getText("E0003_1", new String[]{"Buzzer Number of Delivery Address"}));
 			hasError = true;
 		}
 		
 		//Delivery Postal Code
 		if (!ValidationUtil.isBlank(mvo.getDelivPostalCode()) && !ValidationUtil.isPostalCode(mvo.getDelivPostalCode())) {
-			addFieldError("mvo.delivPostalCode", getText("E0003_1", new String[]{"Delivery Postal Code"}));
+			addFieldError("mvo.delivPostalCode", getText("E0003_1", new String[]{"Postal Code of Delivery Address"}));
 			hasError = true;
 		}
 		
@@ -571,5 +647,34 @@ public class MemberAction extends ActionSupport implements Preparable {
 	 */
 	public void setRoleList(List<CodeMasterVO> roleList) {
 		this.roleList = roleList;
+	}
+
+	/**
+	 * @return the restaurantList
+	 */
+	public List<RestaurantMasterVO> getRestaurantList() {
+		return restaurantList;
+	}
+
+	/**
+	 * @return the memberRestaurantList
+	 */
+	public List<MemberRestaurantVO> getMemberRestaurantList() {
+		return memberRestaurantList;
+	}
+
+	/**
+	 * @param memberRestaurantList the memberRestaurantList to set
+	 */
+	public void setMemberRestaurantList(
+			List<MemberRestaurantVO> memberRestaurantList) {
+		this.memberRestaurantList = memberRestaurantList;
+	}
+
+	/**
+	 * @return the active
+	 */
+	public Integer getActive() {
+		return active;
 	}
 }

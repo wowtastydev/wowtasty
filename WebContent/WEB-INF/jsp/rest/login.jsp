@@ -4,8 +4,8 @@
 <html lang="en">
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
 <link rel="shortcut icon" href="./images/wowicon.ico">
-<meta name="keywords" content="FoodDelivery, WowStaty, Admin">
-<meta name="description" content="Admin login at FoodDelivery WowStaty">
+<meta name="keywords" content="FoodDelivery, WowStaty, Restaurant">
+<meta name="description" content="Restaurant login at FoodDelivery WowStaty">
 <link rel="shortcut icon" href="../images/wowicon.ico">
 <link rel="stylesheet" href="../themes/redmond/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" href="../css/admin_message.css" media="screen" />
@@ -15,7 +15,7 @@
 <script src="../js/jquery.blockUI.js"></script>
 
 <head>
-<title>FoodDelivery WowStaty Admin Login</title>
+<title>FoodDelivery WowStaty Restaurant Login</title>
 </head>
 <script>
 <!--	
@@ -40,10 +40,10 @@
 <body>
 <div id="page_s">
 	<div id="header_s">
-		<h1>WOW TASTY ADMIN</h1>
+		<h1>WOW TASTY RESTAURANT</h1>
 	</div>
 	<div id="contentarea_s">
-		<h2>Wow Tasty Admin Login</h2>
+		<h2>Wow Tasty Restaurant Login</h2>
 		<s:form theme="css_xhtml" name="frm" id="frm" action="login">
 			<table>
 				<tr>

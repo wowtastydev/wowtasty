@@ -66,6 +66,10 @@
 	<include file="struts-a1.xml"></include>
 	<include file="struts-a2.xml"></include>
 	<include file="struts-a3.xml"></include>
+	<include file="struts-r0.xml"></include>
+	<include file="struts-r1.xml"></include>
+	<include file="struts-r2.xml"></include>
+	<include file="struts-r3.xml"></include>
 	<include file="struts-u0.xml"></include>
     <include file="struts-u2.xml"></include>
     <!-- external action : email for restaurant-->

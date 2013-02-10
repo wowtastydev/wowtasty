@@ -22,6 +22,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		, SemiMonthType, CompanyID, CompanyName
 	FROM bill_master 
 	WHERE 1=1
+		<if test="restaurantList.size > 0">
+		AND CompanyID in 
+		<foreach item="item" index="index" collection="restaurantList" open="(" separator="," close=")">
+	          #{item}
+	    </foreach>
+	    </if>
 		<if test="fromDate != ''">
 		AND YearMonth >= #{fromDate}
 		</if>

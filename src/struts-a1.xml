@@ -58,6 +58,12 @@
 			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
 		</action>
 		
+		<!-- saveMemberRestaurant : Edit Member Restaurant data -->
+		<action name="saveMemberRestaurant" class="com.wowtasty.action.MemberAction" method="saveMemberRestaurant">
+			<result>/WEB-INF/jsp/admin/memberedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/memberedit.jsp</result>
+		</action>
+		
 		<!-- MemberListAction -->
 		
 		<!-- initMemberList : initialize Member list Page -->

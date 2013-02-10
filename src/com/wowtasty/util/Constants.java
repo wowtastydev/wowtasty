@@ -74,6 +74,7 @@ public class Constants {
 	
 	//ROLE
 	static public final String CODE_ROLE_NONMEMBER = "99";
+	static public final int CODE_ROLE_REST_MAX = 20;
 	
 	/**Mail Contents key */
 	static public final Integer KEY_CONTENTS_SIGNUP_MEM = 1;
@@ -91,6 +92,7 @@ public class Constants {
 	
 	/**Session Key*/
 	static public final String KEY_SESSION_USER = "KEY_SESSION_USER";
+	static public final String KEY_SESSION_USER_REST_LIST = "KEY_SESSION_USER_REST_LIST";
 	static public final String KEY_SESSION_CODE_LIST = "KEY_SESSION_CODE_LIST";
 	static public final String KEY_SESSION_ACTIONAUTH_LIST = "KEY_SESSION_ACTIONAUTH_LIST";
 	static public final String KEY_SESSION_CONFIG_PROPERTIES = "KEY_SESSION_CONFIG_PROPERTIES";

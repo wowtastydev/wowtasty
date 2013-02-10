@@ -1,7 +1,7 @@
 package com.wowtasty.util;
 
 import java.util.Properties;
- 
+
 import javax.mail.Message;
 import javax.mail.Part;
 import javax.mail.Session;
@@ -12,6 +12,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
+
+import com.sun.mail.util.MailSSLSocketFactory;
 
 public class MailSender {
 	
@@ -57,7 +59,7 @@ public class MailSender {
                 
         try {
             Properties props = System.getProperties();
-            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.starttls.enable", "false");
             props.put("mail.transport.protocol", "smtp");
             props.put("mail.host", smtpServer);
             props.put("mail.user", userName);
@@ -65,6 +67,10 @@ public class MailSender {
             props.put("mail.port", "587");
             //SMTP server authentication is set to false, by default. Setting it to true as shown below
             props.put( "mail.smtp.auth", "true" ) ;
+            
+            MailSSLSocketFactory sf = new MailSSLSocketFactory();
+            sf.setTrustAllHosts(true);
+            props.put("mail.smtp.ssl.socketFactory", sf);
  
             Session session = Session.getDefaultInstance(props, null);
             MimeMessage message = new MimeMessage(session);
@@ -90,7 +96,7 @@ public class MailSender {
             transport.close();
             return true;
         } catch (Exception e){
-        	logger.error("!!!!!FileUtil downloadOrderList occurs error:" + e);
+        	logger.error("!!!!!FileUtil sendEmail occurs error:" + e);
         	throw new RuntimeException(e);
         }
     }

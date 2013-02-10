@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC '-//Apache Software Foundation//DTD Struts Configuration 2.0//EN' 
+	'http://struts.apache.org/dtds/struts-2.0.dtd'>
+
+<struts>
+	<package name="rest0" namespace="/rest" extends="wow-default">
+
+	    <default-interceptor-ref name="wowDefaultStack"/>
+	
+		<global-results>
+			<result name="login">/WEB-INF/jsp/rest/login.jsp</result>
+			<result name="autherror">/WEB-INF/jsp/rest/autherror.jsp</result>
+			<result name="error">/WEB-INF/jsp/rest/error.jsp</result>
+		</global-results>
+		
+		<global-exception-mappings>
+			<exception-mapping exception="java.lang.RuntimeException" result="error" />
+			<exception-mapping exception="java.lang.Exception" result="error" />
+		</global-exception-mappings>
+	
+		<!-- LoginAction -->
+		
+		<!-- initLogin : initialize Login Page -->	
+		<action name="initLogin" class="com.wowtasty.action.LoginAction" method="init">
+			<interceptor-ref name="basicStack"/>
+			<result>/WEB-INF/jsp/rest/login.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/login.jsp</result>
+		</action>
+		
+		<!-- login : login -->	
+		<action name="login" class="com.wowtasty.action.LoginAction">
+			<interceptor-ref name="validationWorkflowStack"/>
+			<result type="chain">initCurrentOrderList</result>
+			<result name="input">/WEB-INF/jsp/rest/login.jsp</result>
+		</action>
+		
+		<!-- logout : logout -->	
+		<action name="logout" class="com.wowtasty.action.LoginAction" method="logout">
+			<interceptor-ref name="basicStack"/>
+			<result>/WEB-INF/jsp/rest/login.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/login.jsp</result>
+		</action>
+
+		<!-- OrderListAction -->
+		
+		<!-- initOrderList : initialize order list page -->
+		<action name="initOrderList" class="com.wowtasty.action.OrderListAction" method="initRest">
+			<result>/WEB-INF/jsp/rest/orderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/orderlist.jsp</result>
+		</action>
+		
+		<!-- searchOrder : search order list -->
+		<action name="searchOrder" class="com.wowtasty.action.OrderListAction" method="searchRest">
+			<result>/WEB-INF/jsp/rest/orderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/orderlist.jsp</result>
+		</action>
+		
+		<!-- initCurrentOrderList : initialize current order list page -->
+		<action name="initCurrentOrderList" class="com.wowtasty.action.OrderListAction" method="initCurrentRest">
+			<result>/WEB-INF/jsp/rest/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/currentorderlist.jsp</result>
+		</action>
+		
+		<!-- searchCurrentOrder : search current order list -->
+		<action name="searchCurrentOrder" class="com.wowtasty.action.OrderListAction" method="searchCurrentRest">
+			<result>/WEB-INF/jsp/rest/currentorderlist.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/currentorderlist.jsp</result>
+		</action>
+		
+		<!-- OrderAction -->
+		
+		<!-- initOrderEdit : initialize order edit page for restaurant users -->
+		<action name="initOrderEdit" class="com.wowtasty.action.OrderAction" method="initRest">
+			<result>/WEB-INF/jsp/rest/orderedit.jsp</result>
+		</action>
+		
+		<!-- changeOrderStatusEdit : change order status on the order edit page -->
+		<action name="changeOrderStatusEdit" class="com.wowtasty.action.OrderAction" method="changeOrderStatus">
+			<result>/WEB-INF/jsp/rest/orderedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/rest/orderedit.jsp</result>
+		</action>
+		
+		<!-- goOrderList : go back to order/current order list -->
+		<action name="goOrderList" class="com.wowtasty.action.OrderAction" method="goOrderList">
+			<result type="chain">${forwardPage}</result>
+			<result name="input">/WEB-INF/jsp/rest/orderedit.jsp</result>
+		</action>
+	</package>
+	
+</struts>

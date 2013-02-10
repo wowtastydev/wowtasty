@@ -24,6 +24,7 @@ import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.mybatis.vo.MemberRestaurantVO;
 import com.wowtasty.mybatis.vo.OrderRestaurantVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
+import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.MailSender;
 import com.wowtasty.util.OrderUtil;
@@ -100,7 +101,8 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		codeMap = (Map<String, List<CodeMasterVO>>)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CODE_LIST);
 		
 		// set up dropdown menu from codes
-		orderStatusList = codeMap.get(Constants.KEY_CD_ORDER_STATUS);
+		List<CodeMasterVO> orgList = codeMap.get(Constants.KEY_CD_ORDER_STATUS);
+		orderStatusList = CodeUtil.copyCode(orgList);
 		int intAuth = Integer.parseInt(uservo.getAuth());
 		if (intAuth >= Constants.CODE_ROLE_REST_MAX) {
 			// If user is not Wow users. Don't need to show "Pending status"

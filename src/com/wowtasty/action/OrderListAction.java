@@ -1,6 +1,8 @@
 package com.wowtasty.action;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -110,6 +112,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 			for (int i = 0; i < size; i++) {
 				if (Constants.CODE_ORDER_STATUS_PENDING.equals(orderStatusList.get(i).getCode())) {
 					orderStatusList.remove(i);
+					size--;
 				}
 			}
 		}
@@ -133,7 +136,7 @@ public class OrderListAction extends ActionSupport implements Preparable {
 		// order status condition for Restaurant user page
 		orderStatusRestMap.put("", "All Status");
 		orderStatusRestMap.put(Constants.CODE_ORDER_STATUS_ORDERED, "Ordered Only");
-		
+
 		logger.info("<---prepare end --->");
 	}
 	
@@ -143,8 +146,23 @@ public class OrderListAction extends ActionSupport implements Preparable {
 	 */
 	public String init() throws Exception {
 		logger.info("<---init start --->");
+		
+		// Default FromDate ~ ToDate Setting
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat sdf = new SimpleDateFormat(DAY_PATTERN);
+		
+		// ToDate -> current date
+		if (ValidationUtil.isBlank(condition.getToDate())) {
+			condition.setToDate(sdf.format(cal.getTime()));
+		}
+		
+		// FromDate -> 2 day back from the current date
+		if (ValidationUtil.isBlank(condition.getFromDate())) {
+			cal.add(Calendar.DATE, -2);
+			condition.setFromDate(sdf.format(cal.getTime()));
+		}
 
-		//Select All Order List
+		//Select Order List by the default period
 		OrderDao dao = new OrderDao();
 		list = dao.select(condition);
 

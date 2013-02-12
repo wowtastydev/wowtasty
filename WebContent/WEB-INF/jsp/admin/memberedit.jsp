@@ -273,6 +273,13 @@
 								<td colspan=7><FONT color=red>More than 8 digits with alphabets or symbols(e.g: !@#$%^&*?_~)</FONT></td>
 							</tr>
 							<tr>
+								<td>Current eCash:</td>
+								<td colspan=7>
+									<s:property value="%{mvo.ecash}" />
+									<s:hidden name="mvo.ecash" />
+								</td>
+							</tr>
+							<tr>
 								<td colspan=8><br><b>[Contact Address]</b></td>
 							</tr>
 							<tr>
@@ -298,13 +305,6 @@
 								<td><s:select name="mvo.province" id="province" list ="provinceList" listKey="code" listValue="shortName" headerKey="01" headerValue="BC" /></td>
 								<td>Postal Code:</td>
 								<td><s:textfield name="mvo.postalCode" id="postalCode" size="8" maxlength="7"/></td>
-							</tr>
-							<tr>
-								<td>Current eCash:</td>
-								<td colspan=7>
-									<s:property value="%{mvo.ecash}" />
-									<s:hidden name="mvo.ecash" />
-								</td>
 							</tr>
 							<tr>
 								<td colspan=8><br><b>[Delivery Address]</b></td>

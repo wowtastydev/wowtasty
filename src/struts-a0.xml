@@ -84,6 +84,7 @@
 		<!-- initOrderEdit : initialize order edit page -->
 		<action name="initOrderEdit" class="com.wowtasty.action.OrderAction">
 			<result>/WEB-INF/jsp/admin/orderedit.jsp</result>
+			<result name="input">/WEB-INF/jsp/admin/orderedit.jsp</result>
 		</action>
 		
 		<!-- changeOrderStatusEdit : change order status on the order edit page -->

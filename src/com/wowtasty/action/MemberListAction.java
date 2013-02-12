@@ -94,7 +94,6 @@ public class MemberListAction extends ActionSupport implements Preparable {
 		
 		// Select all memember by same or lower level of user's role
 		int size = roleList.size();
-		conditionRoles.clear();
 		for (int i = 0; i < size; i++) {
 			conditionRoles.add(roleList.get(i).getCode());
 		}
@@ -113,7 +112,7 @@ public class MemberListAction extends ActionSupport implements Preparable {
 		logger.info("<---execute start --->");
 		MemberMasterDao dao = new MemberMasterDao();
 		if (conditionRoles.size() == 0) {
-			// Date(from) is not datetype
+			// Member type is required
 			addFieldError("conditionRoles", getText("E0001_1", new String[]{"Member Type"}));
 			list.clear();
 			return INPUT;

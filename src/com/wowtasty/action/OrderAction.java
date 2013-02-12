@@ -167,7 +167,7 @@ public class OrderAction extends ActionSupport implements Preparable {
 		if (returnCnt > 0) {
 			addActionMessage("Order Status has been changed successfully");
 			
-			// Get Order Detail to reload detail
+			// Get Order Detail to reload detail and set member email
 			getOrderDetail();
 			
 			//Get order member's name 
@@ -262,9 +262,10 @@ public class OrderAction extends ActionSupport implements Preparable {
 
 				addActionMessage("Email has been sent to the customer and the restaurant successfully");
 			}
+		} else {
+			// Get Order Detail to reload detail
+			getOrderDetail();			
 		}
-		// Get Order Detail to reload detail
-		getOrderDetail();
 		
 		logger.info("<---changeOrderStatus end --->");
 		return SUCCESS;
@@ -407,8 +408,6 @@ public class OrderAction extends ActionSupport implements Preparable {
 		
 		if (returnCnt > 0) {
 			addActionMessage("Delivery Man has been updated successfully"); 
-		} else {
-			addActionError("No data has been changed."); 
 		}
 		
 		// Get Order Detail to reload detail

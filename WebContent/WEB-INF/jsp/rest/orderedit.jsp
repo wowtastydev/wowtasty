@@ -6,23 +6,25 @@
 <link rel="stylesheet" type="text/css" href="../css/admin_style.css" media="screen" />
 <script>
 <!--	
-	// Change Pending Order Status into Ordered Status
+	// Change Order Status
 	function changeOrderStatus(status){
-		document.getElementById("selectedStatus").value = status;
-		// In case of cancel
-		if (status == "71") {
-			var radioList = document.getElementsByName("reasonSel");
-			for(var i=0; i<radioList.length; i++){
-				if (radioList[i].checked) {
-					document.getElementById("declinedReason").value = radioList[i].value;
-					break;
+		if(confirm("Do you want to change the order status?")) {
+			document.getElementById("selectedStatus").value = status;
+			// In case of decline
+			if (status == "71") {
+				var radioList = document.getElementsByName("reasonSel");
+				for(var i=0; i<radioList.length; i++){
+					if (radioList[i].checked) {
+						document.getElementById("declinedReason").value = radioList[i].value;
+						break;
+					}
 				}
 			}
+			document.getElementById("frm").action = "changeOrderStatusEdit";
+			$( "#declineReasonPanel" ).dialog( "close" );
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
 		}
-		document.getElementById("frm").action = "changeOrderStatusEdit";
-		$( "#declineReasonPanel" ).dialog( "close" );
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
 	}
 	
 	// Set Delivery Man
@@ -35,8 +37,8 @@
 	
 	// Go back to List page
 	function goList() {
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").action = "goOrderList";
+		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
 		document.getElementById("frm").submit();
 	}
 
@@ -274,18 +276,18 @@ $(function() {
 						<th width="100">Amount</th>
 					</tr>
 					<tr>
-					<s:if test='%{"1".equals(paymentType)}'>
+					<s:if test='%{"1".equals(master.paymentType)}'>
 						<s:iterator value="creditCardTypeList" id="creditCardTypeList" status="outerStat">
-						<s:if test='%{code.equals(paymentCreditType)}'>
-							<td><s:property value="%{name}"/><td>
-						</s:if>
+							<s:if test='%{code.equals(master.paymentCreditType)}'>
+								<td><s:property value="%{name}"/></td>
+							</s:if>
 						</s:iterator>
 							<td><s:property value="%{master.paymentCreditNO}"/></td>
 					</s:if>
-					<s:if test='%{"2".equals(paymentType)}'>
+					<s:elseif test='%{"2".equals(master.paymentType)}'>
 						<td>DEBIT </td>
 						<td><s:property value="%{master.paymentDebitNO}"/></td>
-					</s:if>
+					</s:elseif>
 					<s:else>
 						<td>CASH </td><td align="center">-</td>
 					</s:else>

@@ -77,14 +77,14 @@ public class RestaurantPictDao {
 	
 	/**
 	 * @param list: Restaurant pictures list
+	 * @param id: Restaurant ID
 	 */
-	public void updateAll(List<RestaurantPictVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<RestaurantPictVO> list, String id) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String id = list.get(0).getRestaurantID();
 		try {
 			// Delete all pictures
 			sqlSession.delete("restaurantpict.delete", id);

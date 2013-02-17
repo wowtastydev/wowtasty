@@ -235,7 +235,6 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 			return INPUT;
 		}
 		
-		
 		// Validation Check
 		// Check Information Validation
 		boolean hasError = false;
@@ -403,7 +402,7 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		
 		// Delete all areas and insert inputted areas
 		DeliveryAreaDao dadao = new DeliveryAreaDao();
-		dadao.updateAll(newlist);
+		dadao.updateAll(newlist, vo.getDeliveryCompanyID());
 		
 		addActionMessage("Delivery Areas has been updated successfully");
 
@@ -413,7 +412,7 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		// set AREA accordion open
 		active = AREA;
 		
-		// set parameter restaurantID
+		// set parameter Delivery company ID
 		selectedID = vo.getDeliveryCompanyID();
 		
 		logger.info("<---saveDeliveryArea end --->");

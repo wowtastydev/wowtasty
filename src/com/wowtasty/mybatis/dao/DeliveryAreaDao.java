@@ -99,14 +99,14 @@ public class DeliveryAreaDao {
 	
 	/**
 	 * @param list: Delivery area list
+	 * @param id: Delivery CompanyID
 	 */
-	public void updateAll(List<DeliveryAreaVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<DeliveryAreaVO> list, String id) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String id = list.get(0).getDeliveryCompanyID();
 		try {
 			// Delete all areas
 			sqlSession.delete("deliveryarea.delete", id);

@@ -97,7 +97,8 @@ public class DeliveryMasterDao {
 	}
 	
 	/**
-	 * @return DeliveryMasterVO: Delivery master data
+	 * @param DeliveryMasterVO: Delivery master data
+	 * @return int: update count
 	 */
 	public int insert(DeliveryMasterVO vo) {
 		// autocommit session open
@@ -120,7 +121,8 @@ public class DeliveryMasterDao {
 	}
 	
 	/**
-	 * @return DeliveryMasterVO: Delivery master data
+	 * @param DeliveryMasterVO: Delivery master data
+	 * @return int: update count
 	 */
 	public int update(DeliveryMasterVO vo) {
 		// autocommit session open
@@ -136,6 +138,30 @@ public class DeliveryMasterDao {
 				sqlSession.close();
 			} catch (Exception e) {
 				logger.error("!!!!!DeliveryMasterDao update occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
+	
+	/**
+	 * @param id: Delivery Company ID
+	 * @return int: delete count
+	 */
+	public int delete(String id) {
+		// autocommit session open
+		SqlSession sqlSession = factory.openSession(true);
+		int returnObject = 0;
+		try {
+			returnObject = sqlSession.insert("deliverymaster.delete", id);
+		} catch (Exception e) {
+			logger.error("!!!!!DeliveryMasterDao delete occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!DeliveryMasterDao delete occurs error:" + e);
 	        	throw new RuntimeException(e);
 			}
 		}

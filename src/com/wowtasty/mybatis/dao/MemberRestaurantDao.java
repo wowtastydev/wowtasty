@@ -55,14 +55,14 @@ public class MemberRestaurantDao {
 	/**
 	 * Delete and insert 
 	 * @param List<MemberRestaurantVO>: Member's restaurant list
+	 * @param id: Member ID
 	 */
-	public void updateAll(List<MemberRestaurantVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<MemberRestaurantVO> list, String id) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String id = list.get(0).getMemberID();
 		try {
 			// Delete all Member's restaurant
 			sqlSession.delete("memberrestaurant.delete", id);

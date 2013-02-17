@@ -255,7 +255,7 @@ public class MemberAction extends ActionSupport implements Preparable {
 		}
 		
 		// Delete all and insert all
-		mrdao.updateAll(memberRestaurantList);
+		mrdao.updateAll(memberRestaurantList, mvo.getMemberID());
 		
 		addActionMessage("Member restaurant list has been updated successfully");
 		// Reload 

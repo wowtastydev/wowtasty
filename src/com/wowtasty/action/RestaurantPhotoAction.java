@@ -233,13 +233,7 @@ public class RestaurantPhotoAction extends ActionSupport implements Preparable {
 		}
 		
 		// Update db table
-		if (newList.size() == 0) {
-			// Delete all
-			rpdao.delete(selectedID);
-		} else {
-			rpdao.updateAll(newList);
-		}
-		
+		rpdao.updateAll(newList, selectedID);
 		
 		// Select current picture
 		pictureList = rpdao.selectByID(selectedID);

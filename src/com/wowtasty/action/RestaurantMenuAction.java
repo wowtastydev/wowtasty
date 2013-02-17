@@ -263,7 +263,7 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 		for (int i = 0; i < size; i++) {
 			menuOptionList.get(i).setMenuID(newMenuID);
 		}
-		rmodao.updateAll(menuOptionList);
+		rmodao.updateAll(menuOptionList, selectedID, newMenuID);
 		
 		// load category/menu/option
 		loadList();
@@ -360,7 +360,7 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 			}
 		}
 		// Update(Delete and Insert)
-		rcdao.updateAll(categoryList);
+		rcdao.updateAll(categoryList, selectedID);
 		
 		// Update Menu
 		size = menuList.size();
@@ -409,7 +409,7 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 		}
 		
 		// Delete all and inser all
-		rmodao.updateAll(menuOptionList);
+		rmodao.updateAll(menuOptionList, selectedID, selectedMenuID);
 		
 		// reload menuoption list
 		//menuOptionList = rmodao.selectByID(selectedID, selectedMenuID);

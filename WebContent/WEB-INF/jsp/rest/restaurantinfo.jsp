@@ -16,40 +16,42 @@
 
 <script>
 <!--	
-	window.onload = function() {
-		// Initialize Delivery Business hours
-		// If naDelivFlag is on, disable delivery hours textfields
-		naDeliv(document.getElementById("naDelivFlag"));
-	};
-	
     // Restaurant delivery area max index
 	var maxAreaIndex = <s:property value="restDelivArealist.size"/>;
 
 	// Save Restaurant General Info
 	function save(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Save Restaurant Business hours
 	function saveBizHour(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveRestaurantBizHour";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveRestaurantBizHour";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Save Restaurant Delivery Business hours
 	function saveBizHourDeliv(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveRestaurantBizHourDeliv";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveRestaurantBizHourDeliv";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Save Restaurant Delivery areas
 	function saveArea(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveDeliveryArea";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveDeliveryArea";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Instruction textcounter
@@ -91,45 +93,6 @@
 		}
 	}
 	
-	// Not available Delivery business hour
-	function naDeliv(obj) {
-		
-		if (obj.checked) {
-
-			// Disable Every day dropdown menu
-			document.getElementById("bizDelivAll1Start").disabled = true;
-			document.getElementById("bizDelivAll1End").disabled = true;
-			document.getElementById("bizDelivAll2Start").disabled = true;
-			document.getElementById("bizDelivAll2End").disabled = true;
-			
-			// Disable Set by day dropdown menu
-			for (var i = 0; i < 7; i++) {
-				document.getElementById("openHourDelivlist[" + i + "].startTime1").disabled = true;
-				document.getElementById("openHourDelivlist[" + i + "].endTime1").disabled = true;
-				document.getElementById("openHourDelivlist[" + i + "].startTime2").disabled = true;
-				document.getElementById("openHourDelivlist[" + i + "].endTime2").disabled = true;
-			}
-			// Disable save button
-			document.getElementById("btnDelivOpenHour").disabled = true;
-		} else {
-			// Enable Every day dropdown menu
-			document.getElementById("bizDelivAll1Start").disabled = false;
-			document.getElementById("bizDelivAll1End").disabled = false;
-			document.getElementById("bizDelivAll2Start").disabled = false;
-			document.getElementById("bizDelivAll2End").disabled = false;
-			
-			// Enable Set by day dropdown menu
-			for (var i = 0; i < 7; i++) {
-				document.getElementById("openHourDelivlist[" + i + "].startTime1").disabled = false;
-				document.getElementById("openHourDelivlist[" + i + "].endTime1").disabled = false;
-				document.getElementById("openHourDelivlist[" + i + "].startTime2").disabled = false;
-				document.getElementById("openHourDelivlist[" + i + "].endTime2").disabled = false;
-			}
-			// Enable save button
-			document.getElementById("btnDelivOpenHour").disabled = false;
-		}
-	}
-	
 	function openSearchDeliveryArea() {
 		var restid = document.getElementById("selectedID").value;
 		if (restid == "") {
@@ -138,9 +101,7 @@
 			$( "#errorMessagePanel" ).dialog( "open" );
 			return;
 		}
-		
 		$( "#searchDeliveryCompany" ).dialog( "open" );
-		
 	}
 	
 	// Change Postal code map
@@ -179,28 +140,31 @@
 		obj_row.appendChild(td_prefix);
 		
 		var input_prefix = document.createElement("input"); 
-		input_prefix.setAttribute("type", "text");
+		input_prefix.setAttribute("type", "hidden");
 		input_prefix.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].postalPrefix");
 		input_prefix.setAttribute("value", prefix);
-		input_prefix.setAttribute("size", "3");
-		input_prefix.setAttribute("maxlength", "3");
-		input_prefix.setAttribute("readonly", "true");
 		td_prefix.appendChild(input_prefix);
+		
+		var txt_prefix = document.createTextNode(prefix);
+		td_prefix.appendChild(txt_prefix);
 		
 		var td_name = document.createElement("TD");
 		obj_row.appendChild(td_name);
 		
-		var input_name = document.createElement("input"); 
-		input_name.setAttribute("type", "text");
-		input_name.setAttribute("value", companyName);
-		input_name.setAttribute("readonly", "true");
-		td_name.appendChild(input_name);
+		var txt_name = document.createTextNode(companyName);
+		td_name.appendChild(txt_name);
 		
 		var input_id = document.createElement("input"); 
 		input_id.setAttribute("type", "hidden");
 		input_id.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].deliveryCompanyID");
 		input_id.setAttribute("value", id);
 		td_name.appendChild(input_id);
+		
+		var input_type = document.createElement("input"); 
+		input_type.setAttribute("type", "hidden");
+		input_type.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].deliveryCompanyType");
+		input_type.setAttribute("value", "2");
+		td_name.appendChild(input_type);
 		
 		var input_restid = document.createElement("input"); 
 		input_restid.setAttribute("type", "hidden");
@@ -213,26 +177,26 @@
 		obj_row.appendChild(td_min);
 		
 		var input_min = document.createElement("input"); 
-		input_min.setAttribute("type", "text");
+		input_min.setAttribute("type", "hidden");
 		input_min.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].minPrice");
 		input_min.setAttribute("value", min);
-		input_min.setAttribute("size", "6");
-		input_min.setAttribute("maxlength", "6");
-		input_min.setAttribute("readonly", "true");
 		td_min.appendChild(input_min);
+		
+		var txt_min = document.createTextNode(min);
+		td_min.appendChild(txt_min);
 		
 		var td_fee = document.createElement("TD");
 		td_fee.setAttribute("align", "center");
 		obj_row.appendChild(td_fee);
 		
 		var input_fee = document.createElement("input"); 
-		input_fee.setAttribute("type", "text");
+		input_fee.setAttribute("type", "hidden");
 		input_fee.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].deliveryFee");
 		input_fee.setAttribute("value", fee);
-		input_fee.setAttribute("size", "6");
-		input_fee.setAttribute("maxlength", "6");
-		input_fee.setAttribute("readonly", "true");
 		td_fee.appendChild(input_fee);
+		
+		var txt_fee = document.createTextNode(fee);
+		td_fee.appendChild(txt_fee);
 		
 		maxAreaIndex++;
 	}
@@ -289,17 +253,20 @@
 		var td_name = document.createElement("TD");
 		obj_row.appendChild(td_name);
 		
-		var input_name = document.createElement("input"); 
-		input_name.setAttribute("type", "text");
-		input_name.setAttribute("value", companyName);
-		input_name.setAttribute("readonly", "true");
-		td_name.appendChild(input_name);
+		var txt_name = document.createTextNode(companyName);
+		td_name.appendChild(txt_name);
 		
 		var input_id = document.createElement("input"); 
 		input_id.setAttribute("type", "hidden");
 		input_id.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].deliveryCompanyID");
 		input_id.setAttribute("value", id);
 		td_name.appendChild(input_id);
+		
+		var input_type = document.createElement("input"); 
+		input_type.setAttribute("type", "hidden");
+		input_type.setAttribute("name", "restDelivArealist[" + maxAreaIndex + "].deliveryCompanyType");
+		input_type.setAttribute("value", "1");
+		td_name.appendChild(input_type);
 		
 		var input_restid = document.createElement("input"); 
 		input_restid.setAttribute("type", "hidden");
@@ -672,22 +639,34 @@
 							<h3>Business Hour</h3>
 						    <div>
 						    	<div style="padding-bottom:10px;">
-						    	<input type="radio" name="bizHourType" id="bizHourType" value="0"> Every day
+						    	<s:if test='%{"0".equals(bizHourType)}'>
+						    		<input type="radio" name="bizHourType" id="bizHourType" value="0" checked="true">
+						    	</s:if>
+						    	<s:else>
+						    		<input type="radio" name="bizHourType" id="bizHourType" value="0">
+						    	</s:else>
+						    	&nbsp;Every day
 						        <table class="tableborder" width="400">
 									<tr>
 										<th colspan=2>Open1(From ~ To) </th>
 										<th colspan=2>Open2(From ~ To) </th>
 									</tr>
 									<tr>
-										<td align="center"><s:textfield name="bizAll1Start" id="bizAll1Start" value="11:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizAll1End" id="bizAll1End" value="15:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizAll2Start" id="bizAll2Start" value="17:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizAll2End" id="bizAll2End" value="20:00" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizAll1Start" id="bizAll1Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizAll1End" id="bizAll1End" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizAll2Start" id="bizAll2Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizAll2End" id="bizAll2End" size="5" maxlength="5" cssClass="timepicker"/></td>
 									</tr>
 								</table>
 								</div>
 								<div>
-								<input type="radio" name="bizHourType" id="bizHourType" value="1"  checked="true"> Set by day
+								<s:if test='%{"0".equals(bizHourType)}'>
+						    		<input type="radio" name="bizHourType" id="bizHourType" value="1">
+						    	</s:if>
+						    	<s:else>
+						    		<input type="radio" name="bizHourType" id="bizHourType" value="1" checked="true">
+						    	</s:else>
+								&nbsp;Set by day
 						        <table class="tableborder" width="500">
 									<tr>
 										<th>Day </th>
@@ -759,7 +738,7 @@
 						    	<div style="padding-bottom:10px;">
 						    	<table>
 									<tr>
-										<td width="10"><s:checkbox name="naDelivFlag" id="naDelivFlag" onclick="javascript:naDeliv(this);" /></td>
+										<td width="10"><s:checkbox name="naDelivFlag" id="naDelivFlag" /></td>
 										<td valign="middle">Not Available</td>
 										<td>
 											<div id="instruction" class="ui-state-highlight ui-corner-all" style="width:320; padding: 0 .7em;">
@@ -770,22 +749,34 @@
 									</tr>
 								</table>
 						    	
-						    	<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="0"> Every day
+						    	<s:if test='%{"0".equals(bizHourDelivType)}'>
+						    		<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="0" checked="true">
+						    	</s:if>
+						    	<s:else>
+						    		<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="0">
+						    	</s:else>
+						    	&nbsp;Every day
 						        <table class="tableborder" width="500">
 									<tr>
 										<th colspan=2>Open1(From ~ To) </th>
 										<th colspan=2>Open2(From ~ To) </th>
 									</tr>
 									<tr>
-										<td align="center"><s:textfield name="bizDelivAll1Start" id="bizDelivAll1Start" size="5" maxlength="5" value="11:00" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizDelivAll1End" id="bizDelivAll1End" size="5" maxlength="5" value="15:00" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizDelivAll2Start" id="bizDelivAll2Start" size="5" maxlength="5" value="17:00" cssClass="timepicker"/></td>
-										<td align="center"><s:textfield name="bizDelivAll2End" id="bizDelivAll2End" size="5" maxlength="5" value="22:00" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizDelivAll1Start" id="bizDelivAll1Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizDelivAll1End" id="bizDelivAll1End" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizDelivAll2Start" id="bizDelivAll2Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+										<td align="center"><s:textfield name="bizDelivAll2End" id="bizDelivAll2End" size="5" maxlength="5" cssClass="timepicker"/></td>
 									</tr>
 								</table>
 								</div>
 								<div>
-								<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="1"  checked="true"> Set by day
+								<s:if test='%{"0".equals(bizHourDelivType)}'>
+						    		<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="1">
+						    	</s:if>
+						    	<s:else>
+						    		<input type="radio" name="bizHourDelivType" id="bizHourDelivType" value="1" checked="true">
+						    	</s:else>
+						    	&nbsp;Set by day
 						        <table class="tableborder" width="500">
 									<tr>
 										<th>Day </th>
@@ -854,58 +845,72 @@
 						    </div>
 						    <h3>Delivery Area</h3>
 						    <div>
-								<div>
-									<table width="auto">
-										<tr>
-											<td>
-												<input type="button" value="Add Row" onClick ="javascript:addRowBlank();"/>&nbsp;
-												<input type="button" value="Del Row" onClick ="javascript:delRow();"/>
-											</td>
-											<td align="right">
-												<input type="button" value="Search From Delivery Company" onClick ="javascript:openSearchDeliveryArea();"/>
-											</td>
-										</tr>
-									</table>
-							    
-									<div>
-									<table>
-										<tr><td valign="top">
-											<table class="tableborder" id="areaTbl" width="auto">
-												<thead>
-												<tr>
-													<th>Del</th>
-													<th>Postal Code Prefix</th>
-													<th>Delivery Company</th>
-													<th>Min. Order </th>
-													<th>Delivery Fee</th>
-												</tr>
-												</thead>
-												<tbody>
-												<s:iterator value="restDelivArealist" id="restDelivArealist" status="outerStat">
-												<tr>
-													<td align="center">
-														<s:checkbox name="chk" id="restDelivArealist[%{#outerStat.index}].chk"/>
-													</td>
-													<td align="center">
+								<table>
+									<tr>
+										<td>
+											<input type="button" value="Add Row" onClick ="javascript:addRowBlank();"/>&nbsp;
+											<input type="button" value="Del Row" onClick ="javascript:delRow();"/>&nbsp;
+											<input type="button" value="Search From Delivery Company" onClick ="javascript:openSearchDeliveryArea();"/>
+										</td>
+										<td>
+											<s:select name="cityMap" id="cityMap" list ="cityMapList" listKey="code" listValue="shortName" onchange="javascript:changeMap(this);"/>	
+										</td>
+									</tr>
+									<tr><td valign="top">
+										<table class="tableborder" id="areaTbl" width="auto">
+											<thead>
+											<tr>
+												<th>Del</th>
+												<th>Postal Code Prefix</th>
+												<th>Delivery Company</th>
+												<th>Min. Order </th>
+												<th>Delivery Fee</th>
+											</tr>
+											</thead>
+											<tbody>
+											<s:iterator value="restDelivArealist" id="restDelivArealist" status="outerStat">
+											<tr>
+												<td align="center">
+													<s:checkbox name="chk" id="restDelivArealist[%{#outerStat.index}].chk"/>
+												</td>
+												<td align="center">
+													<s:if test='%{"1".equals(deliveryCompanyType)}'>
+														<s:textfield name="restDelivArealist[%{#outerStat.index}].postalPrefix" id="restDelivArealist[%{#outerStat.index}].postalPrefix" size="3" maxlength="3"/>
+													</s:if>
+													<s:else>
 														<s:property value="postalPrefix"/>
 														<s:hidden name="restDelivArealist[%{#outerStat.index}].postalPrefix" id="restDelivArealist[%{#outerStat.index}].postalPrefix"/>
-														<s:hidden name="restDelivArealist[%{#outerStat.index}].restaurantID"/>
-														<s:hidden name="restDelivArealist[%{#outerStat.index}].seq"/>
-													</td>
-													<td>
-														<s:set var="delivID" value="deliveryCompanyID" />
-														<s:iterator value="deliveryCompanyList" id="deliveryCompanyList" status="outerStat">
-															<s:if test='%{#delivID.equals(deliveryCompanyID)}'>
-																<s:property value="%{name}"/>
-															</s:if>
-														</s:iterator>
-													    <s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryCompanyID"/>
-													</td>
-													<td align="center">
-														<s:textfield name="restDelivArealist[%{#outerStat.index}].minPrice" id="restDelivArealist[%{#outerStat.index}].minPrice" size="6" maxlength="6" />
-													</td>
-													<td align="center">
-														<s:textfield name="restDelivArealist[%{#outerStat.index}].deliveryFee" id="restDelivArealist[%{#outerStat.index}].deliveryFee" size="6" maxlength="6" />
+													</s:else>
+													<s:hidden name="restDelivArealist[%{#outerStat.index}].restaurantID"/>
+													<s:hidden name="restDelivArealist[%{#outerStat.index}].seq"/>
+												</td>
+												<td>
+													<s:set var="delivID" value="deliveryCompanyID" />
+													<s:iterator value="deliveryCompanyList" id="deliveryCompanyList" status="outerStat">
+														<s:if test='%{#delivID.equals(deliveryCompanyID)}'>
+															<s:property value="%{name}"/>
+														</s:if>
+													</s:iterator>
+												    <s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryCompanyID"/>
+												    <s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryCompanyType"/>
+												</td>
+												<td align="center">
+													<s:if test='%{"1".equals(deliveryCompanyType)}'>
+														$<s:textfield name="restDelivArealist[%{#outerStat.index}].minPrice" id="restDelivArealist[%{#outerStat.index}].minPrice" size="6" maxlength="6" />
+													</s:if>
+													<s:else>
+														<s:property value="getText('{0,number,$##0.00}',{minPrice})"/>
+														<s:hidden name="restDelivArealist[%{#outerStat.index}].minPrice" id="restDelivArealist[%{#outerStat.index}].minPrice" />
+													</s:else>
+												</td>
+												<td align="center">
+													<s:if test='%{"1".equals(deliveryCompanyType)}'>
+														$<s:textfield name="restDelivArealist[%{#outerStat.index}].deliveryFee" id="restDelivArealist[%{#outerStat.index}].deliveryFee" size="6" maxlength="6" />
+													</s:if>
+													<s:else>
+														<s:property value="getText('{0,number,$##0.00}',{deliveryFee})"/>
+															<s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryFee" id="restDelivArealist[%{#outerStat.index}].deliveryFee" />
+														</s:else>
 													</td>
 												</tr>
 												</s:iterator>
@@ -917,11 +922,6 @@
 												<table width="380">
 													<tr>
 														<td>
-															<s:select name="cityMap" id="cityMap" list ="cityMapList" listKey="code" listValue="shortName" onchange="javascript:changeMap(this);"/>
-														</td>
-													</tr>
-													<tr>
-														<td>
 															<span id="map_info"><img src="../images/map/010011.gif"></span>
 														</td>
 													</tr>
@@ -929,37 +929,35 @@
 											</td>
 										</tr>
 									</table>
-									</div>
-								</div>
-								<table width="100%">
-									<tr>
-										<td><hr></td>
-									</tr>
-									<tr>
-										<td>
-											<input type="button" value="Save" onClick="javascript:saveArea();" />
-										</td>
-									</tr>
-								</table>
+									<table width="100%">
+										<tr>
+											<td><hr></td>
+										</tr>
+										<tr>
+											<td>
+												<input type="button" value="Save" onClick="javascript:saveArea();" />
+											</td>
+										</tr>
+									</table>
 	
-						    </div>
-						    
+							    </div>
+							    
+							</div>
+							<table width="100%">
+								<tr>
+									<td><hr></td>
+								</tr>
+								<tr>
+									<td>
+										<input type="button" value="List" onClick="javascript:goPage('A203');" />
+									</td>
+								</tr>
+							</table>
 						</div>
-						<table width="100%">
-							<tr>
-								<td><hr></td>
-							</tr>
-							<tr>
-								<td>
-									<input type="button" value="List" onClick="javascript:goPage('A203');" />
-								</td>
-							</tr>
-						</table>
-					</div>
-					<div id="Menu">
-					</div>
-					<div id="Photo">
-					</div>
+						<div id="Menu">
+						</div>
+						<div id="Photo">
+						</div>
 					
 					</s:form>
 				</div>
@@ -992,8 +990,8 @@
 					<tr>
 						<th>Prefix</th>
 						<th>Company Name</th>
-						<th>Min</th>
-						<th>Fee</th>
+						<th>Min. Order </th>
+						<th>Delivery Fee</th>
 						<th>Add</th>
 					</tr>
 					</thead>
@@ -1016,10 +1014,12 @@
 						    <s:hidden name="delivArealist[%{#outerStat.index}].deliveryCompanyID" id="delivArealist[%{#outerStat.index}].deliveryCompanyID"/>
 						</td>
 						<td align="center">
-							<s:textfield name="delivArealist[%{#outerStat.index}].minPrice" id="delivArealist[%{#outerStat.index}].minPrice" size="6" maxlength="6" />
+							<s:property value="getText('{0,number,$##0.00}',{minPrice})"/>
+							<s:hidden name="delivArealist[%{#outerStat.index}].minPrice" id="delivArealist[%{#outerStat.index}].minPrice" />
 						</td>
 						<td align="center">
-							<s:textfield name="delivArealist[%{#outerStat.index}].deliveryFee" id="delivArealist[%{#outerStat.index}].deliveryFee" size="6" maxlength="6" />
+							<s:property value="getText('{0,number,$##0.00}',{deliveryFee})"/>
+							<s:hidden name="delivArealist[%{#outerStat.index}].deliveryFee" id="delivArealist[%{#outerStat.index}].deliveryFee"/>
 						</td>
 						<td align="center">
 							<input type="button" value="Add" onClick ="javascript:addRow('<s:property value="%{#outerStat.index}"/>');" />

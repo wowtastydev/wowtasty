@@ -95,4 +95,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		  	DeliveryCompanyID = #{deliveryCompanyID}
 
 	</update>
+	
+	<!--Delete-->
+	<delete id = "delete" parameterType="String">
+		DELETE FROM delivery_master
+		WHERE DeliveryCompanyID = #{id} 
+	</delete>
 </mapper>

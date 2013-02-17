@@ -241,7 +241,6 @@
 		category.appendChild(li_cat);
 		
 		var a_cat = document.createElement("A");
-		a_cat.setAttribute("href", "#");
 		a_cat.setAttribute("ondblclick", "javascript:openEditPanel('" + cnt +"');");
 		li_cat.appendChild(a_cat);
 		

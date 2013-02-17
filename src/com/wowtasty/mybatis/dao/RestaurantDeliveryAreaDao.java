@@ -99,14 +99,14 @@ public class RestaurantDeliveryAreaDao {
 	
 	/**
 	 * @param list: Restaurant Delivery area list
+	 * @param id: Restaurant ID
 	 */
-	public void updateAll(List<RestaurantDeliveryAreaVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<RestaurantDeliveryAreaVO> list, String id) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String id = list.get(0).getRestaurantID();
 		try {
 			// Delete all areas
 			sqlSession.delete("restaurantdeliveryarea.delete", id);
@@ -131,5 +131,29 @@ public class RestaurantDeliveryAreaDao {
 	        	throw new RuntimeException(e);
 			}
 		}
+	}
+	
+	/**
+	 * @param id: Delivery Company ID
+	 * @return int: delete count
+	 */
+	public int deleteByDeliveryID(String id) {
+		// autocommit session open
+		SqlSession sqlSession = factory.openSession(true);
+		int returnObject = 0;
+		try {
+			returnObject = sqlSession.insert("restaurantdeliveryarea.deleteByDeliveryID", id);
+		} catch (Exception e) {
+			logger.error("!!!!!RestaurantDeliveryAreaDao deleteByDeliveryID occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!RestaurantDeliveryAreaDao deleteByDeliveryID occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
 	}
 }

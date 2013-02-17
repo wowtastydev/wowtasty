@@ -107,15 +107,15 @@ public class RestaurantMenuOptionDao {
 	/**
 	 * Delete and insert 
 	 * @param List<RestaurantMenuOptionVO>: Menu Option list
+	 * @param restaurantID: Restaurant ID
+	 * @param menuID: Menu ID
 	 */
-	public void updateAll(List<RestaurantMenuOptionVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<RestaurantMenuOptionVO> list, String restaurantID, Integer menuID) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String restaurantID = list.get(0).getRestaurantID();
-		Integer menuID = list.get(0).getMenuID();
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("restaurantID", restaurantID);
 		paraMap.put("menuID", menuID.toString());

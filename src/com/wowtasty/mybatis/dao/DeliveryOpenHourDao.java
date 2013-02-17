@@ -124,4 +124,28 @@ public class DeliveryOpenHourDao {
 		}
 		return returnObject;
 	}
+	
+	/**
+	 * @param id: Delivery Company ID
+	 * @return int: delete count
+	 */
+	public int delete(String id) {
+		// autocommit session open
+		SqlSession sqlSession = factory.openSession(true);
+		int returnObject = 0;
+		try {
+			returnObject = sqlSession.insert("deliveryopenhour.delete", id);
+		} catch (Exception e) {
+			logger.error("!!!!!DeliveryOpenHourDao delete occurs error:" + e);
+        	throw new RuntimeException(e);
+		} finally {
+			try {
+				sqlSession.close();
+			} catch (Exception e) {
+				logger.error("!!!!!DeliveryOpenHourDao delete occurs error:" + e);
+	        	throw new RuntimeException(e);
+			}
+		}
+		return returnObject;
+	}
 }

@@ -348,6 +348,9 @@ public class BillMasterDao {
 	 * @param List<BillDetailVO>: Bill detail list
 	 */
 	public void update(BillMasterVO vo, List<BillDetailVO> list) {
+		if (vo == null || list == null) {
+			return;
+		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
 		try {

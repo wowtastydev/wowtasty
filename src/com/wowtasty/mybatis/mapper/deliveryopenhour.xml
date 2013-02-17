@@ -54,10 +54,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	
 	<!--Delete-->
-	<delete id = "delete" parameterType="deliveryopenhourvo">
+	<delete id = "delete" parameterType="String">
 		DELETE FROM delivery_open_hour
-		WHERE DeliveryCompanyID = #{deliveryCompanyID} 
-		  AND WeekDay = #{weekDay}
-		  AND Seq = #{seq}
+		WHERE DeliveryCompanyID = #{id} 
 	</delete>
 </mapper>

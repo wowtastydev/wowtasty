@@ -34,8 +34,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</insert>
 	
 	<!--Delete-->
-	<delete id = "delete" parameterType="java.lang.String">
+	<delete id = "delete" parameterType="String">
 		DELETE FROM restaurant_delivery_area
 		WHERE RestaurantID = #{id} 
+	</delete>
+	
+	<!--delete By DeliveryCompnayID-->
+	<delete id = "deleteByDeliveryID" parameterType="String">
+		DELETE FROM restaurant_delivery_area
+		WHERE DeliveryCompanyID = #{id} 
 	</delete>
 </mapper>

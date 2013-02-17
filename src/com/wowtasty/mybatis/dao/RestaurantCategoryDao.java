@@ -145,14 +145,14 @@ public class RestaurantCategoryDao {
 	
 	/**
 	 * @param list: Restaurant Category list
+	 * @param id: Restaurant ID
 	 */
-	public void updateAll(List<RestaurantCategoryVO> list) {
-		if (list == null || list.size() == 0) {
+	public void updateAll(List<RestaurantCategoryVO> list, String id) {
+		if (list == null) {
 			return;
 		}
 		SqlSession sqlSession = factory.openSession();
 		int size = list.size();
-		String id = list.get(0).getRestaurantID();
 		try {
 			// Delete all Categorys
 			sqlSession.delete("restaurantcategory.delete", id);

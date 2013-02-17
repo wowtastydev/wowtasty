@@ -27,7 +27,7 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
-		logger.debug("<---intercept start --->");
+		logger.info("<---intercept start --->");
 		Map<String, Object> session = invocation.getInvocationContext().getSession();
 		
         // In case of no login
@@ -65,7 +65,7 @@ public class LoginCheckInterceptor extends AbstractInterceptor {
 			}
 		}
 		
-        logger.debug("<---intercept end --->");
+        logger.info("<---intercept end --->");
         return invocation.invoke();
 	}
 	

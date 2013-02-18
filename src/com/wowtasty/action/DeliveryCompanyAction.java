@@ -25,7 +25,7 @@ import com.wowtasty.mybatis.vo.MemberMasterVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.FileUtil;
 import com.wowtasty.util.SessionUtil;
-import com.wowtasty.util.StringConvertUtil;
+import com.wowtasty.util.StringUtil;
 import com.wowtasty.util.ValidationUtil;
 import com.wowtasty.vo.HourListVO;
 
@@ -43,6 +43,10 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 	private static final String EVERYDAY = "0";
 	private static final Integer FIRST_OPEN_HOUR = 1;
 	private static final Integer SECOND_OPEN_HOUR = 2;
+	private static final String DEFAULT_FIRST_HOUR_FR = "11:00";
+	private static final String DEFAULT_FIRST_HOUR_TO = "15:00";
+	private static final String DEFAULT_SECOND_HOUR_FR = "17:00";
+	private static final String DEFAULT_SECOND_HOUR_TO = "20:00";
 	private static final Integer DAY_SIZE = 7;
 	private static final Float MIN_PRICE = 0.00f;
 	private static final Float MAX_PRICE = 999.99f;
@@ -52,6 +56,7 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 	private static final Integer MASTER = 0;
 	private static final Integer OPENHOUR = 1;
 	private static final Integer AREA = 2;
+	private static final String TIME_PATTERN = "HH:mm";
 	
 	/** Logger */
 	private static Logger logger = Logger.getLogger(DeliveryCompanyAction.class);
@@ -141,6 +146,13 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		DeliveryAreaDao dadao = new DeliveryAreaDao();
 		delivArealist = dadao.selectByID(selectedID);
 		
+		// Set up default value
+		bizHourType = EVERYDAY;
+		bizAll1Start = DEFAULT_FIRST_HOUR_FR;
+		bizAll1End = DEFAULT_FIRST_HOUR_TO;
+		bizAll2Start = DEFAULT_SECOND_HOUR_FR;
+		bizAll2End = DEFAULT_SECOND_HOUR_TO;
+		
 		// set MASTER accordion open
 		active = MASTER;
 
@@ -164,6 +176,7 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		if (hasError) {
 			// Reload Restaurant Information
 			reload(MASTER);
+			active = MASTER;
 			return INPUT;
 		}
 
@@ -244,6 +257,7 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		if (hasError) {
 			// Reload Restaurant Information
 			reload(OPENHOUR);
+			active = OPENHOUR;
 			return INPUT;
 		}
 				
@@ -268,8 +282,8 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 				ovo.setDeliveryCompanyID(id);
 				ovo.setSeq(FIRST_OPEN_HOUR);
 				ovo.setWeekDay(i);
-				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll1Start));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll1End));
+				ovo.setStartTime(StringUtil.convertString2Time(bizAll1Start, TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(bizAll1End, TIME_PATTERN));
 				
 				if (isInsert) {
 					dao.insert(ovo);
@@ -282,8 +296,8 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 				ovo.setDeliveryCompanyID(id);
 				ovo.setSeq(SECOND_OPEN_HOUR);
 				ovo.setWeekDay(i);
-				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll2Start));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll2End));
+				ovo.setStartTime(StringUtil.convertString2Time(bizAll2Start, TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(bizAll2End, TIME_PATTERN));
 				
 				if (isInsert) {
 					dao.insert(ovo);
@@ -308,8 +322,8 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 				ovo.setDeliveryCompanyID(id);
 				ovo.setSeq(FIRST_OPEN_HOUR);
 				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
-				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime1()));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime1()));
+				ovo.setStartTime(StringUtil.convertString2Time(openHourlist.get(i).getStartTime1(), TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(openHourlist.get(i).getEndTime1(), TIME_PATTERN));
 
 				if (isInsert) {
 					// In case insert, Delivery Company ID is ""
@@ -324,8 +338,8 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 				ovo.setDeliveryCompanyID(id);
 				ovo.setSeq(SECOND_OPEN_HOUR);
 				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
-				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime2()));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime2()));
+				ovo.setStartTime(StringUtil.convertString2Time(openHourlist.get(i).getStartTime2(), TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(openHourlist.get(i).getEndTime2(), TIME_PATTERN));
 
 				if (isInsert) {
 					// In case insert, Delivery Company is ""
@@ -359,6 +373,19 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 	public String saveDeliveryArea() throws Exception {
 		logger.info("<---saveDeliveryArea start --->");
 		
+		// Validation Check
+		// Check Delivery Area Validation
+		boolean hasError = false;
+		hasError = checkValidationDelivArea(delivArealist);
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			// Reload Restaurant Information
+			reload(AREA);
+			active = AREA;
+			return INPUT;
+		}
+		
 		// Set new Delivery Area
 		int size = delivArealist.size();
 		List<DeliveryAreaVO> newlist = new ArrayList<DeliveryAreaVO>();
@@ -386,18 +413,6 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 					newlist.add(davo);
 				}
 			}
-		}
-		
-		// Validation Check
-		// Check Delivery Area Validation
-		boolean hasError = false;
-		hasError = checkValidationDelivArea(newlist);
-		
-		// In case of validation error, return INPUT
-		if (hasError) {
-			// Reload Restaurant Information
-			reload(AREA);
-			return INPUT;
 		}
 		
 		// Delete all areas and insert inputted areas
@@ -558,12 +573,12 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 				if (!openHourlist.get(i).isCloseFlag()) {
 					if (ValidationUtil.isBlank(openHourlist.get(i).getStartTime1())) {
 						// Open1(From) is required
-						addFieldError("openHourlist[" + i + "].startTime1", getText("E0001_1", new String[]{"Open1(From)"}));
+						addFieldError("openHourlist[" + i + "].startTime1", getText("E0001_1", new String[]{"Open1(From)[" + (i + 1) + "]"}));
 						hasError = true;
 					}
 					if (ValidationUtil.isBlank(openHourlist.get(i).getEndTime1())) {
 						// Open1(To) is required
-						addFieldError("openHourlist[" + i + "].endTime1", getText("E0001_1", new String[]{"Open1(To)"}));
+						addFieldError("openHourlist[" + i + "].endTime1", getText("E0001_1", new String[]{"Open1(To)[" + (i + 1) + "]"}));
 						hasError = true;
 					}
 				}
@@ -584,46 +599,52 @@ public class DeliveryCompanyAction extends ActionSupport implements Preparable {
 		String tmpStr = "";
 		Float tmpAmt = 0.00f;
 		for (int i = 0; i < size; i++) {
-			// Prefix Validation Check
-			tmpStr = list.get(i).getPostalPrefix();
-			if (ValidationUtil.isBlank(tmpStr)) {
-				// Prefix is required
-				addFieldError("delivArealist[" + i + "].postalPrefix", getText("E0001_1", new String[]{"Postal Code Prefix"}));
-				hasError = true;
-			} else {
-				if (!ValidationUtil.isNumEng(tmpStr)) {
-					// Prefix is NumEng
-					addFieldError("delivArealist[" + i + "].postalPrefix", getText("E0003_1", new String[]{"Postal Code Prefix"}));
+			if (list.get(i) != null) {
+				// Prefix Validation Check
+				tmpStr = list.get(i).getPostalPrefix();
+				if (ValidationUtil.isBlank(tmpStr)) {
+					// Prefix is required
+					addFieldError("delivArealist[" + i + "].postalPrefix", getText("E0001_1", new String[]{"Postal Code Prefix[" + (i + 1) + "]"}));
+					hasError = true;
+				} else {
+					if (!ValidationUtil.isPostalCodePrefix(tmpStr)) {
+						// Prefix is prefix postal code
+						addFieldError("delivArealist[" + i + "].postalPrefix", getText("E0003_1", new String[]{"Postal Code Prefix[" + (i + 1) + "]"}));
+						hasError = true;
+					}
+				}
+				
+				// Min Price Validation Check
+				tmpAmt = list.get(i).getMinPrice();
+				if (tmpAmt != null) {
+					if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+						// 0 < Min Price < 999.99
+						addFieldError("delivArealist[" + i + "].minPrice", getText("E0008", new String[]{"Min. Price[" + (i + 1) + "]", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+						hasError = true;
+					}
+				} else {
+					// Min Price is required
+					addFieldError("delivArealist[" + i + "].minPrice", getText("E0001_1", new String[]{"Min. Price[" + (i + 1) + "]"}));
 					hasError = true;
 				}
-			}
-			
-			// Min Price Validation Check
-			tmpAmt = list.get(i).getMinPrice();
-			if (tmpAmt != null) {
-				if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
-					// 0 < Min Price < 999.99
-					addFieldError("delivArealist[" + i + "].minPrice", getText("E0008", new String[]{"Min. Price", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+				
+				// Delivery Fee Validation Check
+				tmpAmt = list.get(i).getDeliveryFee();
+				if (tmpAmt != null) {
+					if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+						// 0 < Delivery Fee < 999.99
+						addFieldError("delivArealist[" + i + "].deliveryFee", getText("E0008", new String[]{"Delivery Fee[" + (i + 1) + "]", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+						hasError = true;
+					}
+				} else {
+					// Delivery Fee is required
+					addFieldError("delivArealist[" + i + "].deliveryFee", getText("E0001_1", new String[]{"Delivery Fee[" + (i + 1) + "]"}));
 					hasError = true;
 				}
 			} else {
-				// Min Price is required
-				addFieldError("delivArealist[" + i + "].minPrice", getText("E0001_1", new String[]{"Min. Price"}));
-				hasError = true;
-			}
-			
-			// Delivery Fee Validation Check
-			tmpAmt = list.get(i).getDeliveryFee();
-			if (tmpAmt != null) {
-				if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
-					// 0 < Delivery Fee < 999.99
-					addFieldError("delivArealist[" + i + "].deliveryFee", getText("E0008", new String[]{"Delivery Fee", MIN_PRICE.toString(), MAX_PRICE.toString()}));
-					hasError = true;
-				}
-			} else {
-				// Delivery Fee is required
-				addFieldError("delivArealist[" + i + "].deliveryFee", getText("E0001_1", new String[]{"Delivery Fee"}));
-				hasError = true;
+				// Delete removed row
+				list.remove(i--);
+				size--;
 			}
 		}
 		return hasError;

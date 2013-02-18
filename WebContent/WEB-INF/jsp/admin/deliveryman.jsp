@@ -13,8 +13,10 @@
 <!--
 	// Save deliveryman info
 	function save(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
     // Initialize menu data to edit
@@ -53,7 +55,6 @@
 		document.getElementById("province").value = "";
 		document.getElementById("postalCode").value = "";
 		document.getElementById("naFlag").value = "0";
-		
 	}
 	
 	// Delete deliveryman info
@@ -64,9 +65,11 @@
 			$( "#errorMessagePanel" ).dialog( "open" );
 			return;
 		}
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "delDeliveryMan";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to delete it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "delDeliveryMan";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 // -->

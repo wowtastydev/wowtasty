@@ -25,7 +25,7 @@ import com.wowtasty.mybatis.vo.OrderAdjustmentVO;
 import com.wowtasty.mybatis.vo.RestaurantMasterVO;
 import com.wowtasty.mybatis.vo.WowMasterVO;
 import com.wowtasty.util.Constants;
-import com.wowtasty.util.StringConvertUtil;
+import com.wowtasty.util.StringUtil;
 import com.wowtasty.util.ValidationUtil;
 import com.wowtasty.vo.BalanceListConditionVO;
 import com.wowtasty.vo.BalanceListVO;
@@ -241,7 +241,7 @@ public class BalanceListAction extends ActionSupport implements Preparable {
 		oavo.setAdjustItem(adjustItem);
 		oavo.setPrice(Float.parseFloat(price));
 		sb.append(registerDate).append(" ").append(registerTime);
-		oavo.setRegisterTime(StringConvertUtil.convertString2date(sb.toString(), TIMESTAMP_PATTERN));
+		oavo.setRegisterTime(StringUtil.convertString2Timestamp(sb.toString(), TIMESTAMP_PATTERN));
 		oavo.setRestaurantID(selectedRestaurantID);
 		oavo.setUpdateID(uservo.getMemberID());
 		

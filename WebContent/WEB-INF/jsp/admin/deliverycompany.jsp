@@ -19,8 +19,10 @@
 		
 	// Save Delivery company
 	function save(form){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		form.submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			form.submit();
+		}
 	}
 	
 	//Close business hour
@@ -39,7 +41,6 @@
 		}
 		
 	}
-	
 	
 	// Area add row
 	function addRowBlank() {
@@ -306,26 +307,38 @@
 					</s:form>
 					</div>
 					<h3>Business Hour</h3>
-					<s:form theme="css_xhtml" name="frmBizHour" id="frmBizHour" action="saveDeliveryCompanyBizHour">
+					<s:form theme="simple" name="frmBizHour" id="frmBizHour" action="saveDeliveryCompanyBizHour">
 				    <s:hidden name="vo.deliveryCompanyID" />
 				    <div>
 				    	<div style="padding-bottom:10px;">
-				    	<input type="radio" name="bizHourType" id="bizHourType" value="0"> Every day
+				    	<s:if test='%{"0".equals(bizHourType)}'>
+				    		<input type="radio" name="bizHourType" id="bizHourType" value="0" checked="true">
+				    	</s:if>
+				    	<s:else>
+				    		<input type="radio" name="bizHourType" id="bizHourType" value="0">
+				    	</s:else>
+				    	&nbsp;Every day
 				        <table class="tableborder" width="400">
 							<tr>
 								<th colspan=2>Open1(From ~ To) </th>
 								<th colspan=2>Open2(From ~ To) </th>
 							</tr>
 							<tr>
-								<td align="center"><s:textfield name="bizAll1Start" id="bizAll1Start" value="11:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-								<td align="center"><s:textfield name="bizAll1End" id="bizAll1End" value="15:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-								<td align="center"><s:textfield name="bizAll2Start" id="bizAll2Start" value="17:00" size="5" maxlength="5" cssClass="timepicker"/></td>
-								<td align="center"><s:textfield name="bizAll2End" id="bizAll2End" value="20:00" size="5" maxlength="5" cssClass="timepicker"/></td>
+								<td align="center"><s:textfield name="bizAll1Start" id="bizAll1Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+								<td align="center"><s:textfield name="bizAll1End" id="bizAll1End" size="5" maxlength="5" cssClass="timepicker"/></td>
+								<td align="center"><s:textfield name="bizAll2Start" id="bizAll2Start" size="5" maxlength="5" cssClass="timepicker"/></td>
+								<td align="center"><s:textfield name="bizAll2End" id="bizAll2End" size="5" maxlength="5" cssClass="timepicker"/></td>
 							</tr>
 						</table>
 						</div>
 						<div>
-						<input type="radio" name="bizHourType" id="bizHourType" value="1"  checked="true"> Set by day
+						<s:if test='%{"0".equals(bizHourType)}'>
+				    		<input type="radio" name="bizHourType" id="bizHourType" value="1">
+				    	</s:if>
+				    	<s:else>
+				    		<input type="radio" name="bizHourType" id="bizHourType" value="1" checked="true">
+				    	</s:else>
+						&nbsp;Set by day
 				        <table class="tableborder" width="500">
 							<tr>
 								<th>Day </th>
@@ -405,11 +418,10 @@
 										<input type="button" value="Add Row" onClick ="javascript:addRowBlank();"/>&nbsp;
 										<input type="button" value="Del Row" onClick ="javascript:delRow();"/>
 									</td>
+									<td>
+										<s:select name="cityMap" id="cityMap" list ="cityMapList" listKey="code" listValue="shortName" onchange="javascript:changeMap(this);"/>
+									</td>
 								</tr>
-							</table>
-					    
-							<div>
-							<table>
 								<tr><td valign="top">
 									<table class="tableborder" id="areaTbl" width="auto">
 										<thead>
@@ -427,8 +439,7 @@
 												<s:checkbox name="chk" id="delivArealist[%{#outerStat.index}].chk"/>
 											</td>
 											<td align="center">
-												<s:property value="postalPrefix"/>
-												<s:hidden name="delivArealist[%{#outerStat.index}].postalPrefix" id="delivArealist[%{#outerStat.index}].postalPrefix"/>
+												<s:textfield name="delivArealist[%{#outerStat.index}].postalPrefix" id="delivArealist[%{#outerStat.index}].postalPrefix" size="3" maxlength="3" />
 												<s:hidden name="delivArealist[%{#outerStat.index}].deliveryCompanyID"/>
 												<s:hidden name="delivArealist[%{#outerStat.index}].seq"/>
 											</td>
@@ -448,18 +459,13 @@
 										<table width="380">
 											<tr>
 												<td>
-													<s:select name="cityMap" id="cityMap" list ="cityMapList" listKey="code" listValue="shortName" onchange="javascript:changeMap(this);"/>
-												</td>
-											</tr>
-											<tr>
-												<td>
 													<span id="map_info"><img src="../images/map/010011.gif"></span>
 												</td>
 											</tr>
 										</table>
-									</td></tr>
-								</table>
-							</div>
+									</td>
+								</tr>
+							</table>
 						</div>
 						<table width="100%">
 							<tr>
@@ -475,17 +481,6 @@
 				    </div>
 				    </s:form>
 				</div>
-				<table width="100%">
-					<tr>
-						<td><hr></td>
-					</tr>
-					<tr>
-						<td>
-							<input type="button" value="List" onClick="javascript:goPage('A203');" />
-						</td>
-					</tr>
-				</table>
-					
 			</div>
 		</div>
 	</div>

@@ -906,7 +906,7 @@
 												    <s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryCompanyID"/>
 												    <s:hidden name="restDelivArealist[%{#outerStat.index}].deliveryCompanyType"/>
 												</td>
-												<td align="center">
+												<td align="left">
 													<s:if test='%{"1".equals(deliveryCompanyType)}'>
 														$<s:textfield name="restDelivArealist[%{#outerStat.index}].minPrice" id="restDelivArealist[%{#outerStat.index}].minPrice" size="6" maxlength="6" />
 													</s:if>
@@ -915,7 +915,7 @@
 														<s:hidden name="restDelivArealist[%{#outerStat.index}].minPrice" id="restDelivArealist[%{#outerStat.index}].minPrice" />
 													</s:else>
 												</td>
-												<td align="center">
+												<td align="left">
 													<s:if test='%{"1".equals(deliveryCompanyType)}'>
 														$<s:textfield name="restDelivArealist[%{#outerStat.index}].deliveryFee" id="restDelivArealist[%{#outerStat.index}].deliveryFee" size="6" maxlength="6" />
 													</s:if>

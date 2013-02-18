@@ -13,15 +13,19 @@
 <!--	
 	//Save WowMaster
 	function save(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	//Save TaxList
 	function saveTaxList(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveTaxList";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveTaxList";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 // -->

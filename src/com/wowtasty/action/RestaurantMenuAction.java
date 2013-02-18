@@ -75,7 +75,10 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 	
 	/** Menu Data*/
 	private RestaurantMenuVO vo = new RestaurantMenuVO();
+	// the category list on category tree
 	private List<RestaurantCategoryVO> categoryList = new ArrayList<RestaurantCategoryVO>();
+	// the category list in the menu category dropdown
+	private List<RestaurantCategoryVO> menuCategoryList = new ArrayList<RestaurantCategoryVO>();
 	private List<RestaurantMenuVO> menuList = new ArrayList<RestaurantMenuVO>();
 	private List<RestaurantMenuOptionVO> optionList = new ArrayList<RestaurantMenuOptionVO>();
 	private List<RestaurantMenuOptionVO> menuOptionList = new ArrayList<RestaurantMenuOptionVO>();
@@ -324,7 +327,7 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 		if ("".equals(selectedID)) {
 			return INPUT;
 		}
-	
+		
 		String[] categorySortArray = categorySortStr.split(DELIMITER);
 		String[] menuSortArray = menuSortStr.split(DELIMITER);
 		String id = "";
@@ -338,6 +341,18 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 				// Set category sort
 				categoryList.get(Integer.parseInt(id)).setSort(categorySort++);
 			}				
+		}
+		
+		// Check Category Information Validation
+		boolean hasError = false;
+		hasError = checkValidationCategory(categoryList);
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			// load category list 
+			RestaurantCategoryDao rcdao = new RestaurantCategoryDao();
+			menuCategoryList = rcdao.selectByRestaurant(selectedID);
+			return INPUT;
 		}
 		
 		// Set menu sort
@@ -390,6 +405,19 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 			return INPUT;
 		}
 		
+		// Check Category Information Validation
+		boolean hasError = false;
+		hasError = checkValidationOption(menuOptionList);
+		
+		// In case of validation error, return INPUT
+		if (hasError) {
+			// load category list 
+			RestaurantCategoryDao rcdao = new RestaurantCategoryDao();
+			menuCategoryList = rcdao.selectByRestaurant(selectedID);
+			active = 1;
+			return INPUT;
+		}
+		
 		// Save Options
 		int size = menuOptionList.size();
 		RestaurantMenuOptionDao rmodao = new RestaurantMenuOptionDao();
@@ -408,17 +436,16 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 			}
 		}
 		
-		// Delete all and inser all
+		// Delete all and insert all
 		rmodao.updateAll(menuOptionList, selectedID, selectedMenuID);
-		
-		// reload menuoption list
-		//menuOptionList = rmodao.selectByID(selectedID, selectedMenuID);
 		
 		// load category/menu/option
 		loadList();
 		
 		// set Option accordion open
 		active = 1;
+		
+		addActionMessage("Restaurant menu options have been updated successfully");
 		
 		logger.info("<---saveMenuOption end --->");
 		return SUCCESS;
@@ -497,6 +524,69 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 	}
 	
 	/**
+	 * Validation check(Category information)
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidationCategory(List<RestaurantCategoryVO> list) {
+		boolean hasError = false;
+		int size = list.size();
+		for (int i = 0; i < size; i++) {
+			if (list.get(i) != null) {
+				// Category Name Validation Check
+				if (ValidationUtil.isBlank(list.get(i).getName())) {
+					// Category Name is required
+					addFieldError("categoryName[" + i + "]", getText("E0001_1", new String[]{"Category Name[" + (i + 1) + "]"}));
+					hasError = true;
+				}					
+			} else {
+				// Delete removed row
+				list.remove(i--);
+				size--;
+			}
+		}
+		return hasError;
+	}
+	
+	/**
+	 * Validation check(Menu Option information)
+	 * @return true : validation error, false: no error
+	 */	
+	private boolean checkValidationOption(List<RestaurantMenuOptionVO> list) {
+		boolean hasError = false;
+		int size = list.size();
+		Float tmpAmt = 0.00f;
+		for (int i = 0; i < size; i++) {
+			if (list.get(i) != null) {
+				// Menu Option Name Validation Check
+				if (ValidationUtil.isBlank(list.get(i).getName())) {
+					// Option Name is required
+					addFieldError("menuOptionList[" + i + "].name", getText("E0001_1", new String[]{"Option Name[" + (i + 1) + "]"}));
+					hasError = true;
+				}
+				
+				// Extra Charge Validation Check
+				tmpAmt = list.get(i).getExtraCharge();
+				if (tmpAmt != null) {
+					if (tmpAmt < MIN_PRICE || tmpAmt > MAX_PRICE ) {
+						// 0 < Extra Charge < 999.99
+						addFieldError("menuOptionList[" + i + "].extraCharge", getText("E0008", new String[]{"Option Extra Charge[" + (i + 1) + "]", MIN_PRICE.toString(), MAX_PRICE.toString()}));
+						hasError = true;
+					}
+				} else {
+					// Extra Charge is required
+					addFieldError("menuOptionList[" + i + "].extraCharge", getText("E0001_1", new String[]{"Option Extra Charge[" + (i + 1) + "]"}));
+					hasError = true;
+				}
+			} else {
+				// Delete removed row
+				list.remove(i--);
+				size--;
+			}
+		}
+		return hasError;
+	}
+	
+	/**
 	 * File upload
 	 */	
 	private void upload() {
@@ -542,6 +632,16 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 		// select category list 
 		RestaurantCategoryDao rcdao = new RestaurantCategoryDao();
 		categoryList = rcdao.selectByRestaurant(selectedID);
+		// Copy category list
+		RestaurantCategoryVO copyVO = null;
+		for (RestaurantCategoryVO vo : categoryList) {
+			copyVO = new RestaurantCategoryVO();
+			copyVO.setCategoryID(vo.getCategoryID());
+			copyVO.setSort(vo.getSort());
+			copyVO.setName(vo.getName());
+			copyVO.setRestaurantID(vo.getRestaurantID());
+			menuCategoryList.add(copyVO);
+		}
 		
 		// select menu list 
 		RestaurantMenuDao rmdao = new RestaurantMenuDao();
@@ -801,5 +901,13 @@ public class RestaurantMenuAction extends ActionSupport implements Preparable {
 	 */
 	public Integer getActive() {
 		return active;
+	}
+
+	public List<RestaurantCategoryVO> getMenuCategoryList() {
+		return menuCategoryList;
+	}
+
+	public void setMenuCategoryList(List<RestaurantCategoryVO> menuCategoryList) {
+		this.menuCategoryList = menuCategoryList;
 	}
 }

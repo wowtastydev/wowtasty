@@ -195,13 +195,13 @@ public class DeliveryManAction extends ActionSupport implements Preparable {
 	
 		// Delivery Man First Name Validation Check
 		if (ValidationUtil.isBlank(vo.getFirstName())) {
-			addFieldError("vo.firstName", getText("E0001_1", new String[]{"DeliveryMan first Name"}));
+			addFieldError("vo.firstName", getText("E0001_1", new String[]{"First Name"}));
 			hasError = true;
 		}
 		
 		// Delivery Man Last Name Validation Check
 		if (ValidationUtil.isBlank(vo.getLastName())) {
-			addFieldError("vo.lastName", getText("E0001_1", new String[]{"DeliveryMan last Name"}));
+			addFieldError("vo.lastName", getText("E0001_1", new String[]{"Last Name"}));
 			hasError = true;
 		}
 		

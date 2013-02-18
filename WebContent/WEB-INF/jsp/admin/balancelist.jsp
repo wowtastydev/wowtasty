@@ -21,9 +21,11 @@
 	}
 	// Add adjustment
 	function add(){
-		document.getElementById("frm").action = "addAdjustment";
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to add adjustment data?")) {
+			document.getElementById("frm").action = "addAdjustment";
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// delete adjustment

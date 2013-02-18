@@ -45,6 +45,7 @@ public class FileUtil {
 	public static final String RESTAURANT_DIR = "restaurant/";
 	public static final String MENU_DIR = "menu/";
 	public static final String DELIVERY_DIR = "delivery/";
+	public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
 	/** config.properties */	
 	private static Properties config = (Properties)SessionUtil.getInstance().getApplicationAttribute(Constants.KEY_SESSION_CONFIG_PROPERTIES);
@@ -402,9 +403,9 @@ public class FileUtil {
 				// Add Output data
 				bw.write(list.get(i).getOrderID());
 				bw.write("\t");
-				bw.write(StringConvertUtil.convertDate2String(list.get(i).getOrderTime()));
+				bw.write(StringUtil.convertTimestamp2String(list.get(i).getOrderTime(), TIMESTAMP_PATTERN));
 				bw.write("\t");
-				bw.write(StringConvertUtil.convertDate2String(list.get(i).getDeliveryTime()));
+				bw.write(StringUtil.convertTimestamp2String(list.get(i).getDeliveryTime(), TIMESTAMP_PATTERN));
 				bw.write("\t");
 				bw.write(CodeUtil.getCdName(codeMap, Constants.KEY_CD_PAYMENT_TYPE, list.get(i).getPaymentType()));
 				bw.write("\t");
@@ -599,9 +600,9 @@ public class FileUtil {
 				bw.write("\t");
 				bw.write(list.get(i).getRestaurantName());
 				bw.write("\t");
-				bw.write(StringConvertUtil.convertDate2String(list.get(i).getOrderTime()));
+				bw.write(StringUtil.convertTimestamp2String(list.get(i).getOrderTime(), TIMESTAMP_PATTERN));
 				bw.write("\t");
-				bw.write(StringConvertUtil.convertDate2String(list.get(i).getDeliveryTime()));
+				bw.write(StringUtil.convertTimestamp2String(list.get(i).getDeliveryTime(), TIMESTAMP_PATTERN));
 				bw.write("\t");
 				bw.write(list.get(i).getDeliveryDay());
 				bw.write("\t");

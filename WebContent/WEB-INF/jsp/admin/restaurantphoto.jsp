@@ -21,15 +21,19 @@
 <script>
 <!--	
 	function add(frm) {
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		frm.submit();
+		if(confirm("Do you want to add photos?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			frm.submit();
+		}
 	}
 	
 	function edit(frm) {
-		document.getElementById("sortStr").value = $("#photo").sortable('toArray').toString();
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		frm.action = "editRestaurantPhoto";
-		frm.submit();
+		if(confirm("Do you want to edit photos?")) {
+			document.getElementById("sortStr").value = $("#photo").sortable('toArray').toString();
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			frm.action = "editRestaurantPhoto";
+			frm.submit();
+		}
 	}
 	
 	// Delete Image <li> from Photo list 
@@ -117,6 +121,7 @@
 					<div id="Photo">
 						<h3><font color="#555555">Menu Photo</font></h3>
 						<s:form theme="simple" name="frm" id="frm" action="insertRestaurantPhoto" method="POST" enctype="multipart/form-data">
+						<s:token name="clientToken"></s:token>
 						<s:hidden name="selectedID" />
 						<s:hidden name="restVO.name"/>
 						<s:hidden name="sortStr" id="sortStr" />
@@ -140,7 +145,7 @@
 										    <li class="ui-state-default" id ="<s:property value='%{seq}'/>">
 										    <div class="image-thumb">
 											    <a class="fancybox" rel="group" href="../pictures/restaurant/<s:property value='%{fileName}'/>" title="<s:property value='%{fileName}'/>">
-												<img src="<s:property value='#contextUrl'/>/pictures/restaurant/thumb_<s:property value='%{fileName}'/>">
+												<img src="../pictures/restaurant/thumb_<s:property value='%{fileName}'/>">
 												</a>
 												<a href="#" onClick="javascript:delImage('<s:property value="%{seq}"/>');" class="image-fav" title="Delete Image"></a>
 											</div>

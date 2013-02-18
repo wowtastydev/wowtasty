@@ -32,7 +32,7 @@ import com.wowtasty.util.CodeUtil;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.FileUtil;
 import com.wowtasty.util.SessionUtil;
-import com.wowtasty.util.StringConvertUtil;
+import com.wowtasty.util.StringUtil;
 import com.wowtasty.vo.BillingOrderListConditionVO;
 import com.wowtasty.vo.BillingOrderListVO;
 
@@ -188,7 +188,7 @@ public class BillingAction extends ActionSupport implements Preparable {
 		// Add city name, province name, postal code
 		sb.append(CodeUtil.getCdName(codeMap, Constants.KEY_CD_CITY, billVO.getBillCity()));
 		sb.append(" ").append(CodeUtil.getCdShortName(codeMap, Constants.KEY_CD_PROVINCE, billVO.getBillProvince()));
-		sb.append(" ").append(StringConvertUtil.setPostalCode(billVO.getBillPostalCode()));
+		sb.append(" ").append(StringUtil.setPostalCode(billVO.getBillPostalCode()));
 		pdfParameters.put("BillAddress2", sb.toString());
 		
 		if (Constants.CODE_BILL_COM_TYPE_RESTAURANT.equals(billVO.getCompanyType())) {
@@ -202,9 +202,9 @@ public class BillingAction extends ActionSupport implements Preparable {
 					billVO.getCommissionAmount() + billVO.getCashCommissionAmount()
 				  + billVO.getDeliveryAmount() + billVO.getTipAmount() + billVO.getAdjustmentAmount());
 		}
-		pdfParameters.put("IssuedDate", StringConvertUtil.convertDay2String(billVO.getIssueDate(), DAY_PATTERN_MMM));
-		pdfParameters.put("BillFrom", StringConvertUtil.convertDay2String(billVO.getBillFrom(), DAY_PATTERN_MMM));
-		pdfParameters.put("BillTo", StringConvertUtil.convertDay2String(billVO.getBillTo(), DAY_PATTERN_MMM));
+		pdfParameters.put("IssuedDate", StringUtil.convertDate2String(billVO.getIssueDate(), DAY_PATTERN_MMM));
+		pdfParameters.put("BillFrom", StringUtil.convertDate2String(billVO.getBillFrom(), DAY_PATTERN_MMM));
+		pdfParameters.put("BillTo", StringUtil.convertDate2String(billVO.getBillTo(), DAY_PATTERN_MMM));
 		pdfParameters.put("Food", billVO.getFoodAmount());
 		pdfParameters.put("CashCommission", billVO.getCashCommissionAmount());
 		pdfParameters.put("Commission", billVO.getCommissionAmount());
@@ -217,7 +217,7 @@ public class BillingAction extends ActionSupport implements Preparable {
 			pdfParameters.put("LastPaymentAmount", 
 					lastVO.getFoodAmount() + lastVO.getCommissionAmount() + lastVO.getCashCommissionAmount()
 				  + lastVO.getDeliveryAmount() + lastVO.getTipAmount() + lastVO.getAdjustmentAmount());
-			pdfParameters.put("LastIssuedDate", StringConvertUtil.convertDay2String(lastVO.getIssueDate(), DAY_PATTERN_MMM));
+			pdfParameters.put("LastIssuedDate", StringUtil.convertDate2String(lastVO.getIssueDate(), DAY_PATTERN_MMM));
 		} else {
 			// There is no last payment data
 			pdfParameters.put("LastPaymentAmount", 0.0);

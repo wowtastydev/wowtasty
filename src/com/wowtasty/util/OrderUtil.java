@@ -18,6 +18,9 @@ import com.wowtasty.mybatis.vo.RestaurantMasterVO;
  */
 public class OrderUtil {
 	
+	/** Constants*/
+	public static final String TIMESTAMP_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	
 	/**
 	 * Make email context about order detail
 	 * @param orderID : order ID
@@ -43,8 +46,8 @@ public class OrderUtil {
 		sb.append("<tr><td colspan='2' valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>[Order Basic Information]</font></strong></td></tr>");
 		sb.append("<tr><td width='180' bgcolor='#FFFFFF'>Order ID : </td><td bgcolor='#FFFFFF'>").append(master.getOrderID()).append("</td></tr>");
 		sb.append("<tr><td bgcolor='#FFFFFF'>Order Member Telephone : </td><td bgcolor='#FFFFFF'>").append(master.getOrderMemberTelephone()).append("</td></tr>");
-		sb.append("<tr><td bgcolor='#FFFFFF'>Order Time : </td><td bgcolor='#FFFFFF'>").append(StringConvertUtil.convertDate2String(master.getOrderTime())).append("</td></tr>");
-		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery Time : </td><td bgcolor='#FFFFFF'>").append(StringConvertUtil.convertDate2String(master.getDeliveryTime())).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Order Time : </td><td bgcolor='#FFFFFF'>").append(StringUtil.convertTimestamp2String(master.getOrderTime(), TIMESTAMP_PATTERN)).append("</td></tr>");
+		sb.append("<tr><td bgcolor='#FFFFFF'>Delivery Time : </td><td bgcolor='#FFFFFF'>").append(StringUtil.convertTimestamp2String(master.getDeliveryTime(), TIMESTAMP_PATTERN)).append("</td></tr>");
 		sb.append("<tr><td colspan='2' valign='bottom' bgcolor='#FF7800'><strong><font color='#FFFFFF'>[Order Detail Information]</font></strong></td></tr>");
 		sb.append("<tr><td bgcolor='#FFFFFF'>Restaurant Name: </td><td bgcolor='#FFFFFF'>").append(restaurant.getRestaurantName()).append("</td></tr>");
 		sb.append("<tr><td bgcolor='#FFFFFF'>Restaurant Address: </td><td bgcolor='#FFFFFF'>").append(restaurantMaster.getSuite()).append(" ").append(restaurantMaster.getAddress())

@@ -21,22 +21,26 @@
 <!--	
 	// Save menu
 	function save(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Copy menu
 	function copy(){
-		var menuid = document.getElementById("selectedMenuID").value;
-		if (menuid == 0) {
-			// Show Error Message
-			errorMessage.innerHTML = "Please save Menu Information first or select a menu from the menu category.";
-			$( "#errorMessagePanel" ).dialog( "open" );
-			return;
+		if(confirm("Do you want to copy it?")) {
+			var menuid = document.getElementById("selectedMenuID").value;
+			if (menuid == 0) {
+				// Show Error Message
+				errorMessage.innerHTML = "Please save Menu Information first or select a menu from the menu category.";
+				$( "#errorMessagePanel" ).dialog( "open" );
+				return;
+			}
+			document.getElementById("frm").action = "copyMenu";
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
 		}
-		document.getElementById("frm").action = "copyMenu";
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
 	}
 	
 	// Delete menu
@@ -57,51 +61,48 @@
 	
 	// Save changes of category and menu sort 
 	function saveTree() {
-		document.getElementById("categorySortStr").value = $("#categoryTree").sortable('toArray').toString();
-		var categoryArray = $("#categoryTree").sortable('toArray');
-		var menuArray;
-		var arrayStr;
-		var isFirst = true;
-
-		for (var i=0; i<categoryArray.length; i++) {
-			menuArray = $("#menuTree"+categoryArray[i]).sortable('toArray');
-			if (menuArray.length>0) {
-				if (isFirst) {
-					arrayStr = menuArray.toString();
-					isFirst = false;
-				} else {
-					arrayStr = arrayStr + "," + menuArray.toString();
+		if(confirm("Do you want to save it?")) {
+			document.getElementById("categorySortStr").value = $("#categoryTree").sortable('toArray').toString();
+			var categoryArray = $("#categoryTree").sortable('toArray');
+			var menuArray;
+			var arrayStr;
+			var isFirst = true;
+	
+			for (var i=0; i<categoryArray.length; i++) {
+				menuArray = $("#menuTree"+categoryArray[i]).sortable('toArray');
+				if (menuArray.length>0) {
+					if (isFirst) {
+						arrayStr = menuArray.toString();
+						isFirst = false;
+					} else {
+						arrayStr = arrayStr + "," + menuArray.toString();
+					}
 				}
 			}
+	
+			document.getElementById("menuSortStr").value = arrayStr;
+	
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveMenuTree";
+			document.getElementById("frm").submit();
 		}
-
-		document.getElementById("menuSortStr").value = arrayStr;
-
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveMenuTree";
-		document.getElementById("frm").submit();
 	}
 	
 	// Save options
 	function saveOption(){
-		var menuid = document.getElementById("selectedMenuID").value;
-		if (menuid == 0) {
-			// Show Error Message
-			errorMessage.innerHTML = "Please save Menu Information first or select a menu from the menu category.";
-			$( "#errorMessagePanel" ).dialog( "open" );
-			return;
+		if(confirm("Do you want to save it?")) {
+			var menuid = document.getElementById("selectedMenuID").value;
+			if (menuid == 0) {
+				// Show Error Message
+				errorMessage.innerHTML = "Please save Menu Information first or select a menu from the menu category.";
+				$( "#errorMessagePanel" ).dialog( "open" );
+				return;
+			}
+			
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveMenuOption";
+			document.getElementById("frm").submit();
 		}
-		
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveMenuOption";
-		document.getElementById("frm").submit();
-	}
-	
-
-	
-	function search(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
 	}
 	
 	// Instruction textcounter
@@ -690,7 +691,7 @@
 													<s:iterator value="menuList" id="menuList" status="outerStat2">
 														<s:if test='%{#catID == categoryID}'>
 															<li id ="<s:property value='%{#outerStat2.index}'/>">
-																<a href="javascript:initEdit('<s:property value="%{#outerStat2.index}"/>');"><s:property value='%{name}'/>
+																<a href="javascript:initEdit('<s:property value="%{#outerStat2.index}"/>');"><s:property value="@com.wowtasty.util.StringUtil@substringLimit(name,35)"/>
 																<s:hidden name ="menuList[%{#outerStat2.index}].restaurantID" id ="menuList[%{#outerStat2.index}].restaurantID" />
 																<s:hidden name ="menuList[%{#outerStat2.index}].menuID" id ="menuList[%{#outerStat2.index}].menuID" />
 																<s:hidden name ="menuList[%{#outerStat2.index}].categoryID" id ="menuList[%{#outerStat2.index}].categoryID" />
@@ -749,7 +750,7 @@
 													<tr>
 														<th width="150">Category<FONT color=red>*</FONT>:</th>
 														<td>
-															<s:select name="vo.categoryID" id="categoryID" list="categoryList" listKey="categoryID" listValue="name" headerKey="0" headerValue="" />
+															<s:select name="vo.categoryID" id="categoryID" list="menuCategoryList" listKey="categoryID" listValue="name" headerKey="0" headerValue="" />
 															<s:hidden name="vo.restaurantID" id="restaurantID"/>
 															<s:hidden name="vo.naFlag" id="naFlag"/>
 														</td>

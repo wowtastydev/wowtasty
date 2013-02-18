@@ -11,15 +11,19 @@
 <!--	
 	// Save Member master
 	function save(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Save Member restaurant
 	function saveRest(){
-		$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
-		document.getElementById("frm").action = "saveMemberRestaurant";
-		document.getElementById("frm").submit();
+		if(confirm("Do you want to save it?")) {
+			$.blockUI({ message: '<h4><img src="../images/admin/busy.gif" /> Please wait...</h4>' });
+			document.getElementById("frm").action = "saveMemberRestaurant";
+			document.getElementById("frm").submit();
+		}
 	}
 	
 	// Password Validation Check
@@ -31,7 +35,6 @@
 			// Password is invalid
 			password_info.innerHTML = '<image src="../images/admin/x.png">';
 		}
-	
 	}
 
 	// Passwords Matching Check

@@ -31,7 +31,7 @@ import com.wowtasty.mybatis.vo.RestaurantOpenHourVO;
 import com.wowtasty.util.Constants;
 import com.wowtasty.util.FileUtil;
 import com.wowtasty.util.SessionUtil;
-import com.wowtasty.util.StringConvertUtil;
+import com.wowtasty.util.StringUtil;
 import com.wowtasty.util.ValidationUtil;
 import com.wowtasty.vo.DeliveryAreaListConditionVO;
 import com.wowtasty.vo.HourListVO;
@@ -67,6 +67,7 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 	private static final Integer DELIVHOUR = 2;
 	private static final Integer AREA = 3;
 	private static final String DELIMITER = ",";
+	private static final String TIME_PATTERN = "HH:mm";
 	
 	/** Logger */
 	private static Logger logger = Logger.getLogger(RestaurantInfoAction.class);
@@ -358,8 +359,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 				ovo.setRestaurantID(id);
 				ovo.setSeq(FIRST_OPEN_HOUR);
 				ovo.setWeekDay(i);
-				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll1Start));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll1End));
+				ovo.setStartTime(StringUtil.convertString2Time(bizAll1Start, TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(bizAll1End, TIME_PATTERN));
 				
 				if (isInsert) {
 					dao.insert(ovo);
@@ -372,8 +373,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 				ovo.setRestaurantID(id);
 				ovo.setSeq(SECOND_OPEN_HOUR);
 				ovo.setWeekDay(i);
-				ovo.setStartTime(StringConvertUtil.convertString2Time(bizAll2Start));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(bizAll2End));
+				ovo.setStartTime(StringUtil.convertString2Time(bizAll2Start, TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(bizAll2End, TIME_PATTERN));
 				
 				if (isInsert) {
 					dao.insert(ovo);
@@ -398,8 +399,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 				ovo.setRestaurantID(id);
 				ovo.setSeq(FIRST_OPEN_HOUR);
 				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
-				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime1()));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime1()));
+				ovo.setStartTime(StringUtil.convertString2Time(openHourlist.get(i).getStartTime1(), TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(openHourlist.get(i).getEndTime1(), TIME_PATTERN));
 
 				if (isInsert) {
 					// In case insert, Restaurant ID is ""
@@ -414,8 +415,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 				ovo.setRestaurantID(id);
 				ovo.setSeq(SECOND_OPEN_HOUR);
 				ovo.setWeekDay(openHourlist.get(i).getWeekDay());
-				ovo.setStartTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getStartTime2()));
-				ovo.setEndTime(StringConvertUtil.convertString2Time(openHourlist.get(i).getEndTime2()));
+				ovo.setStartTime(StringUtil.convertString2Time(openHourlist.get(i).getStartTime2(), TIME_PATTERN));
+				ovo.setEndTime(StringUtil.convertString2Time(openHourlist.get(i).getEndTime2(), TIME_PATTERN));
 
 				if (isInsert) {
 					// In case insert, Restaurant ID is ""
@@ -556,8 +557,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 					ovo.setDeliveryCompanyID(id);
 					ovo.setSeq(FIRST_OPEN_HOUR);
 					ovo.setWeekDay(i);
-					ovo.setStartTime(StringConvertUtil.convertString2Time(bizDelivAll1Start));
-					ovo.setEndTime(StringConvertUtil.convertString2Time(bizDelivAll1End));
+					ovo.setStartTime(StringUtil.convertString2Time(bizDelivAll1Start, TIME_PATTERN));
+					ovo.setEndTime(StringUtil.convertString2Time(bizDelivAll1End, TIME_PATTERN));
 					
 					if (isInsert) {
 						dao.insert(ovo);
@@ -570,8 +571,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 					ovo.setDeliveryCompanyID(id);
 					ovo.setSeq(SECOND_OPEN_HOUR);
 					ovo.setWeekDay(i);
-					ovo.setStartTime(StringConvertUtil.convertString2Time(bizDelivAll2Start));
-					ovo.setEndTime(StringConvertUtil.convertString2Time(bizDelivAll2End));
+					ovo.setStartTime(StringUtil.convertString2Time(bizDelivAll2Start, TIME_PATTERN));
+					ovo.setEndTime(StringUtil.convertString2Time(bizDelivAll2End, TIME_PATTERN));
 					
 					if (isInsert) {
 						dao.insert(ovo);
@@ -596,8 +597,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 					ovo.setDeliveryCompanyID(id);
 					ovo.setSeq(FIRST_OPEN_HOUR);
 					ovo.setWeekDay(openHourDelivlist.get(i).getWeekDay());
-					ovo.setStartTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getStartTime1()));
-					ovo.setEndTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getEndTime1()));
+					ovo.setStartTime(StringUtil.convertString2Time(openHourDelivlist.get(i).getStartTime1(), TIME_PATTERN));
+					ovo.setEndTime(StringUtil.convertString2Time(openHourDelivlist.get(i).getEndTime1(), TIME_PATTERN));
 
 					if (isInsert) {
 						dao.insert(ovo);
@@ -610,8 +611,8 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 					ovo.setDeliveryCompanyID(id);
 					ovo.setSeq(SECOND_OPEN_HOUR);
 					ovo.setWeekDay(openHourDelivlist.get(i).getWeekDay());
-					ovo.setStartTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getStartTime2()));
-					ovo.setEndTime(StringConvertUtil.convertString2Time(openHourDelivlist.get(i).getEndTime2()));
+					ovo.setStartTime(StringUtil.convertString2Time(openHourDelivlist.get(i).getStartTime2(), TIME_PATTERN));
+					ovo.setEndTime(StringUtil.convertString2Time(openHourDelivlist.get(i).getEndTime2(), TIME_PATTERN));
 
 					if (isInsert) {
 						dao.insert(ovo);
@@ -1059,6 +1060,10 @@ public class RestaurantInfoAction extends ActionSupport implements Preparable {
 					addFieldError("restDelivArealist[" + i + "].deliveryFee", getText("E0001_1", new String[]{"Delivery Fee[" + (i + 1) + "]"}));
 					hasError = true;
 				}
+			} else {
+				// Delete removed row
+				list.remove(i--);
+				size--;
 			}
 		}
 		return hasError;

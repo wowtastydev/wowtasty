@@ -23,6 +23,7 @@ public class OrderRestaurantVO {
 	private Float totalPriceWithTax = 0.00f;
 	private String orderStatus = "";
 	private String declinedReason = "";
+	private Timestamp confirmTime = null;
 	private String deliveryCompanyID = "";
 	private String deliveryCompanyType = "";
 	private Integer deliverymanID = 0;
@@ -38,6 +39,7 @@ public class OrderRestaurantVO {
 	private String deliveryProvince = "";
 	private String deliveryPostalCode = "";
 	private String deliveryInstruction = "";
+	private Integer deliveryLeadTime = 0;
 	private Integer reviewRate = 0;
 	private String updateID = "";
 	private Timestamp updateTime = null;
@@ -424,5 +426,29 @@ public class OrderRestaurantVO {
 	 */
 	public void setUpdateTime(Timestamp updateTime) {
 		this.updateTime = updateTime;
+	}
+	/**
+	 * @return the confirmTime
+	 */
+	public Timestamp getConfirmTime() {
+		return confirmTime;
+	}
+	/**
+	 * @param confirmTime the confirmTime to set
+	 */
+	public void setConfirmTime(Timestamp confirmTime) {
+		this.confirmTime = confirmTime;
+	}
+	/**
+	 * @return the deliveryLeadTime
+	 */
+	public Integer getDeliveryLeadTime() {
+		return deliveryLeadTime;
+	}
+	/**
+	 * @param deliveryLeadTime the deliveryLeadTime to set
+	 */
+	public void setDeliveryLeadTime(Integer deliveryLeadTime) {
+		this.deliveryLeadTime = deliveryLeadTime;
 	}
 }

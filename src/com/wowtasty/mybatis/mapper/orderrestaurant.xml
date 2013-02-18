@@ -6,8 +6,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 	<sql id="columns"> 
 		OrderID, RestaurantID, RestaurantName, RestaurantEmail, DeliveryType, DeliveryPrice, DeliveryTaxPrice, FoodTotalPrice, FoodTaxPrice, TotalPrice, TipPrice, TotalPriceWithTax,
-		OrderStatus, DeclinedReason, DeliveryCompanyID, DeliveryCompanyType, DeliverymanID, DeliverymanTelephone, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
-		DeliveryAddress, DeliverySuite, DeliveryBuzzer, DeliveryCity, DeliveryProvince, DeliveryPostalCode, DeliveryInstruction, ReviewRate, UpdateID, UpdateTime, DeliverymanName
+		OrderStatus, DeclinedReason, ConfirmTime, DeliveryCompanyID, DeliveryCompanyType, DeliverymanID, DeliverymanTelephone, DeliveryFirstName, DeliveryLastName, DeliveryTelephone,
+		DeliveryAddress, DeliverySuite, DeliveryBuzzer, DeliveryCity, DeliveryProvince, DeliveryPostalCode, DeliveryInstruction, DeliveryLeadTime, ReviewRate, UpdateID, UpdateTime, DeliverymanName
 	</sql>
 	
 	<!--selectByID-->
